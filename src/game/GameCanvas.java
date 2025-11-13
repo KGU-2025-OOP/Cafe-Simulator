@@ -1,0 +1,143 @@
+package game;
+
+import graphics.RenderQueue;
+import test.TestObject;
+import graphics.FPSCounter;
+import util.Vector2f;
+
+import java.awt.AWTEvent;
+import java.awt.Canvas;
+import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics;
+
+import java.util.ArrayList;
+
+public class GameCanvas extends Canvas implements Runnable {
+
+    private RenderQueue renderQueue;
+    private MessageQueue messageQueue;
+    FPSCounter frameCounter;
+
+    public boolean shouldRun;
+    private long lastTime;
+
+    private static class GO {
+        public static TestObject tobj;
+        public static Vector2f tobjDisplacement;
+        public static float tobjSpeed;
+        public static Vector2f tobjDirection;
+    }
+
+    public GameCanvas(int width, int height) {
+        renderQueue = new RenderQueue(width, height);
+        messageQueue = new MessageQueue();
+        frameCounter = new FPSCounter();
+        setSize(width, height);
+        Toolkit.getDefaultToolkit().addAWTEventListener(messageQueue, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
+    }
+
+    public void run() {
+        init();
+        KeyEvent ke;
+        MouseEvent me;
+        while (shouldRun) {
+            // message handling
+            AWTEvent input = messageQueue.poll();
+
+            if (input != null) {
+                switch (input.getID()) {
+                    case KeyEvent.KEY_PRESSED:
+                        ke = (KeyEvent) input;
+                        if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
+                            System.out.println("Space key down");
+                            renderQueue.setScreenResetEnabled(false);
+                        } else if (ke.getKeyCode() == KeyEvent.VK_UP) {
+                            GO.tobjDirection.y = -1.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+                            GO.tobjDirection.x = 1.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
+                            GO.tobjDirection.y = 1.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
+                            GO.tobjDirection.x = -1.F;
+                        }
+                            break;
+                    case KeyEvent.KEY_RELEASED:
+                        ke = (KeyEvent) input;
+                        if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
+                            System.out.println("Space key up");
+                            renderQueue.setScreenResetEnabled(true);
+                        } else if (ke.getKeyCode() == KeyEvent.VK_UP) {
+                            GO.tobjDirection.y = 0.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+                            GO.tobjDirection.x = 0.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
+                            GO.tobjDirection.y = 0.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
+                            GO.tobjDirection.x = 0.F;
+                        }
+                        break;
+                    case MouseEvent.MOUSE_CLICKED:
+                        me = (MouseEvent)input;
+                        System.out.println(me.getPoint().toString());
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+            update();
+            render();
+            frameCounter.printFPS();
+            // frameCounter.limitFPS(70);
+        }
+        shutdown();
+    }
+
+    private void init() {
+        // Initialize Gmae objects
+        GO.tobjDisplacement = new Vector2f(0.F, 0.F);
+        GO.tobjSpeed = 150.0F;
+        GO.tobj = new TestObject(getWidth(), getHeight(), 0.5F, GO.tobjDisplacement);
+        GO.tobjDirection = new Vector2f(0.F, 0.F);
+
+        lastTime = System.nanoTime();
+
+        shouldRun = true;
+    }
+
+    private void update() {
+        long currentTime = System.nanoTime();
+        float deltaTime = (currentTime - lastTime) / (float)FPSCounter.secondInNanoTime;
+        lastTime = currentTime;
+        if (GO.tobjDirection.getLength() > 0) {
+            GO.tobjDirection.normalize();
+        }
+        GO.tobjDirection.scale(GO.tobjSpeed);
+        GO.tobjDisplacement.x = GO.tobjDirection.x;
+        GO.tobjDisplacement.y = GO.tobjDirection.y;
+        GO.tobj.update(deltaTime);
+
+    }
+
+    private void render() {
+        renderQueue.add(GO.tobj);
+        drawCanvas();
+    }
+
+    private void drawCanvas() {
+        BufferedImage buffer = renderQueue.flush();
+        Graphics g = getGraphics();
+        assert (g != null);
+        g.drawImage(buffer, 0, 0, null);
+        g.dispose();
+    }
+
+    private void shutdown() {
+        System.exit(0);
+    }
+
+
+}
