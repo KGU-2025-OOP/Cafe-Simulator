@@ -24,11 +24,12 @@ public class GameCanvas extends Canvas implements Runnable {
     public boolean shouldRun;
     private long lastTime;
 
-    private static class GO {
+    private static class Player {
         public static TestObject tobj;
-        public static Vector2f tobjDisplacement;
-        public static float tobjSpeed;
-        public static Vector2f tobjDirection;
+        public static Vector2f displacement;
+        public static float speed;
+        public static Vector2f direction;
+        public static Vector2f move;
     }
 
     public GameCanvas(int width, int height) {
@@ -54,33 +55,33 @@ public class GameCanvas extends Canvas implements Runnable {
                         if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
                             System.out.println("Space key down");
                             renderQueue.setScreenResetEnabled(false);
-                        } else if (ke.getKeyCode() == KeyEvent.VK_UP) {
-                            GO.tobjDirection.y = -1.0F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                            GO.tobjDirection.x = 1.F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-                            GO.tobjDirection.y = 1.0F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                            GO.tobjDirection.x = -1.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_W) {
+                            Player.direction.y = -1.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_D) {
+                            Player.direction.x = 1.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_S) {
+                            Player.direction.y = 1.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_A) {
+                            Player.direction.x = -1.F;
                         }
-                            break;
+                        break;
                     case KeyEvent.KEY_RELEASED:
                         ke = (KeyEvent) input;
                         if (ke.getKeyCode() == KeyEvent.VK_SPACE) {
                             System.out.println("Space key up");
                             renderQueue.setScreenResetEnabled(true);
-                        } else if (ke.getKeyCode() == KeyEvent.VK_UP) {
-                            GO.tobjDirection.y = 0.F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-                            GO.tobjDirection.x = 0.F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_DOWN) {
-                            GO.tobjDirection.y = 0.0F;
-                        } else if (ke.getKeyCode() == KeyEvent.VK_LEFT) {
-                            GO.tobjDirection.x = 0.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_W) {
+                            Player.direction.y = 0.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_D) {
+                            Player.direction.x = 0.F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_S) {
+                            Player.direction.y = 0.0F;
+                        } else if (ke.getKeyCode() == KeyEvent.VK_A) {
+                            Player.direction.x = 0.F;
                         }
                         break;
                     case MouseEvent.MOUSE_CLICKED:
-                        me = (MouseEvent)input;
+                        me = (MouseEvent) input;
                         System.out.println(me.getPoint().toString());
 
                         break;
@@ -90,18 +91,19 @@ public class GameCanvas extends Canvas implements Runnable {
             }
             update();
             render();
+            frameCounter.limitFPS(60);
             frameCounter.printFPS();
-            // frameCounter.limitFPS(70);
         }
         shutdown();
     }
 
     private void init() {
         // Initialize Gmae objects
-        GO.tobjDisplacement = new Vector2f(0.F, 0.F);
-        GO.tobjSpeed = 150.0F;
-        GO.tobj = new TestObject(getWidth(), getHeight(), 0.5F, GO.tobjDisplacement);
-        GO.tobjDirection = new Vector2f(0.F, 0.F);
+        Player.displacement = new Vector2f(0.F, 0.F);
+        Player.speed = 150.0F;
+        Player.tobj = new TestObject(getWidth(), getHeight(), 0.5F, Player.displacement);
+        Player.direction = new Vector2f(0.F, 0.F);
+        Player.move = new Vector2f();
 
         lastTime = System.nanoTime();
 
@@ -110,20 +112,22 @@ public class GameCanvas extends Canvas implements Runnable {
 
     private void update() {
         long currentTime = System.nanoTime();
-        float deltaTime = (currentTime - lastTime) / (float)FPSCounter.secondInNanoTime;
+        float deltaTime = (currentTime - lastTime) / (float) FPSCounter.secondInNanoTime;
         lastTime = currentTime;
-        if (GO.tobjDirection.getLength() > 0) {
-            GO.tobjDirection.normalize();
+        Player.move.x = Player.direction.x;
+        Player.move.y = Player.direction.y;
+        if (Player.move.getLength() > 0) {
+            Player.move.normalize();
         }
-        GO.tobjDirection.scale(GO.tobjSpeed);
-        GO.tobjDisplacement.x = GO.tobjDirection.x;
-        GO.tobjDisplacement.y = GO.tobjDirection.y;
-        GO.tobj.update(deltaTime);
+        Player.move.scale(Player.speed);
+        Player.displacement.x = Player.move.x;
+        Player.displacement.y = Player.move.y;
+        Player.tobj.update(deltaTime);
 
     }
 
     private void render() {
-        renderQueue.add(GO.tobj);
+        renderQueue.add(Player.tobj);
         drawCanvas();
     }
 
