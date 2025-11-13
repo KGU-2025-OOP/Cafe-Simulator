@@ -1,8 +1,11 @@
+package game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class Cup implements IGameObject {
+    private float x, y;
+    private float depth;
 
     public Cup(float x, float y, float depth) {
         this.x = x;
