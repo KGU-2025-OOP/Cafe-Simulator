@@ -2,7 +2,11 @@ package ui;
 
 public class MenuItem
 {
-    public enum MenuType { BEVERAGE, DESSERT }
+    public enum MenuType
+    {
+        BEVERAGE,
+        DESSERT
+    }
 
     private String name;
     private MenuType type;
@@ -15,7 +19,18 @@ public class MenuItem
         this.isUnlocked = isUnlocked;
     }
 
-    public String getName() { return this.name; }
-    public MenuType getType() { return this.type; }
-    public boolean isUnlocked() { return this.isUnlocked; }
+    public String getName()
+    {
+        return this.name;
+    }
+
+    public MenuType getType()
+    {
+        return this.type;
+    }
+
+    public boolean isUnlocked()
+    {
+        return this.isUnlocked;
+    }
 }

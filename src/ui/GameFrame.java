@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 
-
 public class GameFrame extends JFrame
 {
     private CardLayout cardLayout;
@@ -43,56 +42,46 @@ public class GameFrame extends JFrame
 
     public GameFrame(boolean hasSaveFile)
     {
-        setTitle("My Cafe Game");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("My Cafe Game");
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setUndecorated(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setUndecorated(true);
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         this.currentSystemDate = START_DATE;
         this.dailySalesHistory = new LinkedHashMap<>();
-        // 1일차 10000원 초기 자본금 삭제 (이전 요청)
-        // String todayString = START_DATE.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        // this.dailySalesHistory.put(todayString, Integer.valueOf(10000));
 
-        initializeMenuItems();
+        this.initializeMenuItems();
 
         this.cardLayout = new CardLayout();
         this.mainPanel = new JPanel(this.cardLayout);
 
-        // 1. StartPanel
         this.startPanel = new StartPanel(hasSaveFile);
         this.mainPanel.add(this.startPanel, "Start");
 
-        // 2. OrderPanel
-        Map<String, Integer> recipeData = createRecipeData();
+        Map<String, Integer> recipeData = this.createRecipeData();
         this.orderPanel = new OrderPanel(recipeData);
         this.mainPanel.add(this.orderPanel, "Order");
 
-        // 3. NewGamePanel
         this.newGamePanel = new NewGamePanel();
         this.mainPanel.add(this.newGamePanel, "Nickname");
 
-        // 4. GameScreen
         this.gameScreen = new GameScreen();
         this.mainPanel.add(this.gameScreen, "Game");
 
-        // 5. GameSpacePanel (메인 허브)
         this.gameSpacePanel = new GameSpacePanel();
         this.mainPanel.add(this.gameSpacePanel, "GameSpaceHub");
 
-        // 6. 임시 그래프 패널
-        this.tempGraphPanel = createTempGraphPanel();
+        this.tempGraphPanel = this.createTempGraphPanel();
         this.mainPanel.add(this.tempGraphPanel, "Graph");
 
-        // 7. 리스너 연결
-        addListenersToStartPanel(hasSaveFile);
-        addListenersToOrderPanel();
-        addListenersToNewGamePanel();
-        addListenersToGameScreen();
-        addListenersToGameSpacePanel();
+        this.addListenersToStartPanel(hasSaveFile);
+        this.addListenersToOrderPanel();
+        this.addListenersToNewGamePanel();
+        this.addListenersToGameScreen();
+        this.addListenersToGameSpacePanel();
 
-        add(this.mainPanel);
+        this.add(this.mainPanel);
     }
 
     private void initializeMenuItems()
@@ -116,12 +105,14 @@ public class GameFrame extends JFrame
         return recipeData;
     }
 
-    private JPanel createTempGraphPanel() {
+    private JPanel createTempGraphPanel()
+    {
         JPanel panel = new JPanel(new java.awt.GridBagLayout());
         panel.add(new JLabel("성장도 그래프 (임시 화면입니다)"));
 
         JButton backButton = new JButton("돌아가기");
-        backButton.addActionListener(e -> {
+        backButton.addActionListener(e ->
+        {
             this.cardLayout.show(this.mainPanel, "GameSpaceHub");
         });
 
@@ -135,26 +126,32 @@ public class GameFrame extends JFrame
 
     private void addListenersToStartPanel(boolean hasSaveFile)
     {
-        if (hasSaveFile) {
-            this.startPanel.getContinueButton().addActionListener(e -> {
+        if (hasSaveFile)
+        {
+            this.startPanel.getContinueButton().addActionListener(e ->
+            {
                 this.cardLayout.show(this.mainPanel, "GameSpaceHub");
             });
         }
-        this.startPanel.getNewGameButton().addActionListener(e -> {
+        this.startPanel.getNewGameButton().addActionListener(e ->
+        {
             System.out.println("시작/새로하기 버튼 클릭됨");
             this.cardLayout.show(this.mainPanel, "Nickname");
         });
-        this.startPanel.getExitButton().addActionListener(e -> {
-            showExitConfirmation();
+        this.startPanel.getExitButton().addActionListener(e ->
+        {
+            this.showExitConfirmation();
         });
-        this.startPanel.getBgmButton().addActionListener(e -> {
+        this.startPanel.getBgmButton().addActionListener(e ->
+        {
             System.out.println("BGM 버튼 클릭됨");
         });
     }
 
     private void addListenersToOrderPanel()
     {
-        this.orderPanel.getConfirmButton().addActionListener(e -> {
+        this.orderPanel.getConfirmButton().addActionListener(e ->
+        {
             int totalCost = this.orderPanel.getTotalCost();
             this.currentDaySales = -totalCost;
 
@@ -165,17 +162,21 @@ public class GameFrame extends JFrame
 
             this.cardLayout.show(this.mainPanel, "Game");
         });
-        this.orderPanel.getCancelButton().addActionListener(e -> {
+        this.orderPanel.getCancelButton().addActionListener(e ->
+        {
             System.out.println("발주가 취소되었습니다.");
             this.cardLayout.show(this.mainPanel, "GameSpaceHub");
         });
     }
 
-    private void addListenersToNewGamePanel() {
-        this.newGamePanel.getStartButton().addActionListener(e -> {
+    private void addListenersToNewGamePanel()
+    {
+        this.newGamePanel.getStartButton().addActionListener(e ->
+        {
             String cafeName = this.newGamePanel.getNameField().getText().trim();
 
-            if (cafeName.isEmpty()) {
+            if (cafeName.isEmpty())
+            {
                 JOptionPane.showMessageDialog(this, "카페 이름을 입력해주세요.", "입력 오류", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -186,76 +187,89 @@ public class GameFrame extends JFrame
         });
     }
 
-    private void addListenersToGameSpacePanel() {
-        this.gameSpacePanel.getBtn1().addActionListener(e -> {
+    private void addListenersToGameSpacePanel()
+    {
+        this.gameSpacePanel.getBtn1().addActionListener(e ->
+        {
             System.out.println("운영시작 버튼 클릭됨 -> 발주 화면으로");
 
-            // 발주 패널 리셋
             this.orderPanel.resetSpinners();
 
             this.cardLayout.show(this.mainPanel, "Order");
         });
 
-        this.gameSpacePanel.getBtn2().addActionListener(e -> {
+        this.gameSpacePanel.getBtn2().addActionListener(e ->
+        {
             System.out.println("메뉴도감 버튼 클릭됨");
-            showMenuGuideFromHub();
+            this.showMenuGuideFromHub();
         });
 
-        this.gameSpacePanel.getBtn3().addActionListener(e -> {
+        this.gameSpacePanel.getBtn3().addActionListener(e ->
+        {
             System.out.println("성장도그래프 버튼 클릭됨");
             this.cardLayout.show(this.mainPanel, "Graph");
         });
     }
 
-    private void addListenersToGameScreen() {
-        addExitBinding(this.startPanel);
-        addExitBinding(this.newGamePanel);
-        addExitBinding(this.orderPanel);
-        addPauseBinding(this.gameScreen);
-        addExitBinding(this.gameSpacePanel);
-        addExitBinding(this.tempGraphPanel);
+    private void addListenersToGameScreen()
+    {
+        this.addExitBinding(this.startPanel);
+        this.addExitBinding(this.newGamePanel);
+        this.addExitBinding(this.orderPanel);
+        this.addPauseBinding(this.gameScreen);
+        this.addExitBinding(this.gameSpacePanel);
+        this.addExitBinding(this.tempGraphPanel);
 
-        this.gameScreen.getEndDayButton().addActionListener(e -> {
-            showDayEndDialog();
+        this.gameScreen.getEndDayButton().addActionListener(e ->
+        {
+            this.showDayEndDialog();
         });
     }
 
-    private void addExitBinding(JPanel panel) {
+    private void addExitBinding(JPanel panel)
+    {
         String actionKey = "showExitConfirmation";
         InputMap inputMap = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = panel.getActionMap();
         KeyStroke escKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 
         inputMap.put(escKeyStroke, actionKey);
-        actionMap.put(actionKey, new AbstractAction() {
+        actionMap.put(actionKey, new AbstractAction()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 showExitConfirmation();
             }
         });
     }
 
-    private void addPauseBinding(JPanel panel) {
+    private void addPauseBinding(JPanel panel)
+    {
         String actionKey = "showPauseMenu";
         InputMap inputMap = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = panel.getActionMap();
         KeyStroke escKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 
         inputMap.put(escKeyStroke, actionKey);
-        actionMap.put(actionKey, new AbstractAction() {
+        actionMap.put(actionKey, new AbstractAction()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 System.out.println("ESC 키 감지됨! (일시정지)");
                 showPauseDialog();
             }
         });
     }
 
-    private void showExitConfirmation() {
+    private void showExitConfirmation()
+    {
         int confirmExit = JOptionPane.showConfirmDialog(
                 this, "게임을 종료하시겠습니까?", "종료 확인", JOptionPane.YES_NO_OPTION
         );
-        if (confirmExit == JOptionPane.YES_OPTION) {
+        if (confirmExit == JOptionPane.YES_OPTION)
+        {
             System.exit(0);
         }
     }
@@ -270,25 +284,26 @@ public class GameFrame extends JFrame
         {
             case CALENDAR:
                 System.out.println("달력 버튼 클릭됨");
-                showCalendarDialog();
+                this.showCalendarDialog();
                 break;
             case MENU:
                 System.out.println("메뉴판 버튼 클릭됨");
-                showMenuDialog();
+                this.showMenuDialog();
                 break;
             case GIVE_UP:
                 System.out.println("포기하기 버튼 클릭됨");
                 int confirmGiveUp = JOptionPane.showConfirmDialog(
                         this, "정말 포기하고 처음으로 돌아가시겠습니까?", "포기 확인", JOptionPane.YES_NO_OPTION
                 );
-                if (confirmGiveUp == JOptionPane.YES_OPTION) {
+                if (confirmGiveUp == JOptionPane.YES_OPTION)
+                {
                     System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
                     this.cardLayout.show(this.mainPanel, "Start");
                 }
                 break;
             case EXIT:
                 System.out.println("종료하기 버튼 클릭됨");
-                showExitConfirmation();
+                this.showExitConfirmation();
                 break;
             case CONTINUE:
             case NONE:
@@ -303,8 +318,9 @@ public class GameFrame extends JFrame
         CalendarDialog calendarDialog = new CalendarDialog(this, this.currentSystemDate, this.dailySalesHistory);
         calendarDialog.setVisible(true);
 
-        if (calendarDialog.shouldReopenPause()) {
-            showPauseDialog();
+        if (calendarDialog.shouldReopenPause())
+        {
+            this.showPauseDialog();
         }
     }
 
@@ -313,8 +329,9 @@ public class GameFrame extends JFrame
         MenuDialog menuDialog = new MenuDialog(this, this.allMenuItems);
         menuDialog.setVisible(true);
 
-        if (menuDialog.shouldReopenPause()) {
-            showPauseDialog();
+        if (menuDialog.shouldReopenPause())
+        {
+            this.showPauseDialog();
         }
     }
 
@@ -324,51 +341,47 @@ public class GameFrame extends JFrame
         menuDialog.setVisible(true);
     }
 
-    private void showDayEndDialog() {
-        // 1. 현재 며칠차인지 계산
+    private void showDayEndDialog()
+    {
         int dayNumber = (int) ChronoUnit.DAYS.between(START_DATE, this.currentSystemDate) + 1;
 
-        // [수정] 날짜 대신 'N일차'로 콘솔 출력
         System.out.println(dayNumber + "일차 장사를 마감합니다.");
 
-        // 2. 임시 (가상) 데이터 생성
         Random rand = new Random();
         int customerCount = 10 + rand.nextInt(15);
         int revenue = customerCount * (3000 + rand.nextInt(2000));
         int orderCost = (this.currentDaySales == 0) ? 0 : -this.currentDaySales;
 
-        // 3. 결산 다이얼로그 생성 및 표시
         DayEndDialog dayEndDialog = new DayEndDialog(this, dayNumber, customerCount, revenue, orderCost);
         dayEndDialog.setVisible(true);
 
-        // 4. (다이얼로그가 닫힌 후) 다음 날 준비
         System.out.println(dayNumber + "일차 결산 완료.");
 
-        // 5. 하루 매출을 누적
         int netProfit = revenue - orderCost;
         String todayKey = this.currentSystemDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        if (dayNumber > 1) {
+        if (dayNumber > 1)
+        {
             this.dailySalesHistory.put(todayKey, Integer.valueOf(netProfit));
-        } else {
+        }
+        else
+        {
             int initialCapital = this.dailySalesHistory.getOrDefault(todayKey, Integer.valueOf(0));
             this.dailySalesHistory.put(todayKey, Integer.valueOf(initialCapital + netProfit));
         }
-        // [수정] 날짜 대신 'N일차'로 콘솔 출력
         System.out.println(dayNumber + "일차 순수익 " + netProfit + "원 저장됨.");
 
-        // 6. 다음 날로 이동
         this.currentSystemDate = this.currentSystemDate.plusDays(1);
         this.currentDaySales = 0;
 
-        // 7. 메인 허브로 복귀
         this.cardLayout.show(this.mainPanel, "GameSpaceHub");
     }
 
     public static void main(String[] args)
     {
         final boolean MOCK_SAVE_FILE_EXISTS = false;
-        SwingUtilities.invokeLater(() -> {
+        SwingUtilities.invokeLater(() ->
+        {
             GameFrame game = new GameFrame(MOCK_SAVE_FILE_EXISTS);
             game.setVisible(true);
         });

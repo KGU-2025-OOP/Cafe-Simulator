@@ -22,15 +22,16 @@ public class PauseDialog extends JDialog
     private static final String CONTINUE_BUTTON_TEXT = "계속하기";
     private static final String GIVE_UP_BUTTON_TEXT = "포기하기 (데이터 초기화)";
     private static final String EXIT_BUTTON_TEXT = "종료하기";
-    private static final Dimension BUTTON_SIZE = new Dimension(200, 40);
-    private static final int BUTTON_VERTICAL_SPACING = 15;
-    private static final int DIALOG_PADDING = 20;
-    private static final Font MAIN_FONT = new Font("Malgun Gothic", Font.BOLD, 14);
-    private static final Color BUTTON_COLOR = new Color(59, 89, 182);
-    private static final Color BUTTON_TEXT_COLOR = Color.WHITE;
-    private static final Color WARN_BUTTON_COLOR = new Color(220, 53, 69);
 
-    public enum PauseResult { CONTINUE, CALENDAR, MENU, GIVE_UP, EXIT, NONE }
+    public enum PauseResult
+    {
+        CONTINUE,
+        CALENDAR,
+        MENU,
+        GIVE_UP,
+        EXIT,
+        NONE
+    }
 
     private JButton calendarButton;
     private JButton menuButton;
@@ -45,70 +46,93 @@ public class PauseDialog extends JDialog
         this.result = PauseResult.NONE;
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        mainPanel.setBorder(new EmptyBorder(
-                DIALOG_PADDING, DIALOG_PADDING, DIALOG_PADDING, DIALOG_PADDING));
+        mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
         this.calendarButton = new JButton(CALENDAR_BUTTON_TEXT);
         this.menuButton = new JButton(MENU_BUTTON_TEXT);
         this.continueButton = new JButton(CONTINUE_BUTTON_TEXT);
         this.giveUpButton = new JButton(GIVE_UP_BUTTON_TEXT);
         this.exitButton = new JButton(EXIT_BUTTON_TEXT);
-        setButtonProperties(this.calendarButton, false);
-        setButtonProperties(this.menuButton, false);
-        setButtonProperties(this.continueButton, false);
-        setButtonProperties(this.giveUpButton, true);
-        setButtonProperties(this.exitButton, true);
-        addListeners();
+
+        this.setButtonProperties(this.calendarButton, false);
+        this.setButtonProperties(this.menuButton, false);
+        this.setButtonProperties(this.continueButton, false);
+        this.setButtonProperties(this.giveUpButton, true);
+        this.setButtonProperties(this.exitButton, true);
+        this.addListeners();
+
         mainPanel.add(this.calendarButton);
-        mainPanel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.menuButton);
-        mainPanel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.continueButton);
-        mainPanel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.giveUpButton);
-        mainPanel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
+        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.exitButton);
-        add(mainPanel);
-        pack();
-        setResizable(false);
-        setLocationRelativeTo(parent);
-        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        this.add(mainPanel);
+        this.pack();
+        this.setResizable(false);
+        this.setLocationRelativeTo(parent);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     }
 
     private void setButtonProperties(JComponent button, boolean isWarning)
     {
+        Dimension buttonSize = new Dimension(200, 40);
+        Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
+        Color buttonColor = new Color(59, 89, 182);
+        Color buttonTextColor = Color.WHITE;
+        Color warnButtonColor = new Color(220, 53, 69);
+
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMinimumSize(BUTTON_SIZE);
-        button.setPreferredSize(BUTTON_SIZE);
-        button.setMaximumSize(BUTTON_SIZE);
-        button.setFont(MAIN_FONT);
-        button.setForeground(BUTTON_TEXT_COLOR);
-        if (isWarning) {
-            button.setBackground(WARN_BUTTON_COLOR);
-        } else {
-            button.setBackground(BUTTON_COLOR);
+        button.setMinimumSize(buttonSize);
+        button.setPreferredSize(buttonSize);
+        button.setMaximumSize(buttonSize);
+        button.setFont(mainFont);
+        button.setForeground(buttonTextColor);
+        if (isWarning)
+        {
+            button.setBackground(warnButtonColor);
+        }
+        else
+        {
+            button.setBackground(buttonColor);
         }
         button.setOpaque(true);
-        if (button instanceof AbstractButton) {
+        if (button instanceof AbstractButton)
+        {
             ((AbstractButton) button).setBorderPainted(false);
         }
     }
 
     private void addListeners()
     {
-        this.calendarButton.addActionListener(e -> {
-            this.result = PauseResult.CALENDAR; dispose();
+        this.calendarButton.addActionListener(e ->
+        {
+            this.result = PauseResult.CALENDAR;
+            this.dispose();
         });
-        this.menuButton.addActionListener(e -> {
-            this.result = PauseResult.MENU; dispose();
+        this.menuButton.addActionListener(e ->
+        {
+            this.result = PauseResult.MENU;
+            this.dispose();
         });
-        this.continueButton.addActionListener(e -> {
-            this.result = PauseResult.CONTINUE; dispose();
+        this.continueButton.addActionListener(e ->
+        {
+            this.result = PauseResult.CONTINUE;
+            this.dispose();
         });
-        this.giveUpButton.addActionListener(e -> {
-            this.result = PauseResult.GIVE_UP; dispose();
+        this.giveUpButton.addActionListener(e ->
+        {
+            this.result = PauseResult.GIVE_UP;
+            this.dispose();
         });
-        this.exitButton.addActionListener(e -> {
-            this.result = PauseResult.EXIT; dispose();
+        this.exitButton.addActionListener(e ->
+        {
+            this.result = PauseResult.EXIT;
+            this.dispose();
         });
     }
 

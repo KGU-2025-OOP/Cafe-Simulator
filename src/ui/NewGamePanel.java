@@ -14,17 +14,16 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class NewGamePanel extends JPanel {
-
+public class NewGamePanel extends JPanel
+{
     private JTextField nameField;
     private JButton startButton;
 
-    public NewGamePanel() {
-        // 화면 전체
-        setLayout(new GridBagLayout());
-        setBackground(Color.WHITE);
+    public NewGamePanel()
+    {
+        this.setLayout(new GridBagLayout());
+        this.setBackground(Color.WHITE);
 
-        // 안쪽 큰 박스
         JPanel boxPanel = new JPanel(new BorderLayout());
         boxPanel.setPreferredSize(new Dimension(800, 400));
         boxPanel.setBackground(new Color(250, 250, 250));
@@ -34,7 +33,6 @@ public class NewGamePanel extends JPanel {
                         BorderFactory.createEmptyBorder(30, 40, 30, 40)
                 ));
 
-        // 텍스트를 가지는 패널
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
 
@@ -44,7 +42,6 @@ public class NewGamePanel extends JPanel {
         titlePanel.add(titleLabel, BorderLayout.WEST);
         boxPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // input을 가지는 패널
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -53,51 +50,41 @@ public class NewGamePanel extends JPanel {
         ic.gridy = 0;
         ic.anchor = GridBagConstraints.CENTER;
 
-        nameField = new JTextField(35);
-        nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
-        nameField.setHorizontalAlignment(JTextField.CENTER);
-        nameField.setBackground(new Color(255, 248, 220));
-        nameField.setBorder(
+        this.nameField = new JTextField(35);
+        this.nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
+        this.nameField.setHorizontalAlignment(JTextField.CENTER);
+        this.nameField.setBackground(new Color(255, 248, 220));
+        this.nameField.setBorder(
                 BorderFactory.createLineBorder(Color.RED, 3, true)
         );
 
-        inputPanel.add(nameField, ic);
+        inputPanel.add(this.nameField, ic);
         boxPanel.add(inputPanel, BorderLayout.CENTER);
 
-        // 버튼을 가지는 패널
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setOpaque(false);
 
-        startButton = new JButton("창업하기");
-        startButton.setFont(new Font("SansSerif", Font.BOLD, 24));
-        startButton.setPreferredSize(new Dimension(140, 50));
+        this.startButton = new JButton("창업하기");
+        this.startButton.setFont(new Font("SansSerif", Font.BOLD, 24));
+        this.startButton.setPreferredSize(new Dimension(140, 50));
 
-        buttonPanel.add(startButton, BorderLayout.EAST);
+        buttonPanel.add(this.startButton, BorderLayout.EAST);
         boxPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // boxPanel을 중앙에 배치
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 0);
-        add(boxPanel, gbc);
+        this.add(boxPanel, gbc);
     }
 
-    // --- Getter 메서드 추가 ---
-
-    /**
-     * 이름 입력 필드를 반환합니다.
-     * @return nameField
-     */
-    public JTextField getNameField() {
+    public JTextField getNameField()
+    {
         return this.nameField;
     }
 
-    /**
-     * '창업하기' 버튼을 반환합니다.
-     * @return startButton
-     */
-    public JButton getStartButton() {
+    public JButton getStartButton()
+    {
         return this.startButton;
     }
 }

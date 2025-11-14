@@ -8,71 +8,71 @@ import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JButton; // [추가]
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class GameScreen extends JPanel {
-
+public class GameScreen extends JPanel
+{
     private JLabel dayLabel;
     private JLabel timeLabel;
-    private JButton endDayButton; // [신규] 하루 마감 임시 버튼
+    private JButton endDayButton;
 
-    public GameScreen() {
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+    public GameScreen()
+    {
+        this.setLayout(new BorderLayout());
+        this.setBackground(Color.WHITE);
 
-        JPanel topPanel = createTopBar();
-        add(topPanel, BorderLayout.NORTH);
+        JPanel topPanel = this.createTopBar();
+        this.add(topPanel, BorderLayout.NORTH);
 
-        JPanel mainPanel = createMainPanel();
-        add(mainPanel, BorderLayout.CENTER);
+        JPanel mainPanel = this.createMainPanel();
+        this.add(mainPanel, BorderLayout.CENTER);
     }
 
-    private JPanel createTopBar() {
+    private JPanel createTopBar()
+    {
         JPanel topBarPanel = new JPanel(new BorderLayout());
         topBarPanel.setBorder(
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)
         );
         topBarPanel.setBackground(Color.WHITE);
 
-        dayLabel = new JLabel("1일차"); // (이 레이블은 GameFrame에서 동적으로 업데이트해야 합니다)
-        dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        this.dayLabel = new JLabel("1일차");
+        this.dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        timeLabel = new JLabel("마감까지 00:30"); // (이 레이블도 타이머로 업데이트해야 합니다)
-        timeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        this.timeLabel = new JLabel("마감까지 00:30");
+        this.timeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        // [신규] 임시 마감 버튼 추가
-        endDayButton = new JButton("하루 마감 (임시)");
-        endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        this.endDayButton = new JButton("하루 마감 (임시)");
+        this.endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
 
-        topBarPanel.add(dayLabel, BorderLayout.WEST);
-        topBarPanel.add(endDayButton, BorderLayout.CENTER); // 중앙에 버튼 추가
-        topBarPanel.add(timeLabel, BorderLayout.EAST);
+        topBarPanel.add(this.dayLabel, BorderLayout.WEST);
+        topBarPanel.add(this.endDayButton, BorderLayout.CENTER);
+        topBarPanel.add(this.timeLabel, BorderLayout.EAST);
 
         return topBarPanel;
     }
 
-    // [신규] GameFrame에서 버튼에 접근하기 위한 Getter
-    public JButton getEndDayButton() {
+    public JButton getEndDayButton()
+    {
         return this.endDayButton;
     }
 
-    // (GameFrame에서 날짜 레이블을 업데이트하기 위한 Setter - 선택 사항)
-    public void setDayLabel(String text) {
+    public void setDayLabel(String text)
+    {
         this.dayLabel.setText(text);
     }
 
-    // --- (이하 코드는 제공해주신 원본과 동일) ---
-
-    private JPanel createMainPanel() {
+    private JPanel createMainPanel()
+    {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
-        JPanel topPathPanel = createTopPathPanel();
-        JPanel bottomPathPanel = createBottomPathPanel();
-        JPanel leftPathPanel = createLeftPathPanel();
-        JPanel rightPathPanel = createRightPathPanel();
+        JPanel topPathPanel = this.createTopPathPanel();
+        JPanel bottomPathPanel = this.createBottomPathPanel();
+        JPanel leftPathPanel = this.createLeftPathPanel();
+        JPanel rightPathPanel = this.createRightPathPanel();
 
         topPathPanel.setPreferredSize(new Dimension(0, 100));
         bottomPathPanel.setPreferredSize(new Dimension(0, 100));
@@ -84,13 +84,14 @@ public class GameScreen extends JPanel {
         mainPanel.add(leftPathPanel, BorderLayout.WEST);
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
 
-        JPanel gameAreaPanel = createGameAreaPanel();
+        JPanel gameAreaPanel = this.createGameAreaPanel();
         mainPanel.add(gameAreaPanel, BorderLayout.CENTER);
 
         return mainPanel;
     }
 
-    private JPanel createGameAreaPanel() {
+    private JPanel createGameAreaPanel()
+    {
         JPanel gameAreaPanel = new JPanel();
         gameAreaPanel.setBackground(Color.GRAY);
         gameAreaPanel.setBorder(
@@ -103,28 +104,32 @@ public class GameScreen extends JPanel {
         return gameAreaPanel;
     }
 
-    private void createCustomerPath() {
-        add(createTopPathPanel(), BorderLayout.PAGE_START);
-        add(createBottomPathPanel(), BorderLayout.PAGE_END);
-        add(createLeftPathPanel(), BorderLayout.LINE_START);
-        add(createRightPathPanel(), BorderLayout.LINE_END);
+    private void createCustomerPath()
+    {
+        this.add(this.createTopPathPanel(), BorderLayout.PAGE_START);
+        this.add(this.createBottomPathPanel(), BorderLayout.PAGE_END);
+        this.add(this.createLeftPathPanel(), BorderLayout.LINE_START);
+        this.add(this.createRightPathPanel(), BorderLayout.LINE_END);
     }
 
-    private JPanel createTopPathPanel() {
+    private JPanel createTopPathPanel()
+    {
         JPanel topPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         topPathPanel.setBackground(Color.RED);
 
         return topPathPanel;
     }
 
-    private JPanel createBottomPathPanel() {
+    private JPanel createBottomPathPanel()
+    {
         JPanel bottomPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         bottomPathPanel.setBackground(Color.GREEN);
 
         return bottomPathPanel;
     }
 
-    private JPanel createLeftPathPanel() {
+    private JPanel createLeftPathPanel()
+    {
         JPanel leftPathPanel = new JPanel();
         leftPathPanel.setLayout(new BoxLayout(leftPathPanel, BoxLayout.Y_AXIS));
         leftPathPanel.setBackground(Color.BLUE);
@@ -132,7 +137,8 @@ public class GameScreen extends JPanel {
         return leftPathPanel;
     }
 
-    private JPanel createRightPathPanel() {
+    private JPanel createRightPathPanel()
+    {
         JPanel rightPathPanel = new JPanel();
         rightPathPanel.setLayout(new BoxLayout(rightPathPanel, BoxLayout.Y_AXIS));
         rightPathPanel.setBackground(Color.YELLOW);

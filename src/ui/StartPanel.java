@@ -23,13 +23,6 @@ public class StartPanel extends JPanel
     private static final String EXIT_BUTTON_TEXT = "종료하기";
     private static final String BGM_BUTTON_ON_TEXT = "BGM ON";
     private static final String BGM_BUTTON_OFF_TEXT = "BGM OFF";
-    private static final int BUTTON_VERTICAL_SPACING = 20;
-    private static final Dimension CENTER_BUTTON_SIZE = new Dimension(150, 40);
-    private static final int PANEL_PADDING = 10;
-    private static final Font MAIN_FONT = new Font("Malgun Gothic", Font.BOLD, 14);
-    private static final Color BUTTON_COLOR = new Color(59, 89, 182);
-    private static final Color BUTTON_TEXT_COLOR = Color.WHITE;
-    private static final Font SMALL_FONT = new Font("Malgun Gothic", Font.PLAIN, 10);
 
     private JButton continueButton;
     private JButton newGameButton;
@@ -38,15 +31,15 @@ public class StartPanel extends JPanel
 
     public StartPanel(boolean hasSaveFile)
     {
-        setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(PANEL_PADDING, PANEL_PADDING, PANEL_PADDING, PANEL_PADDING));
+        this.setLayout(new BorderLayout());
+        this.setBorder(new EmptyBorder(10, 10, 10, 10));
         this.bgmButton = new JToggleButton(BGM_BUTTON_ON_TEXT, true);
-        this.bgmButton.setFont(SMALL_FONT);
-        JPanel centerPanel = createCenterPanel(hasSaveFile);
-        JPanel bottomPanel = createBottomPanel();
-        add(centerPanel, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
-        addBgmButtonListener();
+        this.bgmButton.setFont(new Font("Malgun Gothic", Font.PLAIN, 10));
+        JPanel centerPanel = this.createCenterPanel(hasSaveFile);
+        JPanel bottomPanel = this.createBottomPanel();
+        this.add(centerPanel, BorderLayout.CENTER);
+        this.add(bottomPanel, BorderLayout.SOUTH);
+        this.addBgmButtonListener();
     }
 
     private JPanel createCenterPanel(boolean hasSaveFile)
@@ -54,23 +47,26 @@ public class StartPanel extends JPanel
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         this.exitButton = new JButton(EXIT_BUTTON_TEXT);
-        setCenterButtonProperties(this.exitButton);
+        this.setCenterButtonProperties(this.exitButton);
         panel.add(Box.createVerticalGlue());
-        if (hasSaveFile) {
+        if (hasSaveFile)
+        {
             this.continueButton = new JButton(CONTINUE_BUTTON_TEXT);
             this.newGameButton = new JButton(NEW_GAME_BUTTON_TEXT);
-            setCenterButtonProperties(this.continueButton);
-            setCenterButtonProperties(this.newGameButton);
+            this.setCenterButtonProperties(this.continueButton);
+            this.setCenterButtonProperties(this.newGameButton);
             panel.add(this.continueButton);
-            panel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
-            panel.add(this.newGameButton);
-        } else {
-            this.continueButton = null;
-            this.newGameButton = new JButton(START_BUTTON_TEXT);
-            setCenterButtonProperties(this.newGameButton);
+            panel.add(Box.createVerticalStrut(20));
             panel.add(this.newGameButton);
         }
-        panel.add(Box.createVerticalStrut(BUTTON_VERTICAL_SPACING));
+        else
+        {
+            this.continueButton = null;
+            this.newGameButton = new JButton(START_BUTTON_TEXT);
+            this.setCenterButtonProperties(this.newGameButton);
+            panel.add(this.newGameButton);
+        }
+        panel.add(Box.createVerticalStrut(20));
         panel.add(this.exitButton);
         panel.add(Box.createVerticalGlue());
         return panel;
@@ -86,32 +82,57 @@ public class StartPanel extends JPanel
 
     private void setCenterButtonProperties(JComponent button)
     {
+        Dimension centerButtonSize = new Dimension(150, 40);
+        Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
+        Color buttonColor = new Color(59, 89, 182);
+        Color buttonTextColor = Color.WHITE;
+
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setMinimumSize(CENTER_BUTTON_SIZE);
-        button.setPreferredSize(CENTER_BUTTON_SIZE);
-        button.setMaximumSize(CENTER_BUTTON_SIZE);
-        button.setFont(MAIN_FONT);
-        button.setBackground(BUTTON_COLOR);
-        button.setForeground(BUTTON_TEXT_COLOR);
+        button.setMinimumSize(centerButtonSize);
+        button.setPreferredSize(centerButtonSize);
+        button.setMaximumSize(centerButtonSize);
+        button.setFont(mainFont);
+        button.setBackground(buttonColor);
+        button.setForeground(buttonTextColor);
         button.setOpaque(true);
-        if (button instanceof AbstractButton) {
+        if (button instanceof AbstractButton)
+        {
             ((AbstractButton) button).setBorderPainted(false);
         }
     }
 
     private void addBgmButtonListener()
     {
-        this.bgmButton.addActionListener(e -> {
-            if (this.bgmButton.isSelected()) {
+        this.bgmButton.addActionListener(e ->
+        {
+            if (this.bgmButton.isSelected())
+            {
                 this.bgmButton.setText(BGM_BUTTON_ON_TEXT);
-            } else {
+            }
+            else
+            {
                 this.bgmButton.setText(BGM_BUTTON_OFF_TEXT);
             }
         });
     }
 
-    public JButton getContinueButton() { return this.continueButton; }
-    public JButton getNewGameButton() { return this.newGameButton; }
-    public JButton getExitButton() { return this.exitButton; }
-    public JToggleButton getBgmButton() { return this.bgmButton; }
+    public JButton getContinueButton()
+    {
+        return this.continueButton;
+    }
+
+    public JButton getNewGameButton()
+    {
+        return this.newGameButton;
+    }
+
+    public JButton getExitButton()
+    {
+        return this.exitButton;
+    }
+
+    public JToggleButton getBgmButton()
+    {
+        return this.bgmButton;
+    }
 }

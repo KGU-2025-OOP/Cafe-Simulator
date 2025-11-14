@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
-public class CalendarDialog extends JDialog {
-
+public class CalendarDialog extends JDialog
+{
     private static final LocalDate START_DATE = LocalDate.of(2025, 11, 13);
 
     private Map<String, Integer> dailySalesHistory;
@@ -18,27 +18,23 @@ public class CalendarDialog extends JDialog {
     private JLabel selectedDayLabel;
     private JLabel salesAmountLabel;
 
-    public CalendarDialog(JFrame parent, LocalDate currentSystemDate, Map<String, Integer> dailySalesHistory) {
+    public CalendarDialog(JFrame parent, LocalDate currentSystemDate, Map<String, Integer> dailySalesHistory)
+    {
         super(parent, "달력", true);
         this.dailySalesHistory = dailySalesHistory;
 
-        // ============================
-        // 전체 배경
-        // ============================
         JPanel base = new JPanel(new BorderLayout());
-        base.setBackground(new Color(255, 249, 235));   // 크림톤
+        base.setBackground(new Color(255, 249, 235));
         base.setBorder(new EmptyBorder(30, 30, 30, 30));
 
-        // ============================
-        // NORTH : 뒤로가기 + 제목
-        // ============================
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        JButton backBtn = createSoftButton("←", 30);
-        backBtn.addActionListener(e -> {
+        JButton backBtn = this.createSoftButton("←", 30);
+        backBtn.addActionListener(e ->
+        {
             this.shouldReopenPause = true;
-            dispose();
+            this.dispose();
         });
 
         JPanel backWrap = new JPanel(new BorderLayout());
@@ -54,15 +50,9 @@ public class CalendarDialog extends JDialog {
 
         base.add(topPanel, BorderLayout.NORTH);
 
-        // ============================
-        // CENTER : 좌측 데이터 패널 + 우측 달력
-        // ============================
         JPanel centerPanel = new JPanel(new BorderLayout(40, 0));
         centerPanel.setOpaque(false);
 
-        // -----------------------
-        // LEFT : 데이터 박스
-        // -----------------------
         JPanel dataPanel = new JPanel(new GridBagLayout());
         dataPanel.setOpaque(false);
         dataPanel.setPreferredSize(new Dimension(420, 500));
@@ -74,28 +64,25 @@ public class CalendarDialog extends JDialog {
                 new EmptyBorder(25, 25, 25, 25)
         ));
 
-        selectedDayLabel = new JLabel("데이터 출력 화면");
-        selectedDayLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 30));
-        selectedDayLabel.setForeground(new Color(80, 60, 50));
+        this.selectedDayLabel = new JLabel("데이터 출력 화면");
+        this.selectedDayLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 30));
+        this.selectedDayLabel.setForeground(new Color(80, 60, 50));
 
-        salesAmountLabel = new JLabel("--- 원");
-        salesAmountLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 42));
-        salesAmountLabel.setForeground(new Color(60, 40, 30));
+        this.salesAmountLabel = new JLabel("--- 원");
+        this.salesAmountLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 42));
+        this.salesAmountLabel.setForeground(new Color(60, 40, 30));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        dataCard.add(selectedDayLabel, gbc);
+        dataCard.add(this.selectedDayLabel, gbc);
 
         gbc.gridy = 1;
         gbc.insets = new Insets(20, 0, 0, 0);
-        dataCard.add(salesAmountLabel, gbc);
+        dataCard.add(this.salesAmountLabel, gbc);
 
         dataPanel.add(dataCard);
         centerPanel.add(dataPanel, BorderLayout.WEST);
 
-        // -----------------------
-        // RIGHT : 달력 그리드
-        // -----------------------
         JPanel calendarWrapper = new JPanel(new GridBagLayout());
         calendarWrapper.setOpaque(false);
 
@@ -104,10 +91,12 @@ public class CalendarDialog extends JDialog {
 
         long currentDayNumber = ChronoUnit.DAYS.between(START_DATE, currentSystemDate) + 1;
 
-        for (int i = 1; i <= 16; i++) {
-            JButton btn = createDayButton(i + "일");
+        for (int i = 1; i <= 16; i++)
+        {
+            JButton btn = this.createDayButton(i + "일");
 
-            if (i == currentDayNumber) {
+            if (i == currentDayNumber)
+            {
                 btn.setBackground(new Color(255, 227, 160));
                 btn.setBorder(new LineBorder(new Color(225, 175, 80), 3, true));
             }
@@ -116,9 +105,10 @@ public class CalendarDialog extends JDialog {
             String key = d.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             int dayNum = i;
 
-            btn.addActionListener(e -> {
-                int sales = dailySalesHistory.getOrDefault(key, Integer.valueOf(0));
-                updateSalesInfo(dayNum, sales);
+            btn.addActionListener(e ->
+            {
+                int sales = this.dailySalesHistory.getOrDefault(key, Integer.valueOf(0));
+                this.updateSalesInfo(dayNum, sales);
             });
 
             grid.add(btn);
@@ -129,12 +119,9 @@ public class CalendarDialog extends JDialog {
 
         base.add(centerPanel, BorderLayout.CENTER);
 
-        add(base);
+        this.add(base);
 
-        // ============================
-        // 전체 화면 설정
-        // ============================
-        setUndecorated(true);
+        this.setUndecorated(true);
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
                 .getDefaultScreenDevice();
@@ -142,14 +129,12 @@ public class CalendarDialog extends JDialog {
         int w = gd.getDisplayMode().getWidth();
         int h = gd.getDisplayMode().getHeight();
 
-        setSize(w, h);
-        setLocationRelativeTo(null);
+        this.setSize(w, h);
+        this.setLocationRelativeTo(null);
     }
 
-    // ============================
-    // 버튼 스타일 함수
-    // ============================
-    private JButton createSoftButton(String text, int size) {
+    private JButton createSoftButton(String text, int size)
+    {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, size));
         btn.setFocusPainted(false);
@@ -162,7 +147,8 @@ public class CalendarDialog extends JDialog {
         return btn;
     }
 
-    private JButton createDayButton(String text) {
+    private JButton createDayButton(String text)
+    {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, 24));
         btn.setFocusPainted(false);
@@ -175,16 +161,14 @@ public class CalendarDialog extends JDialog {
         return btn;
     }
 
-    // ============================
-    // 데이터 갱신
-    // ============================
-    private void updateSalesInfo(int day, int sales) {
-        selectedDayLabel.setText(day + "일차 매출");
-        // [수정] sales를 Integer.valueOf(sales)로 변경
-        salesAmountLabel.setText(String.format("%,d원", Integer.valueOf(sales)));
+    private void updateSalesInfo(int day, int sales)
+    {
+        this.selectedDayLabel.setText(day + "일차 매출");
+        this.salesAmountLabel.setText(String.format("%,d원", Integer.valueOf(sales)));
     }
 
-    public boolean shouldReopenPause() {
-        return shouldReopenPause;
+    public boolean shouldReopenPause()
+    {
+        return this.shouldReopenPause;
     }
 }

@@ -23,13 +23,6 @@ public class OrderDialog extends JDialog
     private static final String CANCEL_BUTTON_TEXT = "취소";
     private static final String TOTAL_COST_LABEL_FORMAT = "총 주문 금액: %d 원";
 
-    private static final int SPINNER_MIN_VALUE = 0;
-    private static final int SPINNER_MAX_VALUE = 99;
-    private static final int SPINNER_STEP_VALUE = 1;
-    private static final int DIALOG_PADDING = 10;
-    private static final int ITEM_PANEL_WIDTH = 350;
-    private static final int ITEM_PANEL_HEIGHT = 200;
-
     private Map<String, Integer> ingredientPrices;
     private Map<String, JSpinner> spinnerMap;
     private JLabel totalCostLabel;
@@ -45,17 +38,16 @@ public class OrderDialog extends JDialog
         this.isConfirmed = false;
         this.finalTotalCost = 0;
 
-        setLayout(new BorderLayout());
-        ((JPanel) getContentPane()).setBorder(new EmptyBorder(
-                DIALOG_PADDING, DIALOG_PADDING, DIALOG_PADDING, DIALOG_PADDING));
+        this.setLayout(new BorderLayout());
+        ((JPanel) this.getContentPane()).setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        add(createIngredientPanel(), BorderLayout.CENTER);
+        this.add(this.createIngredientPanel(), BorderLayout.CENTER);
 
-        add(createSouthPanel(), BorderLayout.SOUTH);
+        this.add(this.createSouthPanel(), BorderLayout.SOUTH);
 
-        pack();
-        setResizable(false);
-        setLocationRelativeTo(parent);
+        this.pack();
+        this.setResizable(false);
+        this.setLocationRelativeTo(parent);
     }
 
     private JScrollPane createIngredientPanel()
@@ -67,11 +59,11 @@ public class OrderDialog extends JDialog
         {
             String name = entry.getKey();
             int price = entry.getValue();
-            mainPanel.add(createIngredientRow(name, price));
+            mainPanel.add(this.createIngredientRow(name, price));
         }
 
         JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.setPreferredSize(new Dimension(ITEM_PANEL_WIDTH, ITEM_PANEL_HEIGHT));
+        scrollPane.setPreferredSize(new Dimension(350, 200));
 
         return scrollPane;
     }
@@ -80,21 +72,20 @@ public class OrderDialog extends JDialog
     {
         JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        // [수정] String.format()을 Integer.valueOf()로 감싸기
         String labelText = String.format("%s (개당 %d원)", name, Integer.valueOf(price));
         JLabel nameLabel = new JLabel(labelText);
         nameLabel.setPreferredSize(new Dimension(150, 20));
         rowPanel.add(nameLabel);
 
         SpinnerNumberModel model = new SpinnerNumberModel(
-                SPINNER_MIN_VALUE,
-                SPINNER_MIN_VALUE,
-                SPINNER_MAX_VALUE,
-                SPINNER_STEP_VALUE
+                0,
+                0,
+                99,
+                1
         );
         JSpinner spinner = new JSpinner(model);
 
-        spinner.addChangeListener(e -> updateTotalCost());
+        spinner.addChangeListener(e -> this.updateTotalCost());
 
         this.spinnerMap.put(name, spinner);
 
@@ -112,17 +103,17 @@ public class OrderDialog extends JDialog
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton confirmButton = new JButton(CONFIRM_BUTTON_TEXT);
-        confirmButton.addActionListener(e -> onConfirm());
+        confirmButton.addActionListener(e -> this.onConfirm());
 
         JButton cancelButton = new JButton(CANCEL_BUTTON_TEXT);
-        cancelButton.addActionListener(e -> onCancel());
+        cancelButton.addActionListener(e -> this.onCancel());
 
         buttonPanel.add(cancelButton);
         buttonPanel.add(confirmButton);
 
         southPanel.add(buttonPanel, BorderLayout.EAST);
 
-        updateTotalCost();
+        this.updateTotalCost();
 
         return southPanel;
     }
@@ -142,20 +133,19 @@ public class OrderDialog extends JDialog
         }
 
         this.finalTotalCost = total;
-        // [수정] String.format()을 Integer.valueOf()로 감싸기
         this.totalCostLabel.setText(String.format(TOTAL_COST_LABEL_FORMAT, Integer.valueOf(total)));
     }
 
     private void onConfirm()
     {
         this.isConfirmed = true;
-        dispose();
+        this.dispose();
     }
 
     private void onCancel()
     {
         this.isConfirmed = false;
-        dispose();
+        this.dispose();
     }
 
     public boolean isConfirmed()
