@@ -27,9 +27,9 @@ import javax.swing.ScrollPaneConstants;
 
 public class MenuDialog extends JDialog
 {
-    private CardLayout card;
-    private JPanel cardPanel;
-    private boolean shouldReopenPause = false;
+    private CardLayout m_card;
+    private JPanel m_cardPanel;
+    private boolean m_shouldReopenPause = false;
 
     private static final Dimension CONTENT_SIZE = new Dimension(1280, 720);
 
@@ -59,8 +59,8 @@ public class MenuDialog extends JDialog
         backwardButton.setFont(new Font("SansSerif", Font.BOLD, 25));
         backwardButton.addActionListener(e ->
         {
-            this.shouldReopenPause = true;
-            this.dispose();
+            m_shouldReopenPause = true;
+            dispose();
         });
 
         backwardPanel.add(backwardButton);
@@ -86,47 +86,47 @@ public class MenuDialog extends JDialog
 
         backPanel.add(topPanel, BorderLayout.NORTH);
 
-        this.card = new CardLayout();
-        this.cardPanel = new JPanel(this.card);
-        this.cardPanel.setPreferredSize(CONTENT_SIZE);
-        this.cardPanel.setMaximumSize(CONTENT_SIZE);
+        m_card = new CardLayout();
+        m_cardPanel = new JPanel(m_card);
+        m_cardPanel.setPreferredSize(CONTENT_SIZE);
+        m_cardPanel.setMaximumSize(CONTENT_SIZE);
 
         List<MenuItem> beverages = allMenus.stream()
-                .filter(item -> item.getType() == MenuItem.MenuType.BEVERAGE)
+                .filter(item -> item.GetType() == MenuItem.MenuType.Beverage)
                 .collect(Collectors.toList());
         List<MenuItem> desserts = allMenus.stream()
-                .filter(item -> item.getType() == MenuItem.MenuType.DESSERT)
+                .filter(item -> item.GetType() == MenuItem.MenuType.Dessert)
                 .collect(Collectors.toList());
 
-        JPanel drinkPanel = this.createCategoryPanel(beverages);
-        JPanel bakeryPanel = this.createCategoryPanel(desserts);
+        JPanel drinkPanel = CreateCategoryPanel(beverages);
+        JPanel bakeryPanel = CreateCategoryPanel(desserts);
 
-        this.cardPanel.add(drinkPanel, "DRINK");
-        this.cardPanel.add(bakeryPanel, "BAKERY");
+        m_cardPanel.add(drinkPanel, "DRINK");
+        m_cardPanel.add(bakeryPanel, "BAKERY");
 
-        drinkButton.addActionListener(e -> this.card.show(this.cardPanel, "DRINK"));
-        bakeryButton.addActionListener(e -> this.card.show(this.cardPanel, "BAKERY"));
+        drinkButton.addActionListener(e -> m_card.show(m_cardPanel, "DRINK"));
+        bakeryButton.addActionListener(e -> m_card.show(m_cardPanel, "BAKERY"));
 
         JPanel mainContentWrapper = new JPanel(new GridBagLayout());
         mainContentWrapper.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE;
-        mainContentWrapper.add(this.cardPanel, gbc);
+        mainContentWrapper.add(m_cardPanel, gbc);
 
         backPanel.add(mainContentWrapper, BorderLayout.CENTER);
 
-        this.add(backPanel);
+        add(backPanel);
 
-        this.setUndecorated(true);
+        setUndecorated(true);
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int screenWidth = gd.getDisplayMode().getWidth();
         int screenHeight = gd.getDisplayMode().getHeight();
-        this.setSize(screenWidth, screenHeight);
-        this.setLocationRelativeTo(null);
+        setSize(screenWidth, screenHeight);
+        setLocationRelativeTo(null);
     }
 
-    private JPanel createCategoryPanel(List<MenuItem> items)
+    private JPanel CreateCategoryPanel(List<MenuItem> items)
     {
         JPanel scrollArea = new JPanel();
         scrollArea.setBackground(new Color(210, 230, 255));
@@ -135,7 +135,7 @@ public class MenuDialog extends JDialog
 
         for (MenuItem item : items)
         {
-            scrollArea.add(this.createMenuCardPanel(item));
+            scrollArea.add(CreateMenuCardPanel(item));
             scrollArea.add(Box.createHorizontalStrut(20));
         }
 
@@ -156,10 +156,10 @@ public class MenuDialog extends JDialog
         return finalWrapper;
     }
 
-    private JPanel createMenuCardPanel(MenuItem item)
+    private JPanel CreateMenuCardPanel(MenuItem item)
     {
-        boolean isUnlocked = item.isUnlocked();
-        String name = item.getName();
+        boolean isUnlocked = item.IsUnlocked();
+        String name = item.GetName();
 
         JPanel card = new JPanel();
         card.setPreferredSize(new Dimension(300, 500));
@@ -197,8 +197,8 @@ public class MenuDialog extends JDialog
         return card;
     }
 
-    public boolean shouldReopenPause()
+    public boolean ShouldReopenPause()
     {
-        return this.shouldReopenPause;
+        return m_shouldReopenPause;
     }
 }

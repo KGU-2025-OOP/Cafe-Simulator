@@ -3,172 +3,174 @@ package ui;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 public class CalendarDialog extends JDialog
 {
-    private static final LocalDate START_DATE = LocalDate.of(2025, 11, 13);
+    private boolean m_reopenPause = false;
 
-    private Map<String, Integer> dailySalesHistory;
-    private boolean shouldReopenPause = false;
+    private JLabel m_dayLabel;
+    private JLabel m_amountLabel;
 
-    private JLabel selectedDayLabel;
-    private JLabel salesAmountLabel;
+    private int m_currentDay;
+    private Map<Integer, Integer> m_dailySales;
 
-    public CalendarDialog(JFrame parent, LocalDate currentSystemDate, Map<String, Integer> dailySalesHistory)
+    public CalendarDialog(JFrame parent, int currentDay, Map<Integer, Integer> dailySales)
     {
-        super(parent, "달력", true);
-        this.dailySalesHistory = dailySalesHistory;
+        super(parent, true);
+        m_currentDay = currentDay;
+        m_dailySales = dailySales;
 
-        JPanel base = new JPanel(new BorderLayout());
-        base.setBackground(new Color(255, 249, 235));
-        base.setBorder(new EmptyBorder(30, 30, 30, 30));
+        setUndecorated(true);
+        setBackground(new Color(245, 245, 245));
+        setLayout(new BorderLayout());
 
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setOpaque(false);
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int screenW = gd.getDisplayMode().getWidth();
+        int screenH = gd.getDisplayMode().getHeight();
+        setSize(screenW, screenH);
+        setLocationRelativeTo(null);
 
-        JButton backBtn = this.createSoftButton("←", 30);
-        backBtn.addActionListener(e ->
+        add(CreateTitleBar(), BorderLayout.NORTH);
+        add(CreateCenter(screenW, screenH), BorderLayout.CENTER);
+    }
+
+    private JPanel CreateTitleBar()
+    {
+        JPanel top = new JPanel(new BorderLayout());
+        top.setOpaque(false);
+        top.setBorder(new EmptyBorder(30, 40, 20, 40));
+
+        JButton back = new JButton("←");
+        back.setFont(new Font("Malgun Gothic", Font.BOLD, 26));
+        back.setBackground(new Color(255, 233, 210));
+        back.setBorder(new LineBorder(new Color(200,160,140), 2, true));
+        back.addActionListener(e ->
         {
-            this.shouldReopenPause = true;
-            this.dispose();
+            m_reopenPause = true;
+            dispose();
         });
 
-        JPanel backWrap = new JPanel(new BorderLayout());
-        backWrap.setOpaque(false);
-        backWrap.add(backBtn, BorderLayout.WEST);
+        JLabel title = new JLabel("일차별 매출 현황", SwingConstants.CENTER);
+        title.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
 
-        JLabel titleLabel = new JLabel("일차별 매출 현황", JLabel.CENTER);
-        titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
-        titleLabel.setForeground(new Color(80, 60, 50));
+        top.add(back, BorderLayout.WEST);
+        top.add(title, BorderLayout.CENTER);
+        return top;
+    }
 
-        topPanel.add(backWrap, BorderLayout.WEST);
-        topPanel.add(titleLabel, BorderLayout.CENTER);
+    private JPanel CreateCenter(int screenW, int screenH)
+    {
+        JPanel outer = new JPanel(new GridBagLayout());
+        outer.setOpaque(false);
 
-        base.add(topPanel, BorderLayout.NORTH);
+        JPanel content = new JPanel(new GridBagLayout());
+        content.setOpaque(false);
+        content.setPreferredSize(new Dimension((int)(screenW * 0.65), (int)(screenH * 0.55)));
 
-        JPanel centerPanel = new JPanel(new BorderLayout(40, 0));
-        centerPanel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        JPanel dataPanel = new JPanel(new GridBagLayout());
-        dataPanel.setOpaque(false);
-        dataPanel.setPreferredSize(new Dimension(420, 500));
+        JPanel left = CreateSalesBox();
+        JPanel right = CreateCalendarGrid();
 
-        JPanel dataCard = new JPanel(new GridBagLayout());
-        dataCard.setBackground(new Color(255, 243, 219));
-        dataCard.setBorder(new CompoundBorder(
-                new LineBorder(new Color(230, 210, 180), 2, true),
-                new EmptyBorder(25, 25, 25, 25)
+        gbc.gridx = 0;
+        gbc.insets = new Insets(0, 0, 0, 70);
+        gbc.anchor = GridBagConstraints.CENTER;
+        content.add(left, gbc);
+
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 70, 0, 0);
+        content.add(right, gbc);
+
+        GridBagConstraints og = new GridBagConstraints();
+        og.anchor = GridBagConstraints.CENTER;
+        outer.add(content, og);
+
+        return outer;
+    }
+
+    private JPanel CreateSalesBox()
+    {
+        JPanel card = new JPanel(new GridBagLayout());
+        card.setOpaque(true);
+        card.setBackground(new Color(255, 244, 210));
+
+        card.setPreferredSize(new Dimension(520, 360));
+
+        card.setBorder(new CompoundBorder(
+                new LineBorder(new Color(200,160,140), 3, true),
+                new EmptyBorder(45, 45, 45, 45)
         ));
 
-        this.selectedDayLabel = new JLabel("데이터 출력 화면");
-        this.selectedDayLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 30));
-        this.selectedDayLabel.setForeground(new Color(80, 60, 50));
+        m_dayLabel = new JLabel("날짜를 선택하세요");
+        m_dayLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 32));
 
-        this.salesAmountLabel = new JLabel("--- 원");
-        this.salesAmountLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 42));
-        this.salesAmountLabel.setForeground(new Color(60, 40, 30));
+        m_amountLabel = new JLabel("--- 원");
+        m_amountLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 58));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 0;
-        dataCard.add(this.selectedDayLabel, gbc);
+        card.add(m_dayLabel, gbc);
 
         gbc.gridy = 1;
-        gbc.insets = new Insets(20, 0, 0, 0);
-        dataCard.add(this.salesAmountLabel, gbc);
+        gbc.insets = new Insets(25, 0, 0, 0);
+        card.add(m_amountLabel, gbc);
 
-        dataPanel.add(dataCard);
-        centerPanel.add(dataPanel, BorderLayout.WEST);
+        return card;
+    }
 
-        JPanel calendarWrapper = new JPanel(new GridBagLayout());
-        calendarWrapper.setOpaque(false);
+    private JPanel CreateCalendarGrid()
+    {
+        JPanel wrap = new JPanel(new GridBagLayout());
+        wrap.setOpaque(false);
 
         JPanel grid = new JPanel(new GridLayout(4, 4, 20, 20));
         grid.setOpaque(false);
 
-        long currentDayNumber = ChronoUnit.DAYS.between(START_DATE, currentSystemDate) + 1;
-
         for (int i = 1; i <= 16; i++)
         {
-            JButton btn = this.createDayButton(i + "일");
+            JButton btn = CreateDayButton(i);
 
-            if (i == currentDayNumber)
+            if (i == m_currentDay)
             {
-                btn.setBackground(new Color(255, 227, 160));
-                btn.setBorder(new LineBorder(new Color(225, 175, 80), 3, true));
+                btn.setBackground(new Color(255, 220, 145));
+                btn.setBorder(new LineBorder(new Color(220,150,60), 3, true));
             }
-
-            LocalDate d = START_DATE.plusDays(i - 1);
-            String key = d.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            int dayNum = i;
-
-            btn.addActionListener(e ->
-            {
-                int sales = this.dailySalesHistory.getOrDefault(key, Integer.valueOf(0));
-                this.updateSalesInfo(dayNum, sales);
-            });
 
             grid.add(btn);
         }
 
-        calendarWrapper.add(grid);
-        centerPanel.add(calendarWrapper, BorderLayout.CENTER);
-
-        base.add(centerPanel, BorderLayout.CENTER);
-
-        this.add(base);
-
-        this.setUndecorated(true);
-
-        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
-                .getDefaultScreenDevice();
-
-        int w = gd.getDisplayMode().getWidth();
-        int h = gd.getDisplayMode().getHeight();
-
-        this.setSize(w, h);
-        this.setLocationRelativeTo(null);
+        wrap.add(grid);
+        return wrap;
     }
 
-    private JButton createSoftButton(String text, int size)
+    private JButton CreateDayButton(int day)
     {
-        JButton btn = new JButton(text);
-        btn.setFont(new Font("Malgun Gothic", Font.BOLD, size));
-        btn.setFocusPainted(false);
-        btn.setBackground(new Color(255, 239, 210));
-        btn.setForeground(new Color(90, 70, 60));
-        btn.setBorder(new CompoundBorder(
-                new LineBorder(new Color(225, 205, 175), 2, true),
-                new EmptyBorder(10, 20, 10, 20)
-        ));
-        return btn;
-    }
-
-    private JButton createDayButton(String text)
-    {
-        JButton btn = new JButton(text);
+        JButton btn = new JButton(day + "일");
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, 24));
-        btn.setFocusPainted(false);
-        btn.setBackground(new Color(255, 243, 220));
+
+        btn.setBackground(new Color(255, 236, 210));
         btn.setForeground(new Color(70, 55, 45));
+        btn.setFocusPainted(false);
+
         btn.setBorder(new CompoundBorder(
-                new LineBorder(new Color(220, 200, 170), 2, true),
-                new EmptyBorder(20, 10, 20, 10)
+                new LineBorder(new Color(220,200,170), 2, true),
+                new EmptyBorder(25, 20, 25, 20)
         ));
+
+        btn.addActionListener(e -> UpdateSales(day));
         return btn;
     }
 
-    private void updateSalesInfo(int day, int sales)
+    private void UpdateSales(int day)
     {
-        this.selectedDayLabel.setText(day + "일차 매출");
-        this.salesAmountLabel.setText(String.format("%,d원", Integer.valueOf(sales)));
+        int amount = m_dailySales.getOrDefault(day, 0);
+        m_dayLabel.setText(day + "일차 매출");
+        m_amountLabel.setText(String.format("%,d 원", amount));
     }
 
-    public boolean shouldReopenPause()
+    public boolean ShouldReopenPause()
     {
-        return this.shouldReopenPause;
+        return m_reopenPause;
     }
 }

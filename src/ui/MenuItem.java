@@ -4,33 +4,33 @@ public class MenuItem
 {
     public enum MenuType
     {
-        BEVERAGE,
-        DESSERT
+        Beverage,
+        Dessert
     }
 
-    private String name;
-    private MenuType type;
-    private boolean isUnlocked;
+    private String m_name;
+    private MenuType m_type;
+    private boolean m_isUnlocked;
 
     public MenuItem(String name, MenuType type, boolean isUnlocked)
     {
-        this.name = name;
-        this.type = type;
-        this.isUnlocked = isUnlocked;
+        m_name = name;
+        m_type = type;
+        m_isUnlocked = isUnlocked;
     }
 
-    public String getName()
+    public String GetName()
     {
-        return this.name;
+        return m_name;
     }
 
-    public MenuType getType()
+    public MenuType GetType()
     {
-        return this.type;
+        return m_type;
     }
 
-    public boolean isUnlocked()
+    public boolean IsUnlocked()
     {
-        return this.isUnlocked;
+        return m_isUnlocked;
     }
 }
