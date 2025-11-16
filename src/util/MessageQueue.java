@@ -1,4 +1,4 @@
-package game;
+package util;
 
 import java.awt.AWTEvent;
 
@@ -16,7 +16,6 @@ public class MessageQueue implements AWTEventListener {
     public MessageQueue() {
         queue = new LinkedBlockingQueue<AWTEvent>();
     }
-
 
     public void post(AWTEvent event) {
         if (!queue.offer(event)) {
