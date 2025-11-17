@@ -35,7 +35,7 @@ public class GameCanvas extends Canvas implements Runnable {
 
     private class InputBox {
         public static TextBox box;
-        // Handle
+
         public static StringBuffer text;
 
         public static void init(int width, int height) {
@@ -50,7 +50,7 @@ public class GameCanvas extends Canvas implements Runnable {
 
     private class FailLine {
         public static DeadLine line;
-        // Handle
+
         public static Vector2f move;
         public static void init(int width, int height) {
             line = new DeadLine(width, height / 3, new Vector2f(), 15.F);
@@ -68,7 +68,7 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void init() {
-        // Initialize game objects
+
         int width = getWidth();
         int height = getHeight();
 
@@ -85,18 +85,18 @@ public class GameCanvas extends Canvas implements Runnable {
         brewingSlots.add(new BrewingSlot(drops, width, height, 0));
 
 
-        // Start game loop;
+
         lastTime = System.nanoTime();
         shouldRun = true;
     }
 
     private void update() {
-        // Get delta time;
+
         long currentTime = System.nanoTime();
         float deltaTime = (currentTime - lastTime) / (float) FPSCounter.secondInNanoTime;
         lastTime = currentTime;
 
-        // update
+
         InputBox.box.update(deltaTime);
         FailLine.line.update(deltaTime);
         for (BrewingSlot i : brewingSlots) {
@@ -105,13 +105,13 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void render() {
-        // Add rendering object
+
         renderQueue.add(InputBox.box);
         renderQueue.add(FailLine.line);
         for (BrewingSlot i : brewingSlots) {
             renderQueue.add(i);
         }
-        // Draw
+
         drawCanvas();
     }
 
@@ -122,7 +122,7 @@ public class GameCanvas extends Canvas implements Runnable {
         MouseEvent mi;
 
         while (shouldRun) {
-            // message handling
+
             AWTEvent input = messageQueue.poll();
 
             if (input != null) {
@@ -182,7 +182,7 @@ public class GameCanvas extends Canvas implements Runnable {
             }
             update();
             render();
-            // frameCounter.limitFPS(60);
+
             frameCounter.printFPS();
         }
         shutdown();

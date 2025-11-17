@@ -4,14 +4,12 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JComponent;
 import javax.swing.AbstractButton;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Color;
 
@@ -21,66 +19,51 @@ public class StartPanel extends JPanel
     private static final String NEW_GAME_BUTTON_TEXT = "새로하기";
     private static final String START_BUTTON_TEXT = "시작";
     private static final String EXIT_BUTTON_TEXT = "종료하기";
-    private static final String BGM_BUTTON_ON_TEXT = "BGM ON";
-    private static final String BGM_BUTTON_OFF_TEXT = "BGM OFF";
 
-    private JButton continueButton;
-    private JButton newGameButton;
-    private JButton exitButton;
-    private JToggleButton bgmButton;
+    private JButton m_continueButton;
+    private JButton m_newGameButton;
+    private JButton m_exitButton;
 
     public StartPanel(boolean hasSaveFile)
     {
-        this.setLayout(new BorderLayout());
-        this.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.bgmButton = new JToggleButton(BGM_BUTTON_ON_TEXT, true);
-        this.bgmButton.setFont(new Font("Malgun Gothic", Font.PLAIN, 10));
-        JPanel centerPanel = this.createCenterPanel(hasSaveFile);
-        JPanel bottomPanel = this.createBottomPanel();
-        this.add(centerPanel, BorderLayout.CENTER);
-        this.add(bottomPanel, BorderLayout.SOUTH);
-        this.addBgmButtonListener();
+        setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        JPanel centerPanel = CreateCenterPanel(hasSaveFile);
+        add(centerPanel, BorderLayout.CENTER);
     }
 
-    private JPanel createCenterPanel(boolean hasSaveFile)
+    private JPanel CreateCenterPanel(boolean hasSaveFile)
     {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        this.exitButton = new JButton(EXIT_BUTTON_TEXT);
-        this.setCenterButtonProperties(this.exitButton);
+        m_exitButton = new JButton(EXIT_BUTTON_TEXT);
+        SetCenterButtonProperties(m_exitButton);
         panel.add(Box.createVerticalGlue());
         if (hasSaveFile)
         {
-            this.continueButton = new JButton(CONTINUE_BUTTON_TEXT);
-            this.newGameButton = new JButton(NEW_GAME_BUTTON_TEXT);
-            this.setCenterButtonProperties(this.continueButton);
-            this.setCenterButtonProperties(this.newGameButton);
-            panel.add(this.continueButton);
+            m_continueButton = new JButton(CONTINUE_BUTTON_TEXT);
+            m_newGameButton = new JButton(NEW_GAME_BUTTON_TEXT);
+            SetCenterButtonProperties(m_continueButton);
+            SetCenterButtonProperties(m_newGameButton);
+            panel.add(m_continueButton);
             panel.add(Box.createVerticalStrut(20));
-            panel.add(this.newGameButton);
+            panel.add(m_newGameButton);
         }
         else
         {
-            this.continueButton = null;
-            this.newGameButton = new JButton(START_BUTTON_TEXT);
-            this.setCenterButtonProperties(this.newGameButton);
-            panel.add(this.newGameButton);
+            m_continueButton = null;
+            m_newGameButton = new JButton(START_BUTTON_TEXT);
+            SetCenterButtonProperties(m_newGameButton);
+            panel.add(m_newGameButton);
         }
         panel.add(Box.createVerticalStrut(20));
-        panel.add(this.exitButton);
+        panel.add(m_exitButton);
         panel.add(Box.createVerticalGlue());
         return panel;
     }
 
-    private JPanel createBottomPanel()
-    {
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        panel.add(this.bgmButton);
-        return panel;
-    }
-
-    private void setCenterButtonProperties(JComponent button)
+    private void SetCenterButtonProperties(JComponent button)
     {
         Dimension centerButtonSize = new Dimension(150, 40);
         Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
@@ -101,38 +84,19 @@ public class StartPanel extends JPanel
         }
     }
 
-    private void addBgmButtonListener()
-    {
-        this.bgmButton.addActionListener(e ->
-        {
-            if (this.bgmButton.isSelected())
-            {
-                this.bgmButton.setText(BGM_BUTTON_ON_TEXT);
-            }
-            else
-            {
-                this.bgmButton.setText(BGM_BUTTON_OFF_TEXT);
-            }
-        });
-    }
-
     public JButton getContinueButton()
     {
-        return this.continueButton;
+        return m_continueButton;
     }
 
     public JButton getNewGameButton()
     {
-        return this.newGameButton;
+        return m_newGameButton;
     }
 
     public JButton getExitButton()
     {
-        return this.exitButton;
+        return m_exitButton;
     }
 
-    public JToggleButton getBgmButton()
-    {
-        return this.bgmButton;
-    }
 }

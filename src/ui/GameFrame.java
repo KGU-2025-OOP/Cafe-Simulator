@@ -9,6 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.InputMap;
@@ -37,6 +40,9 @@ public class GameFrame extends JFrame
 
     private List<MenuItem> m_allMenuItems;
 
+    private JPanel m_bgmPanel;
+    private JToggleButton m_bgmButton;
+
     public GameFrame(boolean hasSaveFile)
     {
         setTitle("My Cafe Game");
@@ -44,6 +50,8 @@ public class GameFrame extends JFrame
 
         setUndecorated(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        setLayout(new BorderLayout());
 
         m_currentDayNumber = 1;
         m_dailySalesHistory = new LinkedHashMap<>();
@@ -80,10 +88,42 @@ public class GameFrame extends JFrame
 
         m_salesGraphPanel.getBackButton().addActionListener(e ->
         {
-            m_cardLayout.show(m_mainPanel, "GameSpaceHub");
+            ShowPanel("GameSpaceHub");
         });
 
-        add(m_mainPanel);
+        add(m_mainPanel, BorderLayout.CENTER);
+
+        m_bgmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        m_bgmButton = new JToggleButton("BGM ON", true);
+        m_bgmButton.addActionListener(e ->
+        {
+            if (m_bgmButton.isSelected())
+            {
+                m_bgmButton.setText("BGM ON");
+                System.out.println("BGM 켜기");
+            }
+            else
+            {
+                m_bgmButton.setText("BGM OFF");
+                System.out.println("BGM 끄기");
+            }
+        });
+        m_bgmPanel.add(m_bgmButton);
+        add(m_bgmPanel, BorderLayout.SOUTH);
+    }
+
+    private void ShowPanel(String panelName)
+    {
+        m_cardLayout.show(m_mainPanel, panelName);
+
+        if (panelName.equals("Order"))
+        {
+            m_bgmPanel.setVisible(false);
+        }
+        else
+        {
+            m_bgmPanel.setVisible(true);
+        }
     }
 
     private void InitializeMenuItems()
@@ -97,19 +137,20 @@ public class GameFrame extends JFrame
         m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
         m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
         m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        
-        
+
+
         m_allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        
+
     }
 
     private Map<String, Integer> CreateRecipeData()
@@ -127,21 +168,17 @@ public class GameFrame extends JFrame
         {
             m_startPanel.getContinueButton().addActionListener(e ->
             {
-                m_cardLayout.show(m_mainPanel, "GameSpaceHub");
+                ShowPanel("GameSpaceHub");
             });
         }
         m_startPanel.getNewGameButton().addActionListener(e ->
         {
             System.out.println("시작/새로하기 버튼 클릭됨");
-            m_cardLayout.show(m_mainPanel, "Nickname");
+            ShowPanel("Nickname");
         });
         m_startPanel.getExitButton().addActionListener(e ->
         {
             ShowExitConfirmation();
-        });
-        m_startPanel.getBgmButton().addActionListener(e ->
-        {
-            System.out.println("BGM 버튼 클릭됨");
         });
     }
 
@@ -156,12 +193,12 @@ public class GameFrame extends JFrame
 
             m_gameScreen.setDayLabel(m_currentDayNumber + "일차");
 
-            m_cardLayout.show(m_mainPanel, "Game");
+            ShowPanel("Game");
         });
         m_orderPanel.getCancelButton().addActionListener(e ->
         {
             System.out.println("발주가 취소되었습니다.");
-            m_cardLayout.show(m_mainPanel, "GameSpaceHub");
+            ShowPanel("GameSpaceHub");
         });
     }
 
@@ -179,7 +216,7 @@ public class GameFrame extends JFrame
 
             System.out.println("카페 이름 (" + cafeName + ") 확정 -> 메인 허브로 이동");
 
-            m_cardLayout.show(m_mainPanel, "GameSpaceHub");
+            ShowPanel("GameSpaceHub");
         });
     }
 
@@ -191,7 +228,7 @@ public class GameFrame extends JFrame
 
             m_orderPanel.resetSpinners();
 
-            m_cardLayout.show(m_mainPanel, "Order");
+            ShowPanel("Order");
         });
 
         m_gameSpacePanel.getBtn2().addActionListener(e ->
@@ -203,7 +240,7 @@ public class GameFrame extends JFrame
         m_gameSpacePanel.getBtn3().addActionListener(e ->
         {
             System.out.println("성장도그래프 버튼 클릭됨");
-            m_cardLayout.show(m_mainPanel, "Graph");
+            ShowPanel("Graph");
         });
     }
 
@@ -296,7 +333,7 @@ public class GameFrame extends JFrame
                     System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
                     m_currentDayNumber = 1;
                     m_dailySalesHistory.clear();
-                    m_cardLayout.show(m_mainPanel, "Start");
+                    ShowPanel("Start");
                 }
                 break;
             case EXIT:
@@ -315,7 +352,9 @@ public class GameFrame extends JFrame
     {
         CalendarDialog calendarDialog = new CalendarDialog(this, m_currentDayNumber, m_dailySalesHistory);
 
+        m_bgmPanel.setVisible(false);
         calendarDialog.setVisible(true);
+        m_bgmPanel.setVisible(true);
 
         if (calendarDialog.ShouldReopenPause())
         {
@@ -326,7 +365,10 @@ public class GameFrame extends JFrame
     private void ShowMenuDialog()
     {
         MenuDialog menuDialog = new MenuDialog(this, m_allMenuItems);
+
+        m_bgmPanel.setVisible(false);
         menuDialog.setVisible(true);
+        m_bgmPanel.setVisible(true);
 
         if (menuDialog.ShouldReopenPause())
         {
@@ -337,7 +379,10 @@ public class GameFrame extends JFrame
     private void ShowMenuGuideFromHub()
     {
         MenuDialog menuDialog = new MenuDialog(this, m_allMenuItems);
+
+        m_bgmPanel.setVisible(false);
         menuDialog.setVisible(true);
+        m_bgmPanel.setVisible(true);
     }
 
     private void ShowDayEndDialog()
@@ -352,7 +397,10 @@ public class GameFrame extends JFrame
         int orderCost = (m_currentDaySales == 0) ? 0 : -m_currentDaySales;
 
         DayEndDialog dayEndDialog = new DayEndDialog(this, dayNumber, customerCount, revenue, orderCost);
+
+        m_bgmPanel.setVisible(false);
         dayEndDialog.setVisible(true);
+        m_bgmPanel.setVisible(true);
 
         System.out.println(dayNumber + "일차 결산 완료.");
 
@@ -368,7 +416,7 @@ public class GameFrame extends JFrame
 
         m_currentDaySales = 0;
 
-        m_cardLayout.show(m_mainPanel, "GameSpaceHub");
+        ShowPanel("GameSpaceHub");
     }
 
     public static void main(String[] args)
@@ -377,7 +425,7 @@ public class GameFrame extends JFrame
         SwingUtilities.invokeLater(() ->
         {
             GameFrame game = new GameFrame(MOCK_SAVE_FILE_EXISTS);
-          
+
             game.setVisible(true);
         });
     }
