@@ -1,18 +1,23 @@
 package core;
 
+import entities.BrewingSlot;
 import entities.DeadLine;
-import entities.DropItem;
-import entities.IGameObject;
 import util.MessageQueue;
 import graphics.RenderQueue;
 import graphics.TextBox;
 import graphics.FPSCounter;
 import util.Vector2f;
+import entities.DropItem;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Font;
+import java.awt.AWTEvent;
+import java.awt.Toolkit;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.beans.beancontext.BeanContext;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -24,6 +29,9 @@ public class GameCanvas extends Canvas implements Runnable {
 
     public boolean shouldRun;
     private long lastTime;
+
+    private ArrayList<DropItem> drops;
+    private ArrayList<BrewingSlot> brewingSlots;
 
     private class InputBox {
         public static TextBox box;
@@ -50,6 +58,7 @@ public class GameCanvas extends Canvas implements Runnable {
         }
     }
 
+
     public GameCanvas(int width, int height) {
         renderQueue = new RenderQueue(width, height);
         messageQueue = new MessageQueue();
@@ -65,6 +74,16 @@ public class GameCanvas extends Canvas implements Runnable {
 
         InputBox.init(width, height);
         FailLine.init(width, height);
+        Font dropsFont = new Font("Arial", Font.BOLD, 12);
+        drops = new ArrayList<DropItem>();
+        for (int i = 0; i < 10; ++i) {
+            drops.add(new DropItem(
+                    new Vector2f(width / 10 * i, height),
+                    new Vector2f(0, -1.F), 25.F, "temp str " + i, dropsFont, FailLine.line));
+        }
+        brewingSlots = new ArrayList<BrewingSlot>();
+        brewingSlots.add(new BrewingSlot(drops, width, height, 0));
+
 
         // Start game loop;
         lastTime = System.nanoTime();
@@ -80,12 +99,18 @@ public class GameCanvas extends Canvas implements Runnable {
         // update
         InputBox.box.update(deltaTime);
         FailLine.line.update(deltaTime);
+        for (BrewingSlot i : brewingSlots) {
+            i.update(deltaTime);
+        }
     }
 
     private void render() {
         // Add rendering object
         renderQueue.add(InputBox.box);
         renderQueue.add(FailLine.line);
+        for (BrewingSlot i : brewingSlots) {
+            renderQueue.add(i);
+        }
         // Draw
         drawCanvas();
     }
@@ -114,6 +139,11 @@ public class GameCanvas extends Canvas implements Runnable {
                                 InputBox.text.setLength(length - 1);
                             }
                         } else if (c == '\n') {
+                            for (BrewingSlot i : brewingSlots) {
+                                if (i.matchInput(InputBox.text.toString())) {
+                                    break;
+                                }
+                            }
                             InputBox.text.setLength(0);
                         } else {
                             InputBox.text.append(c);
@@ -123,6 +153,16 @@ public class GameCanvas extends Canvas implements Runnable {
                     case KeyEvent.KEY_PRESSED:
                         ki = (KeyEvent)input;
                         if (ki.getKeyCode() == KeyEvent.VK_UP) {
+                            int newSlotCount = brewingSlots.size() + 1;
+                            int newWidth = getWidth() / newSlotCount;
+                            int height = getHeight();
+                            for (int i = 0; i < newSlotCount; ++i) {
+                                brewingSlots.add(new BrewingSlot(drops, newWidth, height, newWidth * (newSlotCount - 1)));
+                            }
+                            for (int i = 0; i < newSlotCount - 1; ++i) {
+                                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+                            }
+
 
                         } else if (ki.getKeyCode() == KeyEvent.VK_DOWN) {
 

@@ -9,12 +9,14 @@ import java.awt.Font;
 public class DropItem extends TextBox {
     private boolean isValid;
     private Vector2f move;
+    private Vector2f adder;
     private float speed;
     private DeadLine deadLine;
 
     public DropItem(Vector2f pos, Vector2f move, float speed, String str, Font font, DeadLine deadLine) {
         super(new Vector2f(pos), 1.0F, new StringBuffer(str), font);
         this.move = new Vector2f(move);
+        adder = new Vector2f();
         this.deadLine = deadLine;
         this.speed = speed;
         isValid = true;
@@ -22,9 +24,10 @@ public class DropItem extends TextBox {
 
     @Override
     public void update(float deltaTime) {
-        // super.update(deltaTime);
-        move.scale(deltaTime * speed);
-        pos.add(move);
+        adder.x = move.x;
+        adder.y = move.y;
+        adder.scale(deltaTime * speed);
+        pos.add(adder);
         if (deadLine.isDead(pos.y)) {
             isValid = false;
         }
@@ -50,4 +53,7 @@ public class DropItem extends TextBox {
         return isValid;
     }
 
+    public Vector2f getMoveHandle() {
+        return move;
+    }
 }

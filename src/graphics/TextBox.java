@@ -17,6 +17,7 @@ public class TextBox implements IGameObject {
     protected String outStr;
     private StringBuffer textBak;
     private Font font;
+    private int lastTextWidth;
 
     public TextBox(Vector2f pos, float depth, StringBuffer text, Font font) {
         this.pos = new Vector2f(pos);
@@ -25,12 +26,16 @@ public class TextBox implements IGameObject {
         this.font = font;
         textBak = new StringBuffer();
         outStr = text.toString();
+        lastTextWidth = 0;
     }
     public StringBuffer getBufferHandle() {
         return text;
     }
     public Vector2f getPositionHandle() {
         return pos;
+    }
+    public int getTextWidth() {
+        return lastTextWidth / 2;
     }
     @Override
     public void draw(Graphics2D g) {
@@ -39,6 +44,7 @@ public class TextBox implements IGameObject {
         g.setFont(font);
         int width = g.getFontMetrics().stringWidth(outStr);
         g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y));
+        lastTextWidth = width;
     }
     @Override
     public void update(float deltaTime) {
