@@ -2,23 +2,8 @@ package menu;
 
 import java.util.Scanner;
 
-public class Ingredient {
-    String name;
-    int makingTime;
-    int maxWaitTime;
-    int price;
-
+public class Ingredient extends MenuItem {
     public Ingredient(Scanner scan) {
-        this.name = scan.next();
-        this.makingTime = scan.nextInt();
-        this.maxWaitTime = scan.nextInt();
-        this.price = scan.nextInt();
-    }
-
-    Ingredient matches(String type, String name) {
-        if (this.name.equals(name)) {
-            return this;
-        }
-        return null;
+        super(scan);
     }
 }
