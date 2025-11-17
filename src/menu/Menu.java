@@ -29,11 +29,16 @@ public class Menu {
         this.price = scanner.nextInt();
     }
 
-    void printMenu() {
-        System.out.print("Menu Name: " + this.name + ", Ingredients: ");
-        for (Ingredient ingredient : ingredients) {
-            System.out.print(ingredient.name + " ");
-        }
-        System.out.println(", Price: " + this.price);
+    ArrayList<Ingredient> getIngredients() {
+        return this.ingredients;
+    }
+
+    void addOptions(Ingredient ingredient) {
+        this.ingredients.add(ingredient);
+        this.ingredientCount = this.ingredients.size();
+    }
+
+    Menu getMenu() {
+        return this;
     }
 }
