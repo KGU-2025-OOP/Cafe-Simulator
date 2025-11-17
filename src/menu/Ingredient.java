@@ -3,6 +3,7 @@ package menu;
 import java.util.Scanner;
 
 public class Ingredient {
+    public static final String ingredientPath = "resources/ingredient.txt";
     String type;
     String name;
     int makingTime;

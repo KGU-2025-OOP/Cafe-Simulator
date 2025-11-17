@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Menu {
+    public static final String menuPath = "resources/menu.txt";
     String name;
     int ingredientCount;
     ArrayList<Ingredient> ingredients;
@@ -29,7 +30,11 @@ public class Menu {
         this.price = scanner.nextInt();
     }
 
-    void printMenu() {
+    public ArrayList<Ingredient> getIngredients() {
+        return new ArrayList<Ingredient>(ingredients);
+    }
+
+    public void printMenu() {
         System.out.print("Menu Name: " + this.name + ", Ingredients: ");
         for (Ingredient ingredient : ingredients) {
             System.out.print(ingredient.name + " ");

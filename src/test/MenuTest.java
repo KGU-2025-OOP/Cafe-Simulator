@@ -1,15 +1,18 @@
-package menu;
+package test;
+
+import menu.Ingredient;
+import menu.Menu;
 
 import java.io.File;
 
 import java.util.Scanner;
 import java.util.ArrayList;
 
-public class Test {
+public class MenuTest {
     ArrayList<Ingredient> ingredientList = new ArrayList<Ingredient>();
     ArrayList<Menu> menuList = new ArrayList<Menu>();
     public static void main(String[] args) {
-        Test test = new Test();
+        MenuTest test = new MenuTest();
         test.myMain();
     }
 
@@ -20,14 +23,14 @@ public class Test {
 
     void readMenuTest() {
         try {
-            File file = new File("src/menu/ingredients.txt");
+            File file = new File(Ingredient.ingredientPath);
             Scanner filein = new Scanner(file, "UTF-8");
             while (filein.hasNext()) {
                 ingredientList.add(new Ingredient(filein));
             }
             filein.close();
 
-            file = new File("src/menu/menu.txt");
+            file = new File(Menu.menuPath);
             filein = new Scanner(file, "UTF-8");
             while (filein.hasNext()) {
                 Menu menu = new Menu();

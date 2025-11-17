@@ -5,7 +5,7 @@ import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 
-public class Main {
+public class GameTest {
     public static void main(String[] args) {
         int width = 800;
         int height = 600;
