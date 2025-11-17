@@ -93,9 +93,23 @@ public class GameFrame extends JFrame
         m_allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Beverage, true));
         m_allMenuItems.add(new MenuItem("바닐라 라떼", MenuItem.MenuType.Beverage, false));
         m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
+        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
+        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
+        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
+        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
+        
+        
         m_allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
+        
     }
 
     private Map<String, Integer> CreateRecipeData()
@@ -363,6 +377,7 @@ public class GameFrame extends JFrame
         SwingUtilities.invokeLater(() ->
         {
             GameFrame game = new GameFrame(MOCK_SAVE_FILE_EXISTS);
+          
             game.setVisible(true);
         });
     }
