@@ -41,4 +41,12 @@ public class Menu {
         }
         System.out.println(", Price: " + this.price);
     }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
