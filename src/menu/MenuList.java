@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class MenuList {
     private ArrayList<Menu> menuList;
-    private static final String FILE_NAME = "menu.txt";
+    private static final String MENU_PATH = "resources/menu.txt";
 
     public MenuList(ArrayList<Ingredient> ingredientList) {
         this.menuList = new ArrayList<Menu>();
@@ -14,7 +14,7 @@ public class MenuList {
 
     private void loadFromFile(ArrayList<Ingredient> ingredientList) {
         try {
-            java.io.File file = new java.io.File("resources/" + FILE_NAME);
+            java.io.File file = new java.io.File(MENU_PATH);
             Scanner filein = new Scanner(file, "UTF-8");
             while (filein.hasNext()) {
                 Menu menu = new Menu();

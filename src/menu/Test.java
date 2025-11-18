@@ -74,7 +74,7 @@ public class Test {
         if (pizza != null && optionList.size() > 0) {
             Option firstOption = optionList.get(0);
             System.out.println("\nAdding option '" + firstOption.getName() + "' to pizza...");
-            pizza.addMenuItem(firstOption);
+            pizza.addMenuItem(firstOption); // ?
             System.out.println("Pizza total items now: " + pizza.getItems().size());
         }
         
