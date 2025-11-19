@@ -13,58 +13,62 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Color;
 
-public class StartPanel extends JPanel
-{
-    private static final String CONTINUE_BUTTON_TEXT = "계속하기";
+public class StartMenuPanel extends JPanel {
+	
+	private static final String CONTINUE_BUTTON_TEXT = "계속하기";
     private static final String NEW_GAME_BUTTON_TEXT = "새로하기";
     private static final String START_BUTTON_TEXT = "시작";
     private static final String EXIT_BUTTON_TEXT = "종료하기";
 
-    private JButton m_continueButton;
-    private JButton m_newGameButton;
-    private JButton m_exitButton;
+    private JButton continueButton;
+    private JButton newGameButton;
+    private JButton exitButton;
 
-    public StartPanel(boolean hasSaveFile)
-    {
+    public StartMenuPanel(boolean hasSaveFile) {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JPanel centerPanel = CreateCenterPanel(hasSaveFile);
+        JPanel centerPanel = createCenterPanel(hasSaveFile);
         add(centerPanel, BorderLayout.CENTER);
     }
 
-    private JPanel CreateCenterPanel(boolean hasSaveFile)
-    {
+    private JPanel createCenterPanel(boolean hasSaveFile) {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        m_exitButton = new JButton(EXIT_BUTTON_TEXT);
-        SetCenterButtonProperties(m_exitButton);
+        
+        exitButton = new JButton(EXIT_BUTTON_TEXT);
+        setCenterButtonProperties(exitButton);
+        
         panel.add(Box.createVerticalGlue());
-        if (hasSaveFile)
-        {
-            m_continueButton = new JButton(CONTINUE_BUTTON_TEXT);
-            m_newGameButton = new JButton(NEW_GAME_BUTTON_TEXT);
-            SetCenterButtonProperties(m_continueButton);
-            SetCenterButtonProperties(m_newGameButton);
-            panel.add(m_continueButton);
+        
+        if (hasSaveFile) {
+            continueButton = new JButton(CONTINUE_BUTTON_TEXT);
+            newGameButton = new JButton(NEW_GAME_BUTTON_TEXT);
+            
+            setCenterButtonProperties(continueButton);
+            setCenterButtonProperties(newGameButton);
+            
+            panel.add(continueButton);
             panel.add(Box.createVerticalStrut(20));
-            panel.add(m_newGameButton);
+            panel.add(newGameButton);
         }
-        else
-        {
-            m_continueButton = null;
-            m_newGameButton = new JButton(START_BUTTON_TEXT);
-            SetCenterButtonProperties(m_newGameButton);
-            panel.add(m_newGameButton);
+        else {
+            continueButton = null;
+            newGameButton = new JButton(START_BUTTON_TEXT);
+            
+            setCenterButtonProperties(newGameButton);
+            
+            panel.add(newGameButton);
         }
+        
         panel.add(Box.createVerticalStrut(20));
-        panel.add(m_exitButton);
+        panel.add(exitButton);
         panel.add(Box.createVerticalGlue());
+        
         return panel;
     }
 
-    private void SetCenterButtonProperties(JComponent button)
-    {
+    private void setCenterButtonProperties(JComponent button) {
         Dimension centerButtonSize = new Dimension(150, 40);
         Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
         Color buttonColor = new Color(59, 89, 182);
@@ -78,25 +82,21 @@ public class StartPanel extends JPanel
         button.setBackground(buttonColor);
         button.setForeground(buttonTextColor);
         button.setOpaque(true);
-        if (button instanceof AbstractButton)
-        {
+        
+        if (button instanceof AbstractButton) {
             ((AbstractButton) button).setBorderPainted(false);
         }
     }
 
-    public JButton getContinueButton()
-    {
-        return m_continueButton;
+    public JButton getContinueButton() {
+        return continueButton;
     }
 
-    public JButton getNewGameButton()
-    {
-        return m_newGameButton;
+    public JButton getNewGameButton() {
+        return newGameButton;
     }
 
-    public JButton getExitButton()
-    {
-        return m_exitButton;
+    public JButton getExitButton() {
+        return exitButton;
     }
-
 }

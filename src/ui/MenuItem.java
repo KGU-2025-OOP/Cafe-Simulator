@@ -1,36 +1,30 @@
 package ui;
 
-public class MenuItem
-{
-    public enum MenuType
-    {
+public class MenuItem {
+    public enum MenuType {
         Beverage,
         Dessert
     }
 
-    private String m_name;
-    private MenuType m_type;
-    private boolean m_isUnlocked;
+    private String name;
+    private MenuType type;
+    private boolean unlocked;
 
-    public MenuItem(String name, MenuType type, boolean isUnlocked)
-    {
-        m_name = name;
-        m_type = type;
-        m_isUnlocked = isUnlocked;
+    public MenuItem(String name, MenuType type, boolean unlocked) {
+        this.name = name;
+        this.type = type;
+        this.unlocked = unlocked;
     }
 
-    public String GetName()
-    {
-        return m_name;
+    public String getName() {
+        return name;
     }
 
-    public MenuType GetType()
-    {
-        return m_type;
+    public MenuType getType() {
+        return type;
     }
 
-    public boolean IsUnlocked()
-    {
-        return m_isUnlocked;
+    public boolean isUnlocked() {
+        return unlocked;
     }
 }

@@ -15,17 +15,16 @@ import java.awt.Font;
 import java.awt.Color;
 import java.awt.Dimension;
 
-public class DayEndDialog extends JDialog
-{
-    private static final Font FONT_TITLE = new Font("Malgun Gothic", Font.BOLD, 28);
+public class DaySummaryDialog extends JDialog {
+	
+	private static final Font FONT_TITLE = new Font("Malgun Gothic", Font.BOLD, 28);
     private static final Font FONT_LABEL = new Font("Malgun Gothic", Font.PLAIN, 20);
     private static final Font FONT_VALUE = new Font("Malgun Gothic", Font.BOLD, 20);
     private static final Font FONT_PROFIT = new Font("Malgun Gothic", Font.BOLD, 28);
 
     private static final Color COLOR_PROFIT_GREEN = new Color(0, 120, 0);
 
-    public DayEndDialog(JFrame parent, int dayNumber, int customerCount, int revenue, int orderCost)
-    {
+    public DaySummaryDialog(JFrame parent, int dayNumber, int customerCount, int revenue, int orderCost) {
         super(parent, dayNumber + "일차 결산", true);
 
         int netProfit = revenue - orderCost;
@@ -40,49 +39,55 @@ public class DayEndDialog extends JDialog
 
         JPanel reportPanel = new JPanel(new GridBagLayout());
         reportPanel.setOpaque(false);
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-
+        
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
+        
         JLabel customerLabel = new JLabel("방문 손님 수:");
         customerLabel.setFont(FONT_LABEL);
         reportPanel.add(customerLabel, gbc);
-
+        
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
+        
         JLabel customerValue = new JLabel(String.format("%,d 명", Integer.valueOf(customerCount)));
         customerValue.setFont(FONT_VALUE);
         reportPanel.add(customerValue, gbc);
-
+        
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.EAST;
+        
         JLabel revenueLabel = new JLabel("총 수익 (매출):");
         revenueLabel.setFont(FONT_LABEL);
         reportPanel.add(revenueLabel, gbc);
-
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
+        
         JLabel revenueValue = new JLabel(String.format("%,d 원", Integer.valueOf(revenue)));
         revenueValue.setFont(FONT_VALUE);
         reportPanel.add(revenueValue, gbc);
-
+        
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
+        
         JLabel orderCostLabel = new JLabel("발주 비용 (지출):");
         orderCostLabel.setFont(FONT_LABEL);
         reportPanel.add(orderCostLabel, gbc);
-
+        
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
+        
         JLabel orderCostValue = new JLabel(String.format("%,d 원", Integer.valueOf(orderCost)));
         orderCostValue.setFont(FONT_VALUE);
         orderCostValue.setForeground(Color.RED.darker());
         reportPanel.add(orderCostValue, gbc);
-
+        
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
@@ -94,12 +99,14 @@ public class DayEndDialog extends JDialog
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
+        
         JLabel netProfitLabel = new JLabel("순수익:");
         netProfitLabel.setFont(FONT_PROFIT);
         reportPanel.add(netProfitLabel, gbc);
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
+        
         JLabel netProfitValue = new JLabel(String.format("%,d 원", Integer.valueOf(netProfit)));
         netProfitValue.setFont(FONT_PROFIT);
         netProfitValue.setForeground(netProfit >= 0 ? COLOR_PROFIT_GREEN : Color.RED.darker());
@@ -109,10 +116,12 @@ public class DayEndDialog extends JDialog
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
+        
         JButton confirmButton = new JButton("다음 날로 (확인)");
         confirmButton.setFont(FONT_LABEL);
         confirmButton.setPreferredSize(new Dimension(200, 50));
         confirmButton.addActionListener(e -> this.dispose());
+        
         buttonPanel.add(confirmButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 

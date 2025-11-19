@@ -16,8 +16,8 @@ import java.awt.Dimension;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-public class OrderDialog extends JDialog
-{
+public class OrderDetailsDialog extends JDialog {
+	
     private static final String DIALOG_TITLE = "재료 발주";
     private static final String CONFIRM_BUTTON_TEXT = "발주 확인";
     private static final String CANCEL_BUTTON_TEXT = "취소";
@@ -29,8 +29,7 @@ public class OrderDialog extends JDialog
     private boolean isConfirmed;
     private int finalTotalCost;
 
-    public OrderDialog(JFrame parent, Map<String, Integer> ingredients)
-    {
+    public OrderDetailsDialog(JFrame parent, Map<String, Integer> ingredients) {
         super(parent, DIALOG_TITLE, true);
 
         this.ingredientPrices = ingredients;
@@ -50,13 +49,11 @@ public class OrderDialog extends JDialog
         this.setLocationRelativeTo(parent);
     }
 
-    private JScrollPane createIngredientPanel()
-    {
+    private JScrollPane createIngredientPanel() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
-        for (Map.Entry<String, Integer> entry : this.ingredientPrices.entrySet())
-        {
+        for (Map.Entry<String, Integer> entry : this.ingredientPrices.entrySet()) {
             String name = entry.getKey();
             int price = entry.getValue();
             mainPanel.add(this.createIngredientRow(name, price));
@@ -68,8 +65,7 @@ public class OrderDialog extends JDialog
         return scrollPane;
     }
 
-    private JPanel createIngredientRow(String name, int price)
-    {
+    private JPanel createIngredientRow(String name, int price) {
         JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         String labelText = String.format("%s (개당 %d원)", name, Integer.valueOf(price));
@@ -83,6 +79,7 @@ public class OrderDialog extends JDialog
                 99,
                 1
         );
+        
         JSpinner spinner = new JSpinner(model);
 
         spinner.addChangeListener(e -> this.updateTotalCost());
@@ -90,11 +87,11 @@ public class OrderDialog extends JDialog
         this.spinnerMap.put(name, spinner);
 
         rowPanel.add(spinner);
+         
         return rowPanel;
     }
 
-    private JPanel createSouthPanel()
-    {
+    private JPanel createSouthPanel() {
         JPanel southPanel = new JPanel(new BorderLayout());
 
         this.totalCostLabel = new JLabel();
@@ -118,11 +115,10 @@ public class OrderDialog extends JDialog
         return southPanel;
     }
 
-    private void updateTotalCost()
-    {
+    private void updateTotalCost() {
         int total = 0;
-        for (Map.Entry<String, JSpinner> entry : this.spinnerMap.entrySet())
-        {
+        
+        for (Map.Entry<String, JSpinner> entry : this.spinnerMap.entrySet()) {
             String name = entry.getKey();
             JSpinner spinner = entry.getValue();
 
@@ -136,25 +132,21 @@ public class OrderDialog extends JDialog
         this.totalCostLabel.setText(String.format(TOTAL_COST_LABEL_FORMAT, Integer.valueOf(total)));
     }
 
-    private void onConfirm()
-    {
+    private void onConfirm() {
         this.isConfirmed = true;
         this.dispose();
     }
 
-    private void onCancel()
-    {
+    private void onCancel() {
         this.isConfirmed = false;
         this.dispose();
     }
 
-    public boolean isConfirmed()
-    {
+    public boolean isConfirmed() {
         return this.isConfirmed;
     }
 
-    public Map<String, Integer> getOrderQuantities()
-    {
+    public Map<String, Integer> getOrderQuantities() {
         Map<String, Integer> order = new LinkedHashMap<>();
         if (this.isConfirmed)
         {
@@ -166,8 +158,7 @@ public class OrderDialog extends JDialog
         return order;
     }
 
-    public int getTotalCost()
-    {
+    public int getTotalCost() {
         return this.finalTotalCost;
     }
 }

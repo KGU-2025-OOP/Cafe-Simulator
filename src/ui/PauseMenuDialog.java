@@ -14,8 +14,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Color;
 
-public class PauseDialog extends JDialog
-{
+public class PauseMenuDialog extends JDialog {
+	
     private static final String DIALOG_TITLE = "일시정지";
     private static final String CALENDAR_BUTTON_TEXT = "달력";
     private static final String MENU_BUTTON_TEXT = "메뉴판";
@@ -23,8 +23,7 @@ public class PauseDialog extends JDialog
     private static final String GIVE_UP_BUTTON_TEXT = "포기하기 (데이터 초기화)";
     private static final String EXIT_BUTTON_TEXT = "종료하기";
 
-    public enum PauseResult
-    {
+    public enum PauseResult {
         CONTINUE,
         CALENDAR,
         MENU,
@@ -40,10 +39,10 @@ public class PauseDialog extends JDialog
     private JButton exitButton;
     private PauseResult result;
 
-    public PauseDialog(JFrame parent)
-    {
+    public PauseMenuDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
         this.result = PauseResult.NONE;
+        
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -78,8 +77,7 @@ public class PauseDialog extends JDialog
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     }
 
-    private void setButtonProperties(JComponent button, boolean isWarning)
-    {
+    private void setButtonProperties(JComponent button, boolean isWarning) {
         Dimension buttonSize = new Dimension(200, 40);
         Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
         Color buttonColor = new Color(59, 89, 182);
@@ -92,52 +90,48 @@ public class PauseDialog extends JDialog
         button.setMaximumSize(buttonSize);
         button.setFont(mainFont);
         button.setForeground(buttonTextColor);
-        if (isWarning)
-        {
+        
+        if (isWarning) {
             button.setBackground(warnButtonColor);
         }
-        else
-        {
+        else {
             button.setBackground(buttonColor);
         }
         button.setOpaque(true);
-        if (button instanceof AbstractButton)
-        {
+        
+        if (button instanceof AbstractButton) {
             ((AbstractButton) button).setBorderPainted(false);
         }
     }
 
-    private void addListeners()
-    {
-        this.calendarButton.addActionListener(e ->
-        {
+    private void addListeners() {
+        this.calendarButton.addActionListener(e -> {
             this.result = PauseResult.CALENDAR;
             this.dispose();
         });
-        this.menuButton.addActionListener(e ->
-        {
+        
+        this.menuButton.addActionListener(e -> {
             this.result = PauseResult.MENU;
             this.dispose();
         });
-        this.continueButton.addActionListener(e ->
-        {
+        
+        this.continueButton.addActionListener(e -> {
             this.result = PauseResult.CONTINUE;
             this.dispose();
         });
-        this.giveUpButton.addActionListener(e ->
-        {
+        
+        this.giveUpButton.addActionListener(e -> {
             this.result = PauseResult.GIVE_UP;
             this.dispose();
         });
-        this.exitButton.addActionListener(e ->
-        {
+        
+        this.exitButton.addActionListener(e -> {
             this.result = PauseResult.EXIT;
             this.dispose();
         });
     }
 
-    public PauseResult getResult()
-    {
+    public PauseResult getResult() {
         return this.result;
     }
 }

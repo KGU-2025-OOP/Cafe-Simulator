@@ -3,16 +3,16 @@ package ui;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameSpacePanel extends JPanel
-{
-    private JButton btn1;
+public class GameplayAreaPanel extends JPanel {
+	
+	private JButton btn1;
     private JButton btn2;
     private JButton btn3;
 
-    public GameSpacePanel()
-    {
+    public GameplayAreaPanel() {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+        
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
@@ -33,24 +33,23 @@ public class GameSpacePanel extends JPanel
 
         gbc.gridy = 0;
         this.add(this.btn1, gbc);
+        
         gbc.gridy = 1;
         this.add(this.btn2, gbc);
+        
         gbc.gridy = 2;
         this.add(this.btn3, gbc);
     }
 
-    public JButton getBtn1()
-    {
+    public JButton getBtn1() {
         return this.btn1;
     }
 
-    public JButton getBtn2()
-    {
+    public JButton getBtn2() {
         return this.btn2;
     }
 
-    public JButton getBtn3()
-    {
+    public JButton getBtn3() {
         return this.btn3;
     }
 }

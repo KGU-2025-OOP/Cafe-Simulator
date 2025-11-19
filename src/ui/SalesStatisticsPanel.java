@@ -10,16 +10,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class SalesGraphPanel extends JPanel
-{
-    private JButton m_backButton;
-    private GraphDisplayPanel m_graphDisplayPanel;
+public class SalesStatisticsPanel extends JPanel {
+	
+	private JButton backButton;
+    private GraphDisplayPanel graphDisplayPanel;
 
-    private Map<Integer, Integer> m_dailySalesHistory;
+    private Map<Integer, Integer> dailySalesHistory;
 
-    public SalesGraphPanel(Map<Integer, Integer> dailySalesHistory)
+    public SalesStatisticsPanel(Map<Integer, Integer> dailySalesHistory)
     {
-        m_dailySalesHistory = dailySalesHistory;
+        this.dailySalesHistory = dailySalesHistory;
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
         setBorder(new EmptyBorder(20, 30, 20, 30));
@@ -27,12 +27,12 @@ public class SalesGraphPanel extends JPanel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        m_backButton = new JButton("돌아가기");
-        m_backButton.setFont(new Font("Malgun Gothic", Font.BOLD, 16));
+        backButton = new JButton("돌아가기");
+        backButton.setFont(new Font("Malgun Gothic", Font.BOLD, 16));
 
         JPanel backButtonWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonWrapper.setOpaque(false);
-        backButtonWrapper.add(m_backButton);
+        backButtonWrapper.add(backButton);
 
         JLabel titleLabel = new JLabel("성장도 그래프 (일일 순수익)", JLabel.CENTER);
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 32));
@@ -43,16 +43,15 @@ public class SalesGraphPanel extends JPanel
 
         add(topPanel, BorderLayout.NORTH);
 
-        m_graphDisplayPanel = new GraphDisplayPanel(m_dailySalesHistory);
-        add(m_graphDisplayPanel, BorderLayout.CENTER);
+        graphDisplayPanel = new GraphDisplayPanel(this.dailySalesHistory);
+        add(graphDisplayPanel, BorderLayout.CENTER);
     }
 
-    public JButton getBackButton()
-    {
-        return m_backButton;
+    public JButton getBackButton() {
+        return backButton;
     }
 
-    private class GraphDisplayPanel extends JPanel
+    private class GraphDisplayPanel extends JPanel 
     {
         private static final int PADDING = 60;
         private static final int POINT_RADIUS = 5;
@@ -70,42 +69,37 @@ public class SalesGraphPanel extends JPanel
         private static final Stroke STROKE_AXIS = new BasicStroke(1.5f);
         private static final Stroke STROKE_GRID = new BasicStroke(1f);
 
-        private Map<Integer, Integer> m_historyData;
+        private Map<Integer, Integer> historyData;
 
-        private List<Integer> m_salesData;
-        private List<Point> m_graphPoints;
+        private List<Integer> salesData;
+        private List<Point> graphPoints;
 
         public GraphDisplayPanel(Map<Integer, Integer> historyData)
         {
-            m_historyData = historyData;
-            m_salesData = new ArrayList<>();
-            m_graphPoints = new ArrayList<>();
+            this.historyData = historyData;
+            salesData = new ArrayList<>();
+            graphPoints = new ArrayList<>();
 
             setBackground(COLOR_BACKGROUND);
             setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 
-            addMouseListener(new MouseAdapter()
-            {
+            addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent e)
-                {
-                    HandleGraphClick(e.getX(), e.getY());
+                public void mouseClicked(MouseEvent e) {
+                    handleGraphClick(e.getX(), e.getY());
                 }
             });
         }
 
-        private void HandleGraphClick(int clickX, int clickY)
-        {
-            for (int i = 0; i < m_graphPoints.size(); i++)
-            {
-                Point p = m_graphPoints.get(i);
+        private void handleGraphClick(int clickX, int clickY) {
+            for (int i = 0; i < graphPoints.size(); i++) {
+                Point p = graphPoints.get(i);
 
                 double distance = Math.sqrt(Math.pow(clickX - p.x, 2) + Math.pow(clickY - p.y, 2));
 
-                if (distance <= CLICK_RADIUS)
-                {
+                if (distance <= CLICK_RADIUS) {
                     int day = i + 1;
-                    int sales = m_salesData.get(i);
+                    int sales = salesData.get(i);
 
                     String message = String.format("%d일차 순수익: %,d 원", day, sales);
 
@@ -117,26 +111,24 @@ public class SalesGraphPanel extends JPanel
         }
 
         @Override
-        protected void paintComponent(Graphics g)
-        {
+        protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            m_salesData = new ArrayList<>(m_historyData.values());
-            m_graphPoints.clear();
+            salesData = new ArrayList<>(historyData.values());
+            graphPoints.clear();
 
-            if (m_salesData.isEmpty())
-            {
-                DrawCenteredString(g2, "아직 매출 데이터가 없습니다.");
+            if (salesData.isEmpty()) {
+                drawCenteredString(g2, "아직 매출 데이터가 없습니다.");
                 return;
             }
 
             int graphWidth = getWidth() - 2 * PADDING;
             int graphHeight = getHeight() - 2 * PADDING;
 
-            int maxSales = m_salesData.isEmpty() ? 0 : Collections.max(m_salesData);
-            int minSales = m_salesData.isEmpty() ? 0 : Collections.min(m_salesData);
+            int maxSales = salesData.isEmpty() ? 0 : Collections.max(salesData);
+            int minSales = salesData.isEmpty() ? 0 : Collections.min(salesData);
 
             int yMax = (int) (Math.ceil(Math.max(maxSales, 0) / (double)Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
             int yMin = (int) (Math.floor(Math.min(minSales, 0) / (double)Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
@@ -153,8 +145,7 @@ public class SalesGraphPanel extends JPanel
             g2.drawLine(PADDING, PADDING + graphHeight, PADDING + graphWidth, PADDING + graphHeight);
 
             g2.setFont(new Font("Malgun Gothic", Font.PLAIN, 12));
-            for (int yVal = yMin; yVal <= yMax; yVal += Y_AXIS_INTERVAL)
-            {
+            for (int yVal = yMin; yVal <= yMax; yVal += Y_AXIS_INTERVAL) {
                 int yScreen = PADDING + (int) ((double) (yMax - yVal) * graphHeight / yRange);
 
                 g2.setColor(COLOR_GRID);
@@ -169,40 +160,35 @@ public class SalesGraphPanel extends JPanel
             g2.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
             double xStep = (double) graphWidth / (X_AXIS_DAYS - 1);
 
-            for (int i = 0; i < X_AXIS_DAYS; i++)
-            {
+            for (int i = 0; i < X_AXIS_DAYS; i++) {
                 int x = PADDING + (int) (i * xStep);
                 g2.drawString((i + 1) + "일", x - 5, PADDING + graphHeight + 25);
             }
 
-            for (int i = 0; i < m_salesData.size(); i++)
-            {
+            for (int i = 0; i < salesData.size(); i++) {
                 if (i >= X_AXIS_DAYS) break;
 
                 int x = PADDING + (int) (i * xStep);
-                int y = PADDING + (int) ((double) (yMax - m_salesData.get(i)) * graphHeight / yRange);
+                int y = PADDING + (int) ((double) (yMax - salesData.get(i)) * graphHeight / yRange);
 
-                m_graphPoints.add(new Point(x, y));
+                graphPoints.add(new Point(x, y));
             }
 
             g2.setColor(COLOR_LINE);
             g2.setStroke(STROKE_LINE);
-            for (int i = 0; i < m_graphPoints.size() - 1; i++)
-            {
-                Point p1 = m_graphPoints.get(i);
-                Point p2 = m_graphPoints.get(i + 1);
+            for (int i = 0; i < graphPoints.size() - 1; i++) {
+                Point p1 = graphPoints.get(i);
+                Point p2 = graphPoints.get(i + 1);
                 g2.drawLine(p1.x, p1.y, p2.x, p2.y);
             }
 
             g2.setColor(COLOR_POINT);
-            for (Point p : m_graphPoints)
-            {
+            for (Point p : graphPoints) {
                 g2.fillOval(p.x - POINT_RADIUS, p.y - POINT_RADIUS, 2 * POINT_RADIUS, 2 * POINT_RADIUS);
             }
         }
 
-        private void DrawCenteredString(Graphics2D g2, String text)
-        {
+        private void drawCenteredString(Graphics2D g2, String text) {
             Font font = new Font("Malgun Gothic", Font.BOLD, 24);
             g2.setFont(font);
             g2.setColor(Color.GRAY);

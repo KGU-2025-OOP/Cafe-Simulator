@@ -23,14 +23,13 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.ScrollPaneConstants;
 
-public class MenuDialog extends JDialog
-{
-    private boolean m_shouldReopenPause = false;
+public class MenuDialog extends JDialog {
+	
+    private boolean shouldReopenPause = false;
 
-    private JPanel m_contentContainer;
+    private JPanel contentContainer;
 
-    public MenuDialog(JFrame parent, List<MenuItem> allMenus)
-    {
+    public MenuDialog(JFrame parent, List<MenuItem> allMenus) {
         super(parent, "메뉴 도감", true);
 
         JPanel backPanel = new JPanel(new BorderLayout());
@@ -53,9 +52,8 @@ public class MenuDialog extends JDialog
 
         JButton backwardButton = new JButton("<-");
         backwardButton.setFont(new Font("SansSerif", Font.BOLD, 25));
-        backwardButton.addActionListener(e ->
-        {
-            m_shouldReopenPause = true;
+        backwardButton.addActionListener(e -> {
+            shouldReopenPause = true;
             dispose();
         });
 
@@ -73,6 +71,7 @@ public class MenuDialog extends JDialog
 
         JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 0));
         buttonPanel.setOpaque(false);
+        
         JButton drinkButton = new JButton("음료");
         JButton bakeryButton = new JButton("베이커리");
 
@@ -82,24 +81,24 @@ public class MenuDialog extends JDialog
 
         backPanel.add(topPanel, BorderLayout.NORTH);
 
-        m_contentContainer = new JPanel(new BorderLayout());
-        backPanel.add(m_contentContainer, BorderLayout.CENTER);
+        contentContainer = new JPanel(new BorderLayout());
+        backPanel.add(contentContainer, BorderLayout.CENTER);
 
         List<MenuItem> beverages = allMenus.stream()
-                .filter(item -> item.GetType() == MenuItem.MenuType.Beverage)
+                .filter(item -> item.getType() == MenuItem.MenuType.Beverage)
                 .collect(Collectors.toList());
 
         List<MenuItem> desserts = allMenus.stream()
-                .filter(item -> item.GetType() == MenuItem.MenuType.Dessert)
+                .filter(item -> item.getType() == MenuItem.MenuType.Dessert)
                 .collect(Collectors.toList());
 
-        JPanel drinkPanel = CreateCategoryPanel(beverages);
-        JPanel bakeryPanel = CreateCategoryPanel(desserts);
+        JPanel drinkPanel = createCategoryPanel(beverages);
+        JPanel bakeryPanel = createCategoryPanel(desserts);
 
-        ShowContentPanel(drinkPanel);
+        showContentPanel(drinkPanel);
 
-        drinkButton.addActionListener(e -> ShowContentPanel(drinkPanel));
-        bakeryButton.addActionListener(e -> ShowContentPanel(bakeryPanel));
+        drinkButton.addActionListener(e -> showContentPanel(drinkPanel));
+        bakeryButton.addActionListener(e -> showContentPanel(bakeryPanel));
 
         setContentPane(backPanel);
 
@@ -112,24 +111,21 @@ public class MenuDialog extends JDialog
         setBounds(bounds);
     }
 
-    private void ShowContentPanel(JPanel panel)
-    {
-        m_contentContainer.removeAll();
-        m_contentContainer.add(panel, BorderLayout.CENTER);
-        m_contentContainer.revalidate();
-        m_contentContainer.repaint();
+    private void showContentPanel(JPanel panel) {
+        contentContainer.removeAll();
+        contentContainer.add(panel, BorderLayout.CENTER);
+        contentContainer.revalidate();
+        contentContainer.repaint();
     }
 
-    private JPanel CreateCategoryPanel(List<MenuItem> items)
-    {
+    private JPanel createCategoryPanel(List<MenuItem> items) {
         JPanel scrollArea = new JPanel();
         scrollArea.setBackground(new Color(210, 230, 255));
         scrollArea.setBorder(new EmptyBorder(20, 20, 20, 20));
         scrollArea.setLayout(new BoxLayout(scrollArea, BoxLayout.X_AXIS));
 
-        for (MenuItem item : items)
-        {
-            scrollArea.add(CreateMenuCardPanel(item));
+        for (MenuItem item : items) {
+            scrollArea.add(createMenuCardPanel(item));
             scrollArea.add(Box.createHorizontalStrut(20));
         }
 
@@ -145,13 +141,13 @@ public class MenuDialog extends JDialog
         JPanel finalWrapper = new JPanel(new BorderLayout());
         finalWrapper.setBackground(new Color(210, 230, 255));
         finalWrapper.add(scrollPane, BorderLayout.CENTER);
+        
         return finalWrapper;
     }
 
-    private JPanel CreateMenuCardPanel(MenuItem item)
-    {
-        boolean isUnlocked = item.IsUnlocked();
-        String name = item.GetName();
+    private JPanel createMenuCardPanel(MenuItem item) {
+        boolean isUnlocked = item.isUnlocked();
+        String name = item.getName();
 
         JPanel card = new JPanel();
         card.setPreferredSize(new Dimension(300, 500));
@@ -165,15 +161,14 @@ public class MenuDialog extends JDialog
 
         JPanel imgPanel = new JPanel(new BorderLayout());
         imgPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        
         JLabel imgText = new JLabel(isUnlocked ? "이미지" : "???", JLabel.CENTER);
         imgText.setFont(imgText.getFont().deriveFont(15f));
 
-        if (isUnlocked)
-        {
+        if (isUnlocked) {
             imgPanel.setBackground(Color.WHITE);
         }
-        else
-        {
+        else {
             imgPanel.setBackground(Color.LIGHT_GRAY);
         }
 
@@ -189,8 +184,7 @@ public class MenuDialog extends JDialog
         return card;
     }
 
-    public boolean ShouldReopenPause()
-    {
-        return m_shouldReopenPause;
+    public boolean shouldReopenPause() {
+        return shouldReopenPause;
     }
 }

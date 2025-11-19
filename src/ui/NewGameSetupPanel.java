@@ -14,13 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class NewGamePanel extends JPanel
-{
-    private JTextField m_nameField;
-    private JButton m_startButton;
+public class NewGameSetupPanel extends JPanel {
+	
+	private JTextField nameField;
+    private JButton startButton;
 
-    public NewGamePanel()
-    {
+    public NewGameSetupPanel() {
         setLayout(new GridBagLayout());
         setBackground(Color.WHITE);
 
@@ -50,41 +49,40 @@ public class NewGamePanel extends JPanel
         ic.gridy = 0;
         ic.anchor = GridBagConstraints.CENTER;
 
-        m_nameField = new JTextField(35);
-        m_nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
-        m_nameField.setHorizontalAlignment(JTextField.CENTER);
-        m_nameField.setBackground(new Color(255, 248, 220));
-        m_nameField.setBorder(
+        nameField = new JTextField(35);
+        nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
+        nameField.setHorizontalAlignment(JTextField.CENTER);
+        nameField.setBackground(new Color(255, 248, 220));
+        nameField.setBorder(
                 BorderFactory.createLineBorder(Color.RED, 3, true)
         );
 
-        inputPanel.add(m_nameField, ic);
+        inputPanel.add(nameField, ic);
         boxPanel.add(inputPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setOpaque(false);
 
-        m_startButton = new JButton("창업하기");
-        m_startButton.setFont(new Font("SansSerif", Font.BOLD, 24));
-        m_startButton.setPreferredSize(new Dimension(140, 50));
+        startButton = new JButton("창업하기");
+        startButton.setFont(new Font("SansSerif", Font.BOLD, 24));
+        startButton.setPreferredSize(new Dimension(140, 50));
 
-        buttonPanel.add(m_startButton, BorderLayout.EAST);
+        buttonPanel.add(startButton, BorderLayout.EAST);
         boxPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 0);
+        
         add(boxPanel, gbc);
     }
 
-    public JTextField GetNameField()
-    {
-        return m_nameField;
+    public JTextField getNameField() {
+        return nameField;
     }
 
-    public JButton GetStartButton()
-    {
-        return m_startButton;
+    public JButton getStartButton() {
+        return startButton;
     }
 }
