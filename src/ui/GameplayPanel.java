@@ -96,7 +96,7 @@ public class GameplayPanel extends JPanel {
         mainPanel.add(leftPathPanel, BorderLayout.WEST);
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
 
-        gameCanvas = new GameCanvas(1280, 720);
+        gameCanvas = new GameCanvas(1280 - 200, 720 - 200);
         mainPanel.add(gameCanvas, BorderLayout.CENTER);
 
         return mainPanel;
