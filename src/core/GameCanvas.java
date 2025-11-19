@@ -197,7 +197,8 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void shutdown() {
-        System.exit(0);
+        //System.exit(0);
+        System.out.println("Game Canvas Thread Stopped.");
     }
 
 }
