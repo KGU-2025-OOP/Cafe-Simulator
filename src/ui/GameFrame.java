@@ -133,24 +133,9 @@ public class GameFrame extends JFrame
         m_allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Beverage, true));
         m_allMenuItems.add(new MenuItem("바닐라 라떼", MenuItem.MenuType.Beverage, false));
         m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        m_allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-
-
         m_allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        m_allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-
     }
 
     private Map<String, Integer> CreateRecipeData()
@@ -184,18 +169,18 @@ public class GameFrame extends JFrame
 
     private void AddListenersToOrderPanel()
     {
-        m_orderPanel.getConfirmButton().addActionListener(e ->
+        m_orderPanel.GetConfirmButton().addActionListener(e ->
         {
-            int totalCost = m_orderPanel.getTotalCost();
+            int totalCost = m_orderPanel.GetTotalCost();
             m_currentDaySales = -totalCost;
 
             System.out.println("발주가 확정되었습니다.");
 
-            m_gameScreen.setDayLabel(m_currentDayNumber + "일차");
+            m_gameScreen.SetDayLabel(m_currentDayNumber + "일차");
 
             ShowPanel("Game");
         });
-        m_orderPanel.getCancelButton().addActionListener(e ->
+        m_orderPanel.GetCancelButton().addActionListener(e ->
         {
             System.out.println("발주가 취소되었습니다.");
             ShowPanel("GameSpaceHub");
@@ -204,9 +189,9 @@ public class GameFrame extends JFrame
 
     private void AddListenersToNewGamePanel()
     {
-        m_newGamePanel.getStartButton().addActionListener(e ->
+        m_newGamePanel.GetStartButton().addActionListener(e ->
         {
-            String cafeName = m_newGamePanel.getNameField().getText().trim();
+            String cafeName = m_newGamePanel.GetNameField().getText().trim();
 
             if (cafeName.isEmpty())
             {
@@ -226,7 +211,7 @@ public class GameFrame extends JFrame
         {
             System.out.println("운영시작 버튼 클릭됨 -> 발주 화면으로");
 
-            m_orderPanel.resetSpinners();
+            m_orderPanel.ResetSpinners();
 
             ShowPanel("Order");
         });
@@ -253,7 +238,7 @@ public class GameFrame extends JFrame
         AddExitBinding(m_gameSpacePanel);
         AddExitBinding(m_salesGraphPanel);
 
-        m_gameScreen.getEndDayButton().addActionListener(e ->
+        m_gameScreen.GetEndDayButton().addActionListener(e ->
         {
             ShowDayEndDialog();
         });
@@ -425,7 +410,6 @@ public class GameFrame extends JFrame
         SwingUtilities.invokeLater(() ->
         {
             GameFrame game = new GameFrame(MOCK_SAVE_FILE_EXISTS);
-
             game.setVisible(true);
         });
     }

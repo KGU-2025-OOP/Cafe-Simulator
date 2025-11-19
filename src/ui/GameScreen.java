@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,23 +15,49 @@ import javax.swing.JPanel;
 
 public class GameScreen extends JPanel
 {
-    private JLabel dayLabel;
-    private JLabel timeLabel;
-    private JButton endDayButton;
+    private JLabel m_dayLabel;
+    private JLabel m_timeLabel;
+    private JButton m_endDayButton;
+    private GameCanvas m_gameCanvas;
 
     public GameScreen()
     {
-        this.setLayout(new BorderLayout());
-        this.setBackground(Color.WHITE);
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
-        JPanel topPanel = this.createTopBar();
-        this.add(topPanel, BorderLayout.NORTH);
+        JPanel topPanel = CreateTopBar();
+        add(topPanel, BorderLayout.NORTH);
 
-        JPanel mainPanel = this.createMainPanel();
-        this.add(mainPanel, BorderLayout.CENTER);
+        JPanel mainPanel = CreateMainPanel();
+        add(mainPanel, BorderLayout.CENTER);
     }
 
-    private JPanel createTopBar()
+    public class GameCanvas extends JPanel
+    {
+        public GameCanvas()
+        {
+            setBackground(Color.LIGHT_GRAY);
+            setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        }
+
+        @Override
+        protected void paintComponent(Graphics g)
+        {
+            super.paintComponent(g);
+
+            g.setColor(Color.BLACK);
+            g.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+            g.drawString("여기가 게임 캔버스 영역입니다.", 50, 50);
+
+            g.setColor(Color.ORANGE);
+            g.fillRect(50, 80, 100, 100);
+
+            g.setColor(Color.BLUE);
+            g.drawOval(170, 80, 100, 100);
+        }
+    }
+
+    private JPanel CreateTopBar()
     {
         JPanel topBarPanel = new JPanel(new BorderLayout());
         topBarPanel.setBorder(
@@ -38,41 +65,49 @@ public class GameScreen extends JPanel
         );
         topBarPanel.setBackground(Color.WHITE);
 
-        this.dayLabel = new JLabel("1일차");
-        this.dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        m_dayLabel = new JLabel("1일차");
+        m_dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        this.timeLabel = new JLabel("마감까지 00:30");
-        this.timeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        m_timeLabel = new JLabel("마감까지 00:30");
+        m_timeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        this.endDayButton = new JButton("하루 마감 (임시)");
-        this.endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        m_endDayButton = new JButton("하루 마감 (임시)");
+        m_endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
 
-        topBarPanel.add(this.dayLabel, BorderLayout.WEST);
-        topBarPanel.add(this.endDayButton, BorderLayout.CENTER);
-        topBarPanel.add(this.timeLabel, BorderLayout.EAST);
+        topBarPanel.add(m_dayLabel, BorderLayout.WEST);
+        topBarPanel.add(m_endDayButton, BorderLayout.CENTER);
+        topBarPanel.add(m_timeLabel, BorderLayout.EAST);
 
         return topBarPanel;
     }
 
-    public JButton getEndDayButton()
+    public JButton GetEndDayButton()
     {
-        return this.endDayButton;
+        return m_endDayButton;
     }
 
-    public void setDayLabel(String text)
+    public void SetDayLabel(String text)
     {
-        this.dayLabel.setText(text);
+        m_dayLabel.setText(text);
     }
 
-    private JPanel createMainPanel()
+    public void RepaintCanvas()
+    {
+        if (m_gameCanvas != null)
+        {
+            m_gameCanvas.repaint();
+        }
+    }
+
+    private JPanel CreateMainPanel()
     {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
-        JPanel topPathPanel = this.createTopPathPanel();
-        JPanel bottomPathPanel = this.createBottomPathPanel();
-        JPanel leftPathPanel = this.createLeftPathPanel();
-        JPanel rightPathPanel = this.createRightPathPanel();
+        JPanel topPathPanel = CreateTopPathPanel();
+        JPanel bottomPathPanel = CreateBottomPathPanel();
+        JPanel leftPathPanel = CreateLeftPathPanel();
+        JPanel rightPathPanel = CreateRightPathPanel();
 
         topPathPanel.setPreferredSize(new Dimension(0, 100));
         bottomPathPanel.setPreferredSize(new Dimension(0, 100));
@@ -84,35 +119,21 @@ public class GameScreen extends JPanel
         mainPanel.add(leftPathPanel, BorderLayout.WEST);
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
 
-        JPanel gameAreaPanel = this.createGameAreaPanel();
-        mainPanel.add(gameAreaPanel, BorderLayout.CENTER);
+        m_gameCanvas = new GameCanvas();
+        mainPanel.add(m_gameCanvas, BorderLayout.CENTER);
 
         return mainPanel;
     }
 
-    private JPanel createGameAreaPanel()
+    private void CreateCustomerPath()
     {
-        JPanel gameAreaPanel = new JPanel();
-        gameAreaPanel.setBackground(Color.GRAY);
-        gameAreaPanel.setBorder(
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        );
-
-        JLabel centerLabel = new JLabel("게임 화면");
-        gameAreaPanel.add(centerLabel);
-
-        return gameAreaPanel;
+        add(CreateTopPathPanel(), BorderLayout.PAGE_START);
+        add(CreateBottomPathPanel(), BorderLayout.PAGE_END);
+        add(CreateLeftPathPanel(), BorderLayout.LINE_START);
+        add(CreateRightPathPanel(), BorderLayout.LINE_END);
     }
 
-    private void createCustomerPath()
-    {
-        this.add(this.createTopPathPanel(), BorderLayout.PAGE_START);
-        this.add(this.createBottomPathPanel(), BorderLayout.PAGE_END);
-        this.add(this.createLeftPathPanel(), BorderLayout.LINE_START);
-        this.add(this.createRightPathPanel(), BorderLayout.LINE_END);
-    }
-
-    private JPanel createTopPathPanel()
+    private JPanel CreateTopPathPanel()
     {
         JPanel topPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         topPathPanel.setBackground(Color.RED);
@@ -120,7 +141,7 @@ public class GameScreen extends JPanel
         return topPathPanel;
     }
 
-    private JPanel createBottomPathPanel()
+    private JPanel CreateBottomPathPanel()
     {
         JPanel bottomPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         bottomPathPanel.setBackground(Color.GREEN);
@@ -128,7 +149,7 @@ public class GameScreen extends JPanel
         return bottomPathPanel;
     }
 
-    private JPanel createLeftPathPanel()
+    private JPanel CreateLeftPathPanel()
     {
         JPanel leftPathPanel = new JPanel();
         leftPathPanel.setLayout(new BoxLayout(leftPathPanel, BoxLayout.Y_AXIS));
@@ -137,7 +158,7 @@ public class GameScreen extends JPanel
         return leftPathPanel;
     }
 
-    private JPanel createRightPathPanel()
+    private JPanel CreateRightPathPanel()
     {
         JPanel rightPathPanel = new JPanel();
         rightPathPanel.setLayout(new BoxLayout(rightPathPanel, BoxLayout.Y_AXIS));
