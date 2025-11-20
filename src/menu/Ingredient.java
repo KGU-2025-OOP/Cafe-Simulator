@@ -2,26 +2,9 @@ package menu;
 
 import java.util.Scanner;
 
-public class Ingredient {
-    public static final String ingredientPath = "resources/ingredient.txt";
-    String type;
-    String name;
-    int makingTime;
-    int maxWaitTime;
-    int price;
+public class Ingredient extends MenuItem {
 
     public Ingredient(Scanner scan) {
-        this.type = scan.next();
-        this.name = scan.next();
-        this.makingTime = scan.nextInt();
-        this.maxWaitTime = scan.nextInt();
-        this.price = scan.nextInt();
-    }
-
-    Ingredient matches(String type, String name) {
-        if (this.type.equals(type) && this.name.equals(name)) {
-            return this;
-        }
-        return null;
+        super(scan);
     }
 }
