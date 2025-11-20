@@ -26,7 +26,7 @@ public class BrewingSlot implements IGameObject {
         fillEmptySlots(false);
     }
 
-    /**
+    /*
      * Fill empty slots with items from the queue
      */
     private void fillEmptySlots(boolean randomize) {
@@ -52,7 +52,9 @@ public class BrewingSlot implements IGameObject {
             DropItem item = slots[i];
 
             // Skip if slot is empty
-            if (item == null) continue;
+            if (item == null) {
+                continue;
+            }
             // Update current item
             item.update(deltaTime);
 
@@ -74,7 +76,7 @@ public class BrewingSlot implements IGameObject {
         }
     }
 
-    /**
+    /*
      * Match input with items in slots and remove if matched
      */
     public boolean matchInput(String input) {
@@ -88,11 +90,13 @@ public class BrewingSlot implements IGameObject {
         return false;
     }
 
-    /**
+    /*
      * Resize slot width and reposition items proportionally
      */
     public void resize(int newWidth, int height, int xPos) {
-        if (newWidth <= 0) return;
+        if (newWidth <= 0) {
+            return;
+        }
 
         float scale = newWidth / (float) slotWidth; // Calculate scaling ratio
         slotWidth = newWidth;
@@ -102,6 +106,10 @@ public class BrewingSlot implements IGameObject {
         for (int i = 0; i < SLOT_COUNT; i++) {
             slotPos[i].x = (slotPos[i].x - this.xPos) * scale + xPos;
             slotPos[i].y = height;
+
+            if (slots[i] != null) {
+                slots[i].getPositionHandle().x = slotPos[i].x;
+            }
         }
     }
 

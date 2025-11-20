@@ -2,8 +2,12 @@ package test;
 
 import menu.Ingredient;
 import menu.Menu;
+import menu.Option;
 
 import java.util.ArrayList;
+
+import menu.*;
+
 
 public class MenuTest {
     ArrayList<Ingredient> ingredientList = new ArrayList<Ingredient>();
@@ -77,7 +81,7 @@ public class MenuTest {
         if (pizza != null && optionList.size() > 0) {
             Option firstOption = optionList.get(0);
             System.out.println("\nAdding option '" + firstOption.getName() + "' to pizza...");
-            pizza.addMenuItem(firstOption); // ?
+            pizza.addOptions(firstOption); // ?
             System.out.println("Pizza total items now: " + pizza.getItems().size());
         }
         

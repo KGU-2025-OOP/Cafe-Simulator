@@ -156,16 +156,23 @@ public class GameCanvas extends Canvas implements Runnable {
                             int newSlotCount = brewingSlots.size() + 1;
                             int newWidth = getWidth() / newSlotCount;
                             int height = getHeight();
-                            for (int i = 0; i < newSlotCount; ++i) {
-                                brewingSlots.add(new BrewingSlot(drops, newWidth, height, newWidth * (newSlotCount - 1)));
-                            }
+                            brewingSlots.add(new BrewingSlot(new ArrayList<DropItem>(), newWidth, height, newWidth * (newSlotCount - 1)));
+
                             for (int i = 0; i < newSlotCount - 1; ++i) {
                                 brewingSlots.get(i).resize(newWidth, height, i * newWidth);
                             }
 
 
                         } else if (ki.getKeyCode() == KeyEvent.VK_DOWN) {
-
+                            int newSlotCount = brewingSlots.size() - 1;
+                            if (newSlotCount > 0) {
+                                int newWidth = getWidth() / newSlotCount;
+                                int height = getHeight();
+                                brewingSlots.remove(newSlotCount);
+                                for (int i = 0; i < newSlotCount; ++i) {
+                                    brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+                                }
+                            }
                         }
 
                         break;

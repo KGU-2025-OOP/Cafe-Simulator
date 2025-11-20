@@ -4,11 +4,10 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Menu {
-    public static final String menuPath = "resources/menu.txt";
-    String name;
-    int ingredientCount;
-    ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
-    int price;
+    private String name;
+    private int ingredientCount;
+    private ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
+    private int price;
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
         this.name = scanner.next();
@@ -47,13 +46,9 @@ public class Menu {
     }
 
     // 하위 호환성을 위한 메서드
-    public void addOptions(Ingredient ingredient) {
-        this.items.add(ingredient);
+    public void addOptions(final Option option) {
+        this.items.add(option);
         this.ingredientCount = this.items.size();
-    }
-
-    public Menu getMenu() {
-        return this;
     }
 
     public String getName() {
@@ -70,13 +65,5 @@ public class Menu {
             totalCost += item.getPrice();
         }
         return totalCost + this.price;  // 메뉴 가격 + 재료 가격
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public String getName() {
-        return name;
     }
 }

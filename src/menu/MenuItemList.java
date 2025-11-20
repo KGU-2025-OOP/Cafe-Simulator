@@ -27,7 +27,7 @@ public abstract class MenuItemList<T extends MenuItem> {
 
     private void loadFromFile(Function<Scanner, T> itemCreator) {
         try {
-            java.io.File file = new java.io.File("resources/" + fileName);
+            java.io.File file = new java.io.File(fileName);
             Scanner filein = new Scanner(file, "UTF-8");
             while (filein.hasNext()) {
                 this.itemList.add(itemCreator.apply(filein));

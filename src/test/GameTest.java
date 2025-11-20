@@ -4,6 +4,8 @@ import core.GameCanvas;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.im.InputContext;
+import java.util.Locale;
 
 public class GameTest {
     public static void main(String[] args) {
@@ -22,6 +24,10 @@ public class GameTest {
                 gameCanvas.shouldRun = false;
             }
         });
+
+
+        InputContext ic = gameCanvas.getInputContext();
+        ic.selectInputMethod(Locale.KOREAN);
 
         Thread gameThread = new Thread(gameCanvas);
         gameThread.start();
