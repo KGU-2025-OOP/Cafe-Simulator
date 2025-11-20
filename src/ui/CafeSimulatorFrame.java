@@ -16,16 +16,14 @@ import javax.swing.InputMap;
 import javax.swing.ActionMap;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.ArrayList;
 import java.awt.Dimension;
 import java.util.Random;
 
 public class CafeSimulatorFrame extends JFrame {
-
-    private static final int PRICE_BEANS = 1000;
-    private static final int PRICE_MILK = 500;
-    private static final int PRICE_SYRUP = 300;
 
     private static final int MIN_CUSTOMERS = 10;
     private static final int MAX_EXTRA_CUSTOMERS = 15;
@@ -36,13 +34,12 @@ public class CafeSimulatorFrame extends JFrame {
     private JPanel mainPanel;
 
     private StartMenuPanel startPanel;
-    private OrderManagementPanel orderPanel;
     private NewGameSetupPanel newGamePanel;
     private GameplayPanel gameScreen;
     private GameplayAreaPanel gameSpacePanel;
     private SalesStatisticsPanel salesGraphPanel;
+    private MenuGuidePanel menuGuidePanel;
 
-    private int currentDaySales = 0;
     private int currentDayNumber;
     private Map<Integer, Integer> dailySalesHistory;
     private List<MenuItem> allMenuItems;
@@ -72,15 +69,10 @@ public class CafeSimulatorFrame extends JFrame {
 
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-
-        mainPanel.setPreferredSize(new Dimension(1280, 720));
+        mainPanel.setPreferredSize(ScreenConfig.FRAME_SIZE);
 
         startPanel = new StartMenuPanel(hasSaveFile);
         mainPanel.add(startPanel, "Start");
-
-        Map<String, Integer> recipeData = createRecipeData();
-        orderPanel = new OrderManagementPanel(recipeData);
-        mainPanel.add(orderPanel, "Order");
 
         newGamePanel = new NewGameSetupPanel();
         mainPanel.add(newGamePanel, "Nickname");
@@ -93,9 +85,14 @@ public class CafeSimulatorFrame extends JFrame {
 
         salesGraphPanel = new SalesStatisticsPanel(dailySalesHistory);
         mainPanel.add(salesGraphPanel, "Graph");
+        
+        menuGuidePanel = new MenuGuidePanel(allMenuItems, () -> {
+            cardLayout.show(mainPanel, "GameSpaceHub"); 
+        });
+        mainPanel.add(menuGuidePanel, "MenuGuide");
+
 
         addListenersToStartPanel(hasSaveFile);
-        addListenersToOrderPanel();
         addListenersToNewGamePanel();
         addListenersToGameScreen();
         addListenersToGameSpacePanel();
@@ -119,13 +116,21 @@ public class CafeSimulatorFrame extends JFrame {
             }
         });
 
-        bgmPanel.add(bgmButton, BorderLayout.SOUTH);
-
+        bgmPanel.add(bgmButton);
+        add(bgmPanel, BorderLayout.SOUTH);
+        
         pack();
         setLocationRelativeTo(null);
+        
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                System.out.println("현재 창 크기: " + getWidth() + " x " + getHeight());
+            }
+        });
     }
 
-    private void showPanel(String panelName) {
+    public void showPanel(String panelName) {
         cardLayout.show(mainPanel, panelName);
 
         if (panelName.equals("Order")) {
@@ -160,16 +165,6 @@ public class CafeSimulatorFrame extends JFrame {
         allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
     }
 
-    private Map<String, Integer> createRecipeData() {
-        Map<String, Integer> recipeData = new LinkedHashMap<>();
-
-        recipeData.put("원두", PRICE_BEANS);
-        recipeData.put("우유", PRICE_MILK);
-        recipeData.put("시럽", PRICE_SYRUP);
-
-        return recipeData;
-    }
-
     private void addListenersToStartPanel(boolean hasSaveFile) {
         if (hasSaveFile) {
             startPanel.getContinueButton().addActionListener(e -> {
@@ -184,23 +179,6 @@ public class CafeSimulatorFrame extends JFrame {
 
         startPanel.getExitButton().addActionListener(e -> {
             showExitConfirmation();
-        });
-    }
-
-    private void addListenersToOrderPanel() {
-        orderPanel.getConfirmButton().addActionListener(e -> {
-            int totalCost = orderPanel.getTotalCost();
-            currentDaySales = -totalCost;
-
-            System.out.println("발주가 확정되었습니다.");
-            gameScreen.setDayLabel(currentDayNumber + "일차");
-            showPanel("Game");
-            gameScreen.startGame();
-        });
-
-        orderPanel.getCancelButton().addActionListener(e -> {
-            System.out.println("발주가 취소되었습니다.");
-            showPanel("GameSpaceHub");
         });
     }
 
@@ -219,9 +197,10 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToGameSpacePanel() {
         gameSpacePanel.getBtn1().addActionListener(e -> {
-            System.out.println("운영시작 버튼 클릭됨 -> 발주 화면으로");
-            orderPanel.resetSpinners();
-            showPanel("Order");
+            System.out.println("운영시작 버튼 클릭됨 -> 게임 화면으로");
+            gameScreen.setDayLabel(currentDayNumber + "일차");
+            showPanel("Game");
+            gameScreen.startGame();
         });
 
         gameSpacePanel.getBtn2().addActionListener(e -> {
@@ -238,7 +217,6 @@ public class CafeSimulatorFrame extends JFrame {
     private void addListenersToGameScreen() {
         addExitBinding(startPanel);
         addExitBinding(newGamePanel);
-        addExitBinding(orderPanel);
         addPauseBinding(gameScreen);
         addExitBinding(gameSpacePanel);
         addExitBinding(salesGraphPanel);
@@ -296,11 +274,8 @@ public class CafeSimulatorFrame extends JFrame {
         PauseMenuDialog.PauseResult choice = pauseDialog.getResult();
 
         switch (choice) {
-            case CALENDAR:
-                showCalendarDialog();
-                break;
             case MENU:
-                showMenuDialog();
+                showPanel("MenuGuide");
                 break;
             case GIVE_UP:
                 int confirmGiveUp = JOptionPane.showConfirmDialog(
@@ -323,30 +298,8 @@ public class CafeSimulatorFrame extends JFrame {
         }
     }
 
-    private void showCalendarDialog() {
-        CalendarViewDialog calendarDialog = new CalendarViewDialog(this, currentDayNumber, dailySalesHistory);
-        bgmPanel.setVisible(false);
-        calendarDialog.setVisible(true);
-        bgmPanel.setVisible(true);
-        if (calendarDialog.shouldReopenPause()) {
-            showPauseDialog();
-        }
-    }
-
-    private void showMenuDialog() {
-        MenuDialog menuDialog = new MenuDialog(this, allMenuItems);
-        bgmPanel.setVisible(false);
-        menuDialog.setVisible(true);
-        bgmPanel.setVisible(true);
-        if (menuDialog.shouldReopenPause()) {
-            showPauseDialog();
-        }
-    }
-
     private void showMenuGuideFromHub() {
-        MenuDialog menuDialog = new MenuDialog(this, allMenuItems);
-        bgmPanel.setVisible(false);
-        menuDialog.setVisible(true);
+        showPanel("MenuGuide");
     }
 
     private void showDayEndDialog() {
@@ -359,22 +312,22 @@ public class CafeSimulatorFrame extends JFrame {
 
         int customerCount = MIN_CUSTOMERS + rand.nextInt(MAX_EXTRA_CUSTOMERS);
         int revenue = customerCount * (AVG_SPEND_PER_CUSTOMER + rand.nextInt(SPEND_VARIANCE));
-        int orderCost = (currentDaySales == 0) ? 0 : -currentDaySales;
 
-        DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue, orderCost);
+        int netProfit = revenue;
+
+        DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue);
 
         bgmPanel.setVisible(false);
         dayEndDialog.setVisible(true);
         bgmPanel.setVisible(true);
 
-        int netProfit = revenue - orderCost;
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
 
         System.out.println(dayNumber + "일차 순수익 " + netProfit + "원 저장됨.");
 
         currentDayNumber++;
-        currentDaySales = 0;
 
         showPanel("GameSpaceHub");
     }
+
 }

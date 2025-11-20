@@ -24,10 +24,10 @@ public class DaySummaryDialog extends JDialog {
 
     private static final Color COLOR_PROFIT_GREEN = new Color(0, 120, 0);
 
-    public DaySummaryDialog(JFrame parent, int dayNumber, int customerCount, int revenue, int orderCost) {
+    public DaySummaryDialog(JFrame parent, int dayNumber, int customerCount, int revenue) {
         super(parent, dayNumber + "일차 결산", true);
 
-        int netProfit = revenue - orderCost;
+        int netProfit = revenue;
 
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
@@ -47,6 +47,7 @@ public class DaySummaryDialog extends JDialog {
         gbc.gridy = 0;
         gbc.anchor = GridBagConstraints.EAST;
         
+        //-------------------
         JLabel customerLabel = new JLabel("방문 손님 수:");
         customerLabel.setFont(FONT_LABEL);
         reportPanel.add(customerLabel, gbc);
@@ -76,26 +77,14 @@ public class DaySummaryDialog extends JDialog {
         gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.EAST;
         
-        JLabel orderCostLabel = new JLabel("발주 비용 (지출):");
-        orderCostLabel.setFont(FONT_LABEL);
-        reportPanel.add(orderCostLabel, gbc);
-        
-        gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        
-        JLabel orderCostValue = new JLabel(String.format("%,d 원", Integer.valueOf(orderCost)));
-        orderCostValue.setFont(FONT_VALUE);
-        orderCostValue.setForeground(Color.RED.darker());
-        reportPanel.add(orderCostValue, gbc);
-        
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         reportPanel.add(new JSeparator(), gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 3;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
@@ -112,6 +101,7 @@ public class DaySummaryDialog extends JDialog {
         netProfitValue.setForeground(netProfit >= 0 ? COLOR_PROFIT_GREEN : Color.RED.darker());
         reportPanel.add(netProfitValue, gbc);
 
+        //---------------
         mainPanel.add(reportPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();

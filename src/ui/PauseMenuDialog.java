@@ -25,14 +25,12 @@ public class PauseMenuDialog extends JDialog {
 
     public enum PauseResult {
         CONTINUE,
-        CALENDAR,
         MENU,
         GIVE_UP,
         EXIT,
         NONE
     }
 
-    private JButton calendarButton;
     private JButton menuButton;
     private JButton continueButton;
     private JButton giveUpButton;
@@ -47,21 +45,17 @@ public class PauseMenuDialog extends JDialog {
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        this.calendarButton = new JButton(CALENDAR_BUTTON_TEXT);
         this.menuButton = new JButton(MENU_BUTTON_TEXT);
         this.continueButton = new JButton(CONTINUE_BUTTON_TEXT);
         this.giveUpButton = new JButton(GIVE_UP_BUTTON_TEXT);
         this.exitButton = new JButton(EXIT_BUTTON_TEXT);
 
-        this.setButtonProperties(this.calendarButton, false);
         this.setButtonProperties(this.menuButton, false);
         this.setButtonProperties(this.continueButton, false);
         this.setButtonProperties(this.giveUpButton, true);
         this.setButtonProperties(this.exitButton, true);
         this.addListeners();
 
-        mainPanel.add(this.calendarButton);
-        mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.menuButton);
         mainPanel.add(Box.createVerticalStrut(15));
         mainPanel.add(this.continueButton);
@@ -104,12 +98,7 @@ public class PauseMenuDialog extends JDialog {
         }
     }
 
-    private void addListeners() {
-        this.calendarButton.addActionListener(e -> {
-            this.result = PauseResult.CALENDAR;
-            this.dispose();
-        });
-        
+    private void addListeners() {        
         this.menuButton.addActionListener(e -> {
             this.result = PauseResult.MENU;
             this.dispose();

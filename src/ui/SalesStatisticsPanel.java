@@ -17,8 +17,7 @@ public class SalesStatisticsPanel extends JPanel {
 
     private Map<Integer, Integer> dailySalesHistory;
 
-    public SalesStatisticsPanel(Map<Integer, Integer> dailySalesHistory)
-    {
+    public SalesStatisticsPanel(Map<Integer, Integer> dailySalesHistory) {
         this.dailySalesHistory = dailySalesHistory;
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
@@ -34,7 +33,7 @@ public class SalesStatisticsPanel extends JPanel {
         backButtonWrapper.setOpaque(false);
         backButtonWrapper.add(backButton);
 
-        JLabel titleLabel = new JLabel("성장도 그래프 (일일 순수익)", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("성장도 그래프 (일일 수익)", JLabel.CENTER);
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 32));
         titleLabel.setForeground(new Color(60, 60, 60));
 
@@ -51,8 +50,7 @@ public class SalesStatisticsPanel extends JPanel {
         return backButton;
     }
 
-    private class GraphDisplayPanel extends JPanel 
-    {
+    private class GraphDisplayPanel extends JPanel {
         private static final int PADDING = 60;
         private static final int POINT_RADIUS = 5;
         private static final int CLICK_RADIUS = POINT_RADIUS + 3;
@@ -74,8 +72,7 @@ public class SalesStatisticsPanel extends JPanel {
         private List<Integer> salesData;
         private List<Point> graphPoints;
 
-        public GraphDisplayPanel(Map<Integer, Integer> historyData)
-        {
+        public GraphDisplayPanel(Map<Integer, Integer> historyData) {
             this.historyData = historyData;
             salesData = new ArrayList<>();
             graphPoints = new ArrayList<>();
@@ -101,7 +98,7 @@ public class SalesStatisticsPanel extends JPanel {
                     int day = i + 1;
                     int sales = salesData.get(i);
 
-                    String message = String.format("%d일차 순수익: %,d 원", day, sales);
+                    String message = String.format("%d일차 수익: %,d 원", day, sales);
 
                     JOptionPane.showMessageDialog(this, message, "일일 매출 정보", JOptionPane.INFORMATION_MESSAGE);
 
