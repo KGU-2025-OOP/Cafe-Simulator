@@ -50,7 +50,7 @@ public class Order {
                 }
             }
 
-            sb.append("\n  가격 : ").append(price).append("원\n");
+            sb.append("\n  가격: ").append(price).append("원\n");
             return sb.toString();
         }
     }
