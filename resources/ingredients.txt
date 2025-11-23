@@ -1,27 +1,27 @@
-커피 10 25 0
-디카페인커피 12 25 0
-물 2 20 0
-우유 5 25 0
-바닐라시럽 3 15 0
-카라멜시럽 3 15 0
-초콜릿시럽 4 15 0
-화이트초콜릿시럽 4 15 0
-헤이즐넛시럽 3 15 0
-생크림 6 20 0
-설탕 2 25 0
-아이스크림 8 20 0
-민트시럽 3 15 0
-연유 4 20 0
-오트밀크 5 25 0
-고구마 10 30 0
-녹차 8 25 0
-얼음 3 20 0
-자몽시럽 4 15 0
-레몬시럽 4 15 0
-청포도시럽 4 15 0
-탄산수 3 20 0
-유자 6 25 0
-자스민 7 25 0
-얼그레이 7 25 0
-꿀 2 20 0
-딸기 8 25 0
+커피 10 25 0 coffee.png
+디카페인커피 12 25 0 decaffeinated_coffee.png
+물 2 20 0 water.png
+우유 5 25 0 milk.png
+바닐라시럽 3 15 0 syrup.png
+카라멜시럽 3 15 0 syrup.png
+초콜릿시럽 4 15 0 chocolate_syrup.png
+화이트초콜릿시럽 4 15 0 whitechocolate_syrup.png
+헤이즐넛시럽 3 15 0 syrup.png
+생크림 6 20 0 whipped_cream.png
+설탕 2 25 0 sugar.png
+아이스크림 8 20 0 icecream.png
+민트시럽 3 15 0 mint_syrup.png
+연유 4 20 0 condensed_milk.png
+오트밀크 5 25 0 oatmeal.png
+고구마 10 30 0 sweet_potato.png
+녹차 8 25 0 green_tea.png
+얼음 3 20 0 ice.png
+자몽시럽 4 15 0 grapefruit_syrup.png
+레몬시럽 4 15 0 lemon_syrup.png
+청포도시럽 4 15 0 green_grape_syrup.png
+탄산수 3 20 0 sparkling_water.png
+유자 6 25 0 Citron.png
+자스민 7 25 0 jasmine.png
+얼그레이 7 25 0 earl_grey.png
+꿀 2 20 0 honey.png
+딸기 8 25 0 strawberry.png
