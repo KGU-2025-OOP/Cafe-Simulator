@@ -13,6 +13,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.InputMap;
@@ -35,6 +37,9 @@ public class CafeSimulatorFrame extends JFrame {
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
+    // 배경 이미지
+    private Image mainBackgroundImage;
+
     private StartMenuPanel startPanel;
     private NewGameSetupPanel newGamePanel;
     private GameplayPanel gameScreen;
@@ -54,11 +59,10 @@ public class CafeSimulatorFrame extends JFrame {
 
     private JButton exitButton;
     private JButton giveUpButton;
-    private JButton menuButton; // 달력 대신 메뉴 버튼
+    private JButton menuButton;
     private JToggleButton bgmButton;
 
     private String currentPanelName = "Start";
-    // [중요] 뒤로가기를 위해 이전 화면의 이름을 저장하는 변수
     private String previousPanelName = "GameSpaceHub";
 
     public static void mymain(String[] args) {
@@ -74,6 +78,9 @@ public class CafeSimulatorFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
+        // [수정] ImageManager를 통해 배경 이미지 로드
+        mainBackgroundImage = ImageManager.getImage(ImageManager.IMG_MAIN_BG);
+
         setLayout(new BorderLayout());
 
         currentDayNumber = 1;
@@ -83,7 +90,18 @@ public class CafeSimulatorFrame extends JFrame {
         initializeMenuItems();
 
         cardLayout = new CardLayout();
-        mainPanel = new JPanel(cardLayout);
+
+        // [수정] 배경 그리기 로직 포함된 익명 클래스
+        mainPanel = new JPanel(cardLayout) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (mainBackgroundImage != null) {
+                    g.drawImage(mainBackgroundImage, 0, 0, getWidth(), getHeight(), this);
+                }
+            }
+        };
+
         mainPanel.setPreferredSize(ScreenConfig.FRAME_SIZE);
 
         startPanel = new StartMenuPanel(hasSaveFile);
@@ -101,8 +119,6 @@ public class CafeSimulatorFrame extends JFrame {
         salesGraphPanel = new SalesStatisticsPanel(dailySalesHistory);
         mainPanel.add(salesGraphPanel, "Graph");
 
-        // [수정] 여기가 핵심입니다!
-        // 뒤로가기 동작을 handleMenuBack 메서드로 연결했습니다.
         menuGuidePanel = new MenuGuidePanel(allMenuItems, this::handleMenuBack);
         mainPanel.add(menuGuidePanel, "MenuGuide");
 
@@ -153,7 +169,6 @@ public class CafeSimulatorFrame extends JFrame {
 
         bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        // [수정] 달력 버튼 제거하고 메뉴도감 버튼 추가
         menuButton = new JButton("메뉴도감");
         menuButton.setFont(btnFont);
         menuButton.addActionListener(e -> openMenuGuide());
@@ -177,29 +192,22 @@ public class CafeSimulatorFrame extends JFrame {
         bottomBarPanel.add(bottomRightPanel, BorderLayout.EAST);
     }
 
-    // [중요] 메뉴 도감 열기 버튼 로직
     private void openMenuGuide() {
-        // 1. 현재 화면이 어디인지 기억해둡니다. (Game 또는 GameSpaceHub)
         previousPanelName = currentPanelName;
 
-        // 2. 만약 게임 중이었다면 게임을 멈춥니다.
         if ("Game".equals(currentPanelName)) {
             gameScreen.stopGame();
-            System.out.println("게임 중 메뉴 열기 -> 일시정지");
+            System.out.println("게임 중 메뉴 열기 -> 게임 중지");
         }
 
-        // 3. 메뉴 도감 화면으로 이동
         showPanel("MenuGuide");
     }
 
-    // [중요] 메뉴 도감에서 뒤로가기 눌렀을 때 실행될 로직
     private void handleMenuBack() {
-        // 1. 아까 기억해둔 화면으로 돌아갑니다.
         showPanel(previousPanelName);
 
-        // 2. 만약 돌아온 곳이 게임 화면이라면, 멈췄던 게임을 다시 시작합니다.
         if ("Game".equals(previousPanelName)) {
-            System.out.println("메뉴 닫힘 -> 게임 재개");
+            System.out.println("메뉴 닫힘 -> 게임 재시작");
             gameScreen.startGame();
         }
     }
@@ -274,7 +282,6 @@ public class CafeSimulatorFrame extends JFrame {
             gameScreen.startGame();
         });
 
-        // 허브화면의 버튼도 동일한 openMenuGuide 로직 사용 (여기선 게임 정지 로직이 안 돌고 화면만 바뀜)
         gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
 
         gameSpacePanel.getBtn3().addActionListener(e -> showPanel("Graph"));
@@ -331,6 +338,7 @@ public class CafeSimulatorFrame extends JFrame {
 
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
             System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
+
             currentDayNumber = 1;
             dailySalesHistory.clear();
             totalAccumulatedRevenue = 0;
@@ -348,6 +356,7 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void showDayEndDialog() {
         gameScreen.stopGame();
+
         int dayNumber = currentDayNumber;
 
         System.out.println(dayNumber + "일차 장사를 마감합니다.");
