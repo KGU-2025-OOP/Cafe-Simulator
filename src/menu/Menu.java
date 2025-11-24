@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Menu {
+    private int isCoffee;
     private String name;
     private int ingredientCount;
     private ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
@@ -12,6 +13,7 @@ public class Menu {
     protected java.io.File img; //이미지 파일
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
+        this.isCoffee = Integer.parseInt(scanner.next());
         this.name = scanner.next();
         this.ingredientCount = Integer.parseInt(scanner.next());
         this.items = new ArrayList<MenuItem>();
@@ -61,6 +63,10 @@ public class Menu {
     public void addOptions(final Option option) {
         this.items.add(option);
         this.ingredientCount = this.items.size();
+    }
+
+    public int getIsCoffee() {
+        return isCoffee;
     }
 
     public String getName() {

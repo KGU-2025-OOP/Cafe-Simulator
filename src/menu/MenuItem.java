@@ -7,16 +7,12 @@ import java.util.Scanner;
  */
 public abstract class MenuItem {
     protected String name;
-    protected int makingTime;
-    protected int maxWaitTime;
     protected int price;
     protected String imgPath; //이미지 경로
     protected java.io.File img; //이미지 파일
 
     public MenuItem(Scanner scan) {
         this.name = scan.next();
-        this.makingTime = scan.nextInt();
-        this.maxWaitTime = scan.nextInt();
         this.price = scan.nextInt();
         if (scan.hasNext()) {
             this.imgPath = scan.next();
@@ -40,14 +36,6 @@ public abstract class MenuItem {
     // Getter 메서드들
     public String getName() {
         return name;
-    }
-
-    public int getMakingTime() {
-        return makingTime;
-    }
-
-    public int getMaxWaitTime() {
-        return maxWaitTime;
     }
 
     public int getPrice() {
