@@ -21,8 +21,8 @@ public class ImageManager {
     // 2. 버튼 이미지 (실제 위치: resources/image/button/...)
     // 코드 경로: /image/button/...
     public static final String BTN_CONTINUE = "/image/button/play_button.png";
-    public static final String BTN_NEW_GAME = "/image/button/play_button.png";
-    public static final String BTN_START    = "/image/button/play_button.png";
+    public static final String BTN_NEW_GAME = "/image/button/start_button.png";
+    public static final String BTN_START    = "/image/button/start_button.png";
     public static final String BTN_EXIT     = "/image/button/exit_button.png";
 
 
