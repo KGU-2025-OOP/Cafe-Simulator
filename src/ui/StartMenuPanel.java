@@ -13,15 +13,16 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D; // 추가
-import java.awt.BasicStroke; // 추가
-import java.awt.RenderingHints; // 추가
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
 import java.awt.Image;
 import java.awt.Cursor;
 import java.awt.GridBagLayout;
 
 public class StartMenuPanel extends JPanel {
 
+    // [복구] 텍스트 상수 다시 추가
     private static final String EXIT_BUTTON_TEXT = "종료하기";
 
     private JButton continueButton;
@@ -52,22 +53,17 @@ public class StartMenuPanel extends JPanel {
         JPanel outerPanel = new JPanel(new GridBagLayout());
         outerPanel.setOpaque(false);
 
-        // [수정] 불투명 박스 (배경색 + 검은 테두리)
         JPanel menuBox = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
-                // Graphics2D로 형변환 (더 나은 그래픽 처리를 위해)
                 Graphics2D g2 = (Graphics2D) g;
-                // 계단 현상 방지 (부드럽게)
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 1. 반투명 배경 그리기
                 g2.setColor(new Color(255, 255, 255, 180));
                 g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
 
-                // 2. [추가] 검은색 테두리 그리기
                 g2.setColor(Color.BLACK);
-                g2.setStroke(new BasicStroke(2f)); // 선 두께 2px
+                g2.setStroke(new BasicStroke(2f));
                 g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
 
                 super.paintComponent(g);
@@ -78,7 +74,7 @@ public class StartMenuPanel extends JPanel {
         menuBox.setOpaque(false);
         menuBox.setBorder(new EmptyBorder(40, 60, 40, 60));
 
-        // 기존 버튼 로직 동일
+        // [복구] 종료 버튼은 텍스트로 생성하고 스타일 false 적용
         exitButton = new JButton(EXIT_BUTTON_TEXT);
         setCenterButtonProperties(exitButton, false);
 
@@ -111,6 +107,7 @@ public class StartMenuPanel extends JPanel {
     }
 
     private void setCenterButtonProperties(JComponent component, boolean isImageButton) {
+        // 이미지 버튼은 크게, 텍스트 버튼은 작게
         Dimension centerButtonSize = new Dimension(250, 70);
 
         if (!isImageButton) {
@@ -126,6 +123,7 @@ public class StartMenuPanel extends JPanel {
             JButton button = (JButton) component;
 
             if (isImageButton) {
+                // 이미지 버튼 스타일
                 button.setText("");
                 button.setContentAreaFilled(false);
                 button.setBorderPainted(false);
@@ -133,6 +131,7 @@ public class StartMenuPanel extends JPanel {
                 button.setOpaque(false);
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             } else {
+                // 텍스트 버튼 스타일 (기존)
                 Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
                 Color buttonColor = new Color(59, 89, 182);
                 Color buttonTextColor = Color.WHITE;
@@ -147,7 +146,15 @@ public class StartMenuPanel extends JPanel {
         }
     }
 
-    public JButton getContinueButton() { return continueButton; }
-    public JButton getNewGameButton() { return newGameButton; }
-    public JButton getExitButton() { return exitButton; }
+    public JButton getContinueButton() {
+        return continueButton;
+    }
+
+    public JButton getNewGameButton() {
+        return newGameButton;
+    }
+
+    public JButton getExitButton() {
+        return exitButton;
+    }
 }

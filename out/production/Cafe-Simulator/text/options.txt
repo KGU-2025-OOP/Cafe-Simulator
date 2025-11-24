@@ -1,0 +1,20 @@
+샷추가 500 coffee.png
+휘핑추가 400 whipped_cream.png
+시럽추가 300 syrup.png
+얼음조절 0 ice.png
+디카페인변경 300 decaffeinated_coffee.png
+라지사이즈 700
+오트밀크변경 500 oatmeal.png 
+두유변경 400 soymilk.png
+무얼음 0
+진하게 0
+연하게 0
+차갑게 0
+따뜻하게 0
+토핑추가 400
+설탕추가 100 sugar.png
+시나몬추가 200 cinnamon.png
+생크림추가 500 whipped_cream.png
+컵홀더추가 100 
+포장하기 200
+테이크아웃 100
