@@ -8,8 +8,11 @@ import java.awt.CardLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JToggleButton;
+import javax.swing.JButton;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.InputMap;
@@ -20,7 +23,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.ArrayList;
-import java.awt.Dimension;
 import java.util.Random;
 
 public class CafeSimulatorFrame extends JFrame {
@@ -44,8 +46,20 @@ public class CafeSimulatorFrame extends JFrame {
     private Map<Integer, Integer> dailySalesHistory;
     private List<MenuItem> allMenuItems;
 
-    private JPanel bgmPanel;
+    private long totalAccumulatedRevenue = 0;
+
+    private JPanel bottomBarPanel;
+    private JPanel bottomLeftPanel;
+    private JPanel bottomRightPanel;
+
+    private JButton exitButton;
+    private JButton giveUpButton;
+    private JButton menuButton; // 달력 대신 메뉴 버튼
     private JToggleButton bgmButton;
+
+    private String currentPanelName = "Start";
+    // [중요] 뒤로가기를 위해 이전 화면의 이름을 저장하는 변수
+    private String previousPanelName = "GameSpaceHub";
 
     public static void mymain(String[] args) {
         final boolean MOCK_SAVE_FILE_EXISTS = false;
@@ -64,6 +78,7 @@ public class CafeSimulatorFrame extends JFrame {
 
         currentDayNumber = 1;
         dailySalesHistory = new LinkedHashMap<>();
+        totalAccumulatedRevenue = 0;
 
         initializeMenuItems();
 
@@ -85,12 +100,11 @@ public class CafeSimulatorFrame extends JFrame {
 
         salesGraphPanel = new SalesStatisticsPanel(dailySalesHistory);
         mainPanel.add(salesGraphPanel, "Graph");
-        
-        menuGuidePanel = new MenuGuidePanel(allMenuItems, () -> {
-            cardLayout.show(mainPanel, "GameSpaceHub"); 
-        });
-        mainPanel.add(menuGuidePanel, "MenuGuide");
 
+        // [수정] 여기가 핵심입니다!
+        // 뒤로가기 동작을 handleMenuBack 메서드로 연결했습니다.
+        menuGuidePanel = new MenuGuidePanel(allMenuItems, this::handleMenuBack);
+        mainPanel.add(menuGuidePanel, "MenuGuide");
 
         addListenersToStartPanel(hasSaveFile);
         addListenersToNewGamePanel();
@@ -103,47 +117,108 @@ public class CafeSimulatorFrame extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        bgmPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        createBottomBar();
+        add(bottomBarPanel, BorderLayout.SOUTH);
+
+        pack();
+        setLocationRelativeTo(null);
+
+        showPanel("Start");
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+            }
+        });
+    }
+
+    private void createBottomBar() {
+        bottomBarPanel = new JPanel(new BorderLayout());
+
+        bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        Font btnFont = new Font("Malgun Gothic", Font.BOLD, 14);
+
+        exitButton = new JButton("종료하기");
+        exitButton.setFont(btnFont);
+        exitButton.setForeground(Color.RED);
+        exitButton.addActionListener(e -> showExitConfirmation());
+
+        giveUpButton = new JButton("포기하기");
+        giveUpButton.setFont(btnFont);
+        giveUpButton.addActionListener(e -> showGiveUpConfirmation());
+
+        bottomLeftPanel.add(exitButton);
+        bottomLeftPanel.add(giveUpButton);
+
+        bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        // [수정] 달력 버튼 제거하고 메뉴도감 버튼 추가
+        menuButton = new JButton("메뉴도감");
+        menuButton.setFont(btnFont);
+        menuButton.addActionListener(e -> openMenuGuide());
+
         bgmButton = new JToggleButton("BGM ON", true);
+        bgmButton.setFont(btnFont);
         bgmButton.addActionListener(e -> {
             if (bgmButton.isSelected()) {
                 bgmButton.setText("BGM ON");
                 System.out.println("BGM 켜기");
-            }
-            else {
+            } else {
                 bgmButton.setText("BGM OFF");
                 System.out.println("BGM 끄기");
             }
         });
 
-        bgmPanel.add(bgmButton);
-        add(bgmPanel, BorderLayout.SOUTH);
-        
-        pack();
-        setLocationRelativeTo(null);
-        
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                System.out.println("현재 창 크기: " + getWidth() + " x " + getHeight());
-            }
-        });
+        bottomRightPanel.add(menuButton);
+        bottomRightPanel.add(bgmButton);
+
+        bottomBarPanel.add(bottomLeftPanel, BorderLayout.WEST);
+        bottomBarPanel.add(bottomRightPanel, BorderLayout.EAST);
+    }
+
+    // [중요] 메뉴 도감 열기 버튼 로직
+    private void openMenuGuide() {
+        // 1. 현재 화면이 어디인지 기억해둡니다. (Game 또는 GameSpaceHub)
+        previousPanelName = currentPanelName;
+
+        // 2. 만약 게임 중이었다면 게임을 멈춥니다.
+        if ("Game".equals(currentPanelName)) {
+            gameScreen.stopGame();
+            System.out.println("게임 중 메뉴 열기 -> 일시정지");
+        }
+
+        // 3. 메뉴 도감 화면으로 이동
+        showPanel("MenuGuide");
+    }
+
+    // [중요] 메뉴 도감에서 뒤로가기 눌렀을 때 실행될 로직
+    private void handleMenuBack() {
+        // 1. 아까 기억해둔 화면으로 돌아갑니다.
+        showPanel(previousPanelName);
+
+        // 2. 만약 돌아온 곳이 게임 화면이라면, 멈췄던 게임을 다시 시작합니다.
+        if ("Game".equals(previousPanelName)) {
+            System.out.println("메뉴 닫힘 -> 게임 재개");
+            gameScreen.startGame();
+        }
     }
 
     public void showPanel(String panelName) {
+        currentPanelName = panelName;
         cardLayout.show(mainPanel, panelName);
 
         if (panelName.equals("Order")) {
-            bgmPanel.setVisible(false);
-        }
-        else {
-            bgmPanel.setVisible(true);
+            bottomBarPanel.setVisible(false);
+        } else if (panelName.equals("Start") || panelName.equals("Nickname")) {
+            bottomBarPanel.setVisible(false);
+        } else {
+            bottomBarPanel.setVisible(true);
         }
     }
 
     private void initializeMenuItems() {
         allMenuItems = new ArrayList<>();
-
         allMenuItems.add(new MenuItem("아메리카노", MenuItem.MenuType.Beverage, true));
         allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Beverage, true));
         allMenuItems.add(new MenuItem("바닐라 라떼", MenuItem.MenuType.Beverage, false));
@@ -154,7 +229,6 @@ public class CafeSimulatorFrame extends JFrame {
         allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
         allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
         allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-
         allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
@@ -171,12 +245,10 @@ public class CafeSimulatorFrame extends JFrame {
                 showPanel("GameSpaceHub");
             });
         }
-
         startPanel.getNewGameButton().addActionListener(e -> {
             System.out.println("시작/새로하기 버튼 클릭됨");
             showPanel("Nickname");
         });
-
         startPanel.getExitButton().addActionListener(e -> {
             showExitConfirmation();
         });
@@ -185,7 +257,6 @@ public class CafeSimulatorFrame extends JFrame {
     private void addListenersToNewGamePanel() {
         newGamePanel.getStartButton().addActionListener(e -> {
             String cafeName = newGamePanel.getNameField().getText().trim();
-
             if (cafeName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "카페 이름을 입력해주세요.", "입력 오류", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -203,27 +274,18 @@ public class CafeSimulatorFrame extends JFrame {
             gameScreen.startGame();
         });
 
-        gameSpacePanel.getBtn2().addActionListener(e -> {
-            System.out.println("메뉴도감 버튼 클릭됨");
-            showMenuGuideFromHub();
-        });
+        // 허브화면의 버튼도 동일한 openMenuGuide 로직 사용 (여기선 게임 정지 로직이 안 돌고 화면만 바뀜)
+        gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
 
-        gameSpacePanel.getBtn3().addActionListener(e -> {
-            System.out.println("성장도그래프 버튼 클릭됨");
-            showPanel("Graph");
-        });
+        gameSpacePanel.getBtn3().addActionListener(e -> showPanel("Graph"));
     }
 
     private void addListenersToGameScreen() {
         addExitBinding(startPanel);
         addExitBinding(newGamePanel);
-        addPauseBinding(gameScreen);
         addExitBinding(gameSpacePanel);
         addExitBinding(salesGraphPanel);
-
-        gameScreen.getEndDayButton().addActionListener(e -> {
-            showDayEndDialog();
-        });
+        gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog());
     }
 
     private void addExitBinding(JPanel panel) {
@@ -231,75 +293,57 @@ public class CafeSimulatorFrame extends JFrame {
         InputMap inputMap = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = panel.getActionMap();
         KeyStroke escKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-
         inputMap.put(escKeyStroke, actionKey);
         actionMap.put(actionKey, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 showExitConfirmation();
-            }
-        });
-    }
-
-    private void addPauseBinding(JPanel panel) {
-        String actionKey = "showPauseMenu";
-        InputMap inputMap = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = panel.getActionMap();
-        KeyStroke escKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-
-        inputMap.put(escKeyStroke, actionKey);
-        actionMap.put(actionKey, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("ESC 키 감지됨! (일시정지)");
-                showPauseDialog();
             }
         });
     }
 
     private void showExitConfirmation() {
+        if ("Game".equals(currentPanelName)) {
+            gameScreen.stopGame();
+        }
+
         int confirmExit = JOptionPane.showConfirmDialog(
                 this, "게임을 종료하시겠습니까?", "종료 확인", JOptionPane.YES_NO_OPTION
         );
-
         if (confirmExit == JOptionPane.YES_OPTION) {
-            gameScreen.stopGame();
             System.exit(0);
+        } else {
+            if ("Game".equals(currentPanelName)) {
+                gameScreen.startGame();
+            }
         }
     }
 
-    private void showPauseDialog() {
-        PauseMenuDialog pauseDialog = new PauseMenuDialog(this);
-        pauseDialog.setVisible(true);
-        PauseMenuDialog.PauseResult choice = pauseDialog.getResult();
+    private void showGiveUpConfirmation() {
+        if ("Game".equals(currentPanelName)) {
+            gameScreen.stopGame();
+        }
 
-        switch (choice) {
-            case MENU:
-                showPanel("MenuGuide");
-                break;
-            case GIVE_UP:
-                int confirmGiveUp = JOptionPane.showConfirmDialog(
-                        this, "정말 포기하고 처음으로 돌아가시겠습니까?", "포기 확인", JOptionPane.YES_NO_OPTION
-                );
-                if (confirmGiveUp == JOptionPane.YES_OPTION) {
-                    gameScreen.stopGame();
-                    System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
-                    currentDayNumber = 1;
-                    dailySalesHistory.clear();
-                    showPanel("Start");
-                }
-                break;
-            case EXIT:
-                gameScreen.stopGame();
-                showExitConfirmation();
-                break;
-            default:
-                break;
+        int confirmGiveUp = JOptionPane.showConfirmDialog(
+                this, "정말 포기하고 처음으로 돌아가시겠습니까?\n(현재 진행 상황이 모두 초기화됩니다)",
+                "포기 확인", JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmGiveUp == JOptionPane.YES_OPTION) {
+            System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
+            currentDayNumber = 1;
+            dailySalesHistory.clear();
+            totalAccumulatedRevenue = 0;
+            showPanel("Start");
+        } else {
+            if ("Game".equals(currentPanelName)) {
+                gameScreen.startGame();
+            }
         }
     }
 
     private void showMenuGuideFromHub() {
-        showPanel("MenuGuide");
+        openMenuGuide();
     }
 
     private void showDayEndDialog() {
@@ -309,17 +353,18 @@ public class CafeSimulatorFrame extends JFrame {
         System.out.println(dayNumber + "일차 장사를 마감합니다.");
 
         Random rand = new Random();
-
         int customerCount = MIN_CUSTOMERS + rand.nextInt(MAX_EXTRA_CUSTOMERS);
         int revenue = customerCount * (AVG_SPEND_PER_CUSTOMER + rand.nextInt(SPEND_VARIANCE));
 
+        totalAccumulatedRevenue += revenue;
+
         int netProfit = revenue;
 
-        DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue);
+        DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue, totalAccumulatedRevenue);
 
-        bgmPanel.setVisible(false);
+        bottomBarPanel.setVisible(false);
         dayEndDialog.setVisible(true);
-        bgmPanel.setVisible(true);
+        bottomBarPanel.setVisible(true);
 
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
 
@@ -329,5 +374,4 @@ public class CafeSimulatorFrame extends JFrame {
 
         showPanel("GameSpaceHub");
     }
-
 }

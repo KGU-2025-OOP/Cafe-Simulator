@@ -16,7 +16,7 @@ import core.GameCanvas;
 public class GameplayPanel extends JPanel {
 
     private JLabel dayLabel;
-    private JLabel timeLabel;
+    // private JLabel timeLabel; // [삭제됨] 타이머 라벨
     private JButton endDayButton;
 
     private GameCanvas gameCanvas;
@@ -41,15 +41,14 @@ public class GameplayPanel extends JPanel {
         dayLabel = new JLabel("1일차");
         dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        timeLabel = new JLabel("마감까지 00:30");
-        timeLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        // timeLabel 코드 제거
 
         endDayButton = new JButton("하루 마감 (임시)");
         endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
 
         topBarPanel.add(dayLabel, BorderLayout.WEST);
         topBarPanel.add(endDayButton, BorderLayout.CENTER);
-        topBarPanel.add(timeLabel, BorderLayout.EAST);
+        // topBarPanel.add(timeLabel, BorderLayout.EAST); // 제거됨
 
         return topBarPanel;
     }
@@ -97,7 +96,7 @@ public class GameplayPanel extends JPanel {
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
 
         gameCanvas = new GameCanvas(
-                ScreenConfig.WIDTH  - 200,
+                ScreenConfig.WIDTH - 200,
                 ScreenConfig.HEIGHT - 200
         );
         mainPanel.add(gameCanvas, BorderLayout.CENTER);
