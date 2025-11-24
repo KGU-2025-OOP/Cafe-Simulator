@@ -16,6 +16,7 @@ public class MenuGuidePanel extends JPanel {
 
         setLayout(new BorderLayout());
         setBackground(new Color(210, 230, 255));
+        // ScreenConfig가 없다면 아래 줄을 주석 처리하고 setPreferredSize(new Dimension(1280, 720)); 으로 바꾸세요.
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
         // ======= 상단 영역 =======
@@ -40,13 +41,14 @@ public class MenuGuidePanel extends JPanel {
         JPanel tabButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         tabButtonPanel.setOpaque(false);
 
-        JButton drinkButton = new JButton("음료");
-        JButton bakeryButton = new JButton("베이커리");
-        drinkButton.setFont(new Font("SansSerif", Font.BOLD, 18));
-        bakeryButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JButton coffeeButton = new JButton("커피");
+        JButton nonCoffeeButton = new JButton("논커피");
 
-        tabButtonPanel.add(drinkButton);
-        tabButtonPanel.add(bakeryButton);
+        coffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        nonCoffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+
+        tabButtonPanel.add(coffeeButton);
+        tabButtonPanel.add(nonCoffeeButton);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
@@ -54,7 +56,6 @@ public class MenuGuidePanel extends JPanel {
         topPanel.add(titlePanel, BorderLayout.CENTER);
         topPanel.add(tabButtonPanel, BorderLayout.EAST);
         topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
-        
 
         add(topPanel, BorderLayout.NORTH);
 
@@ -64,40 +65,60 @@ public class MenuGuidePanel extends JPanel {
         contentContainer.setBorder(new EmptyBorder(10, 10, 10, 10));
         add(contentContainer, BorderLayout.CENTER);
 
-        // 메뉴 분리
-        List<MenuItem> beverages = allMenuItems.stream()
-                .filter(m -> m.getType() == MenuItem.MenuType.Beverage)
+        List<MenuItem> coffeeList = allMenuItems.stream()
+                .filter(m -> m.getType() == MenuItem.MenuType.Coffee)
                 .collect(Collectors.toList());
 
-        List<MenuItem> desserts = allMenuItems.stream()
-                .filter(m -> m.getType() == MenuItem.MenuType.Dessert)
+        List<MenuItem> nonCoffeeList = allMenuItems.stream()
+                .filter(m -> m.getType() == MenuItem.MenuType.NonCoffee)
                 .collect(Collectors.toList());
 
-        JPanel drinkPanel = createCategoryPanel(beverages);
-        JPanel dessertPanel = createCategoryPanel(desserts);
+        JPanel coffeePanel = createCategoryPanel(coffeeList);
+        JPanel nonCoffeePanel = createCategoryPanel(nonCoffeeList);
 
-        showContentPanel(drinkPanel);
+        // 기본 화면
+        showContentPanel(coffeePanel);
 
-        drinkButton.addActionListener(e -> showContentPanel(drinkPanel));
-        bakeryButton.addActionListener(e -> showContentPanel(dessertPanel));
+        // 탭 전환 리스너
+        coffeeButton.addActionListener(e -> showContentPanel(coffeePanel));
+        nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
+    // 탭 전환 시 패널 교체 및 스크롤 초기화
     private void showContentPanel(JPanel panel) {
         contentContainer.removeAll();
         contentContainer.add(panel, BorderLayout.CENTER);
+
+        // 스크롤 위치 초기화 (맨 왼쪽/맨 위로)
+        for (Component c : panel.getComponents()) {
+            if (c instanceof JScrollPane) {
+                JScrollPane sp = (JScrollPane) c;
+                SwingUtilities.invokeLater(() -> {
+                    sp.getHorizontalScrollBar().setValue(0);
+                    sp.getVerticalScrollBar().setValue(0);
+                });
+                break;
+            }
+        }
+
         contentContainer.revalidate();
         contentContainer.repaint();
     }
 
     private JPanel createCategoryPanel(List<MenuItem> items) {
-
         JPanel inner = new JPanel();
         inner.setOpaque(false);
         inner.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 25));
         inner.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        for (MenuItem item : items) {
-            inner.add(createMenuCardPanel(item));
+        if (items.isEmpty()) {
+            JLabel emptyLabel = new JLabel("해당 카테고리의 메뉴가 없습니다.");
+            emptyLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            inner.add(emptyLabel);
+        } else {
+            for (MenuItem item : items) {
+                inner.add(createMenuCardPanel(item));
+            }
         }
 
         JScrollPane scrollPane = new JScrollPane(
@@ -107,6 +128,8 @@ public class MenuGuidePanel extends JPanel {
         );
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setBackground(new Color(210, 230, 255));
@@ -116,14 +139,14 @@ public class MenuGuidePanel extends JPanel {
     }
 
     private JPanel createMenuCardPanel(MenuItem item) {
-
         boolean isUnlocked = item.isUnlocked();
         String name = item.getName();
+        int price = item.getPrice(); // 가격 정보 가져오기
 
         JPanel card = new JPanel(new BorderLayout());
 
-        int frameW = ScreenConfig.WIDTH;
-        int frameH = ScreenConfig.HEIGHT;
+        int frameW = 1280; // ScreenConfig.WIDTH 대신 직접 숫자 사용 (오류 방지용)
+        int frameH = 720;
 
         int cardW = (int) (frameW * 0.23);
         int cardH = (int) (frameH * 0.72);
@@ -135,25 +158,37 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // ===== 이름 영역 =====
+        // ===== 상단 헤더 (이름 + 가격) =====
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1)); // 2줄 (이름, 가격)
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5)); // 전체 여백
+
+        // 1. 이름 라벨
         JLabel nameLabel = new JLabel(isUnlocked ? name : "???", JLabel.CENTER);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
-        nameLabel.setBorder(new EmptyBorder(12, 5, 8, 5));
 
-        // ===== 이미지/회색 칸 영역 =====
+        // 2. 가격 라벨 (작게 표시)
+        String priceText = isUnlocked ? String.format("%,d원", price) : "-";
+        JLabel priceLabel = new JLabel(priceText, JLabel.CENTER);
+        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // 이름보다 작게
+        priceLabel.setForeground(Color.DARK_GRAY); // 회색으로
+
+        headerPanel.add(nameLabel);
+        headerPanel.add(priceLabel);
+
+        // ===== 이미지 영역 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
 
         JPanel imgPanel = new JPanel(new BorderLayout());
 
-        // 🔥 카드 크기에 비례해서 이미지 박스도 같이 조정
         int imgW = (int) (cardW * 0.7);
         int imgH = (int) (cardH * 0.55);
         imgPanel.setPreferredSize(new Dimension(imgW, imgH));
 
         imgPanel.setBackground(isUnlocked ? new Color(255, 245, 200)
-                                          : new Color(220, 220, 220));
+                : new Color(220, 220, 220));
 
         JLabel imgLabel = new JLabel(isUnlocked ? "이미지" : "???", JLabel.CENTER);
         imgLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
@@ -162,12 +197,17 @@ public class MenuGuidePanel extends JPanel {
         imgWrapper.add(imgPanel, BorderLayout.CENTER);
 
         // ===== 레시피 =====
-        JLabel recipeLabel = new JLabel(isUnlocked ? "레시피" : "???", JLabel.CENTER);
-        recipeLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        String recipeText = "???";
+        if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
+            recipeText = String.join(", ", item.getIngredients());
+        }
+
+        JLabel recipeLabel = new JLabel(recipeText, JLabel.CENTER);
+        recipeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         recipeLabel.setBorder(new EmptyBorder(8, 5, 10, 5));
 
-        // 카드 구성
-        card.add(nameLabel, BorderLayout.NORTH);
+        // 카드에 조립
+        card.add(headerPanel, BorderLayout.NORTH);
         card.add(imgWrapper, BorderLayout.CENTER);
         card.add(recipeLabel, BorderLayout.SOUTH);
 

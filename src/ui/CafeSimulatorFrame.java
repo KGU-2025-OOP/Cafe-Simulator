@@ -36,8 +36,6 @@ public class CafeSimulatorFrame extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel mainPanel;
-
-    // 배경 이미지
     private Image mainBackgroundImage;
 
     private StartMenuPanel startPanel;
@@ -78,7 +76,6 @@ public class CafeSimulatorFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
-        // [수정] ImageManager를 통해 배경 이미지 로드
         mainBackgroundImage = ImageManager.getImage(ImageManager.IMG_MAIN_BG);
 
         setLayout(new BorderLayout());
@@ -91,7 +88,6 @@ public class CafeSimulatorFrame extends JFrame {
 
         cardLayout = new CardLayout();
 
-        // [수정] 배경 그리기 로직 포함된 익명 클래스
         mainPanel = new JPanel(cardLayout) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -227,24 +223,23 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void initializeMenuItems() {
         allMenuItems = new ArrayList<>();
-        allMenuItems.add(new MenuItem("아메리카노", MenuItem.MenuType.Beverage, true));
-        allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Beverage, true));
-        allMenuItems.add(new MenuItem("바닐라 라떼", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("딸기 라떼", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Beverage, false));
+
+        // 텍스트 파일에서 로딩
+        List<MenuItem> loadedItems = MenuTextLoader.loadMenuData();
+
+        if (!loadedItems.isEmpty()) {
+            allMenuItems.addAll(loadedItems);
+        } else {
+            // 로딩 실패 시 기본값 (타입 변경됨: Beverage -> Coffee)
+            System.out.println("메뉴 파일 로드 실패. 기본 메뉴 사용.");
+            allMenuItems.add(new MenuItem("아메리카노", MenuItem.MenuType.Coffee, true));
+            allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Coffee, true));
+        }
+
+        // 디저트 (하드코딩 유지)
         allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
-        allMenuItems.add(new MenuItem("스크롤용", MenuItem.MenuType.Dessert, false));
     }
 
     private void addListenersToStartPanel(boolean hasSaveFile) {
@@ -338,7 +333,6 @@ public class CafeSimulatorFrame extends JFrame {
 
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
             System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
-
             currentDayNumber = 1;
             dailySalesHistory.clear();
             totalAccumulatedRevenue = 0;
