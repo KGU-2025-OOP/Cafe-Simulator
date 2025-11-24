@@ -8,10 +8,12 @@ public class Menu {
     private int ingredientCount;
     private ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
     private int price;
+    protected String imgPath; //이미지 경로
+    protected java.io.File img; //이미지 파일
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
         this.name = scanner.next();
-        this.ingredientCount = scanner.nextInt();
+        this.ingredientCount = Integer.parseInt(scanner.next());
         this.items = new ArrayList<MenuItem>();
         for (int i = 0; i < this.ingredientCount; i++) {
             String ingredientName = scanner.next();
@@ -23,10 +25,20 @@ public class Menu {
                 }
             }
         }
-        if (this.items.size() != ingredientCount) {
+        if (this.items.size() != ingredientCount)
             throw new IllegalArgumentException("Ingredient not found for menu: " + this.name + " only found " + this.items.size() + " ingredients.");
+
+        this.price = Integer.parseInt(scanner.next());
+
+        this.imgPath = scanner.next();
+        // 이미지 파일 로드 ===========================================
+        java.io.File file = new java.io.File(this.imgPath);
+        if (file.exists()) { // 이미지 파일이 존재하는지 확인
+            this.img = file;
+        } else {
+            throw new IllegalArgumentException("Image file not found: " + this.imgPath);
         }
-        this.price = scanner.nextInt();
+        // 이미지 파일 로드 ===========================================
     }
 
 
