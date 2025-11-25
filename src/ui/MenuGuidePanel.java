@@ -11,25 +11,32 @@ public class MenuGuidePanel extends JPanel {
     private final Runnable backAction;
     private JPanel contentContainer;
 
+    // [추가] 배경 이미지 변수
+    private Image backgroundImage;
+
     public MenuGuidePanel(List<MenuItem> allMenuItems, Runnable backAction) {
         this.backAction = backAction;
 
+        // [추가] 배경 이미지 로드
+        backgroundImage = ImageManager.getImage(ImageManager.IMG_MENU_BG);
+
         setLayout(new BorderLayout());
-        setBackground(new Color(210, 230, 255));
-        // ScreenConfig가 없다면 아래 줄을 주석 처리하고 setPreferredSize(new Dimension(1280, 720)); 으로 바꾸세요.
+        // [삭제] 배경색 설정 제거 (이미지가 대신함)
+        // setBackground(new Color(210, 230, 255));
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
-        // ======= 상단 영역 =======
-        JPanel backPanel = new JPanel(new BorderLayout());
+        // ======= 상단 영역 (GridBagLayout 사용) =======
+        JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
-        backPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 
         JButton backButton = new JButton("<-");
         backButton.setFont(new Font("SansSerif", Font.BOLD, 25));
+        backButton.setMargin(new Insets(0, 10, 0, 10));
         backButton.addActionListener(e -> {
             if (backAction != null) backAction.run();
         });
-        backPanel.add(backButton, BorderLayout.WEST);
+        backPanel.add(backButton);
 
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setOpaque(false);
@@ -38,7 +45,7 @@ public class MenuGuidePanel extends JPanel {
         titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
         titlePanel.add(titleLabel);
 
-        JPanel tabButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel tabButtonPanel = new JPanel(new GridBagLayout());
         tabButtonPanel.setOpaque(false);
 
         JButton coffeeButton = new JButton("커피");
@@ -47,22 +54,32 @@ public class MenuGuidePanel extends JPanel {
         coffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
         nonCoffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
 
-        tabButtonPanel.add(coffeeButton);
-        tabButtonPanel.add(nonCoffeeButton);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 0, 10);
+        tabButtonPanel.add(coffeeButton, gbc);
+
+        gbc.gridx = 1;
+        gbc.insets = new Insets(0, 0, 0, 0);
+        tabButtonPanel.add(nonCoffeeButton, gbc);
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
+
         topPanel.add(backPanel, BorderLayout.WEST);
         topPanel.add(titlePanel, BorderLayout.CENTER);
         topPanel.add(tabButtonPanel, BorderLayout.EAST);
-        topPanel.setBorder(new EmptyBorder(20, 20, 10, 20));
+
+        topPanel.setBorder(new EmptyBorder(20, 30, 0, 30));
 
         add(topPanel, BorderLayout.NORTH);
 
         // ======= 가운데 영역 =======
         contentContainer = new JPanel(new BorderLayout());
         contentContainer.setOpaque(false);
-        contentContainer.setBorder(new EmptyBorder(10, 10, 10, 10));
+        contentContainer.setBorder(new EmptyBorder(0, 10, 10, 10));
         add(contentContainer, BorderLayout.CENTER);
 
         List<MenuItem> coffeeList = allMenuItems.stream()
@@ -76,20 +93,26 @@ public class MenuGuidePanel extends JPanel {
         JPanel coffeePanel = createCategoryPanel(coffeeList);
         JPanel nonCoffeePanel = createCategoryPanel(nonCoffeeList);
 
-        // 기본 화면
         showContentPanel(coffeePanel);
 
-        // 탭 전환 리스너
         coffeeButton.addActionListener(e -> showContentPanel(coffeePanel));
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
-    // 탭 전환 시 패널 교체 및 스크롤 초기화
+    // [추가] 배경 이미지 그리기
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+
+    // ... (이하 showContentPanel, createCategoryPanel, createMenuCardPanel 메서드는 기존과 동일) ...
     private void showContentPanel(JPanel panel) {
         contentContainer.removeAll();
         contentContainer.add(panel, BorderLayout.CENTER);
 
-        // 스크롤 위치 초기화 (맨 왼쪽/맨 위로)
         for (Component c : panel.getComponents()) {
             if (c instanceof JScrollPane) {
                 JScrollPane sp = (JScrollPane) c;
@@ -132,7 +155,9 @@ public class MenuGuidePanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
 
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setBackground(new Color(210, 230, 255));
+        // [수정] 래퍼 패널도 투명하게 설정 (배경 이미지 보이게)
+        wrapper.setOpaque(false);
+        // wrapper.setBackground(new Color(210, 230, 255)); // 삭제
         wrapper.add(scrollPane, BorderLayout.CENTER);
 
         return wrapper;
@@ -141,11 +166,11 @@ public class MenuGuidePanel extends JPanel {
     private JPanel createMenuCardPanel(MenuItem item) {
         boolean isUnlocked = item.isUnlocked();
         String name = item.getName();
-        int price = item.getPrice(); // 가격 정보 가져오기
+        int price = item.getPrice();
 
         JPanel card = new JPanel(new BorderLayout());
 
-        int frameW = 1280; // ScreenConfig.WIDTH 대신 직접 숫자 사용 (오류 방지용)
+        int frameW = 1280;
         int frameH = 720;
 
         int cardW = (int) (frameW * 0.23);
@@ -158,20 +183,18 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // ===== 상단 헤더 (이름 + 가격) =====
-        JPanel headerPanel = new JPanel(new GridLayout(2, 1)); // 2줄 (이름, 가격)
+        // ===== 상단 헤더 =====
+        JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
-        headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5)); // 전체 여백
+        headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
 
-        // 1. 이름 라벨
         JLabel nameLabel = new JLabel(isUnlocked ? name : "???", JLabel.CENTER);
         nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 
-        // 2. 가격 라벨 (작게 표시)
         String priceText = isUnlocked ? String.format("%,d원", price) : "-";
         JLabel priceLabel = new JLabel(priceText, JLabel.CENTER);
-        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14)); // 이름보다 작게
-        priceLabel.setForeground(Color.DARK_GRAY); // 회색으로
+        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        priceLabel.setForeground(Color.DARK_GRAY);
 
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
@@ -181,20 +204,28 @@ public class MenuGuidePanel extends JPanel {
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
 
-        JPanel imgPanel = new JPanel(new BorderLayout());
+        JLabel imgLabel = new JLabel("", JLabel.CENTER);
+        int imgW = (int) (cardW * 0.8);
+        int imgH = (int) (cardH * 0.5);
+        imgLabel.setPreferredSize(new Dimension(imgW, imgH));
 
-        int imgW = (int) (cardW * 0.7);
-        int imgH = (int) (cardH * 0.55);
-        imgPanel.setPreferredSize(new Dimension(imgW, imgH));
+        if (isUnlocked) {
+            String imagePath = "/resources/image/menu/" + item.getImagePath();
+            ImageIcon originalIcon = ImageManager.getImageIcon(imagePath);
+            if (originalIcon != null && originalIcon.getIconWidth() > 0) {
+                Image scaledImg = originalIcon.getImage().getScaledInstance(imgW, imgH, Image.SCALE_SMOOTH);
+                imgLabel.setIcon(new ImageIcon(scaledImg));
+            } else {
+                imgLabel.setText("이미지 없음");
+            }
+        } else {
+            imgLabel.setText("???");
+            imgLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+            imgLabel.setOpaque(true);
+            imgLabel.setBackground(new Color(220, 220, 220));
+        }
 
-        imgPanel.setBackground(isUnlocked ? new Color(255, 245, 200)
-                : new Color(220, 220, 220));
-
-        JLabel imgLabel = new JLabel(isUnlocked ? "이미지" : "???", JLabel.CENTER);
-        imgLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
-
-        imgPanel.add(imgLabel, BorderLayout.CENTER);
-        imgWrapper.add(imgPanel, BorderLayout.CENTER);
+        imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
         // ===== 레시피 =====
         String recipeText = "???";
@@ -206,7 +237,6 @@ public class MenuGuidePanel extends JPanel {
         recipeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         recipeLabel.setBorder(new EmptyBorder(8, 5, 10, 5));
 
-        // 카드에 조립
         card.add(headerPanel, BorderLayout.NORTH);
         card.add(imgWrapper, BorderLayout.CENTER);
         card.add(recipeLabel, BorderLayout.SOUTH);

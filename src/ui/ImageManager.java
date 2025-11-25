@@ -9,7 +9,7 @@ import java.util.Map;
 public class ImageManager {
 
     // ==========================================================
-    // 경로 설정
+    // 이미지 경로 설정
     // ==========================================================
 
     // 1. 배경 이미지
@@ -17,14 +17,16 @@ public class ImageManager {
     public static final String IMG_SETUP_BG = "/image/background/background_2.jpg";
     public static final String IMG_MAIN_BG  = "/image/background/background_GamePlayArea.jpg";
 
+    // [추가] 메뉴 도감 배경 이미지 (파일명: background_GamePlayArea.jpg)
+    public static final String IMG_MENU_BG  = "/image/background/background_GamePlayArea.jpg";
+
     // 2. 버튼 이미지
     public static final String BTN_CONTINUE = "/image/button/play_button.png";
     public static final String BTN_NEW_GAME = "/image/button/play_button.png";
     public static final String BTN_START    = "/image/button/play_button.png";
     public static final String BTN_EXIT     = "/image/button/exit_button.png";
-
-    // [추가] 창업하기 버튼 배경 (default_button.png)
     public static final String BTN_DEFAULT  = "/image/button/default_button.png";
+    public static final String BTN_MINI     = "/image/button/mini_button.png";
 
 
     private static final Map<String, Image> imageCache = new HashMap<>();
@@ -36,6 +38,7 @@ public class ImageManager {
         }
 
         URL imgUrl = ImageManager.class.getResource(path);
+
         if (imgUrl == null) {
             System.err.println("[에러] 이미지를 찾을 수 없습니다: " + path);
             return null;
@@ -52,6 +55,7 @@ public class ImageManager {
         }
 
         URL imgUrl = ImageManager.class.getResource(path);
+
         if (imgUrl == null) {
             System.err.println("[에러] 버튼 아이콘을 찾을 수 없습니다: " + path);
             return new ImageIcon();

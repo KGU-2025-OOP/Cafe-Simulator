@@ -15,6 +15,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Cursor; // 커서 추가
+import java.awt.Dimension; // 치수 추가
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.InputMap;
@@ -144,39 +146,50 @@ public class CafeSimulatorFrame extends JFrame {
         });
     }
 
+    // [수정] 하단 바 버튼 생성 로직 변경
     private void createBottomBar() {
         bottomBarPanel = new JPanel(new BorderLayout());
 
-        // [수정] 하단 바 배경색 설정 (연한 갈색 - BurlyWood)
         Color barColor = new Color(112, 70, 15);
         bottomBarPanel.setBackground(barColor);
 
         bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        bottomLeftPanel.setOpaque(false); // 투명하게 설정
+        bottomLeftPanel.setOpaque(false);
 
-        Font btnFont = new Font("Malgun Gothic", Font.BOLD, 14);
-
-        exitButton = new JButton("종료하기");
-        exitButton.setFont(btnFont);
-        exitButton.setForeground(Color.RED);
+        // 1. 종료하기 버튼 (미니 버튼 스타일 적용)
+        exitButton = createMiniButton("종료하기");
+        exitButton.setForeground(Color.RED); // 종료는 빨간 글씨 유지? (필요 없으면 삭제 가능)
         exitButton.addActionListener(e -> showExitConfirmation());
 
-        giveUpButton = new JButton("포기하기");
-        giveUpButton.setFont(btnFont);
+        // 2. 포기하기 버튼
+        giveUpButton = createMiniButton("포기하기");
         giveUpButton.addActionListener(e -> showGiveUpConfirmation());
 
         bottomLeftPanel.add(exitButton);
         bottomLeftPanel.add(giveUpButton);
 
         bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomRightPanel.setOpaque(false); // 투명하게 설정
+        bottomRightPanel.setOpaque(false);
 
-        menuButton = new JButton("메뉴도감");
-        menuButton.setFont(btnFont);
+        // 3. 메뉴도감 버튼
+        menuButton = createMiniButton("메뉴도감");
         menuButton.addActionListener(e -> openMenuGuide());
 
+        // 4. BGM 버튼 (JToggleButton이라 따로 설정)
         bgmButton = new JToggleButton("BGM ON", true);
-        bgmButton.setFont(btnFont);
+        // 미니 버튼 스타일 수동 적용
+        bgmButton.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MINI));
+        bgmButton.setHorizontalTextPosition(JButton.CENTER);
+        bgmButton.setVerticalTextPosition(JButton.CENTER);
+        bgmButton.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
+        bgmButton.setForeground(Color.WHITE); // 글씨 흰색
+        bgmButton.setContentAreaFilled(false);
+        bgmButton.setBorderPainted(false);
+        bgmButton.setFocusPainted(false);
+        bgmButton.setOpaque(false);
+        bgmButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        bgmButton.setPreferredSize(new Dimension(100, 40)); // 크기 조정
+
         bgmButton.addActionListener(e -> {
             if (bgmButton.isSelected()) {
                 bgmButton.setText("BGM ON");
@@ -193,6 +206,36 @@ public class CafeSimulatorFrame extends JFrame {
         bottomBarPanel.add(bottomLeftPanel, BorderLayout.WEST);
         bottomBarPanel.add(bottomRightPanel, BorderLayout.EAST);
     }
+
+    // [추가] 미니 버튼 생성 헬퍼 메서드
+    private JButton createMiniButton(String text) {
+        JButton btn = new JButton(text);
+
+        // 배경 이미지 설정
+        btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MINI));
+
+        // 텍스트 중앙 정렬
+        btn.setHorizontalTextPosition(JButton.CENTER);
+        btn.setVerticalTextPosition(JButton.CENTER);
+
+        // 폰트 및 색상
+        btn.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
+        btn.setForeground(Color.WHITE); // 흰색 글씨 (배경에 따라 변경 가능)
+
+        // 투명화 및 커서
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setOpaque(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        // 크기 설정 (이미지 크기에 맞춤, 예: 100x40)
+        btn.setPreferredSize(new Dimension(100, 40));
+
+        return btn;
+    }
+
+    // ... (이하 메서드들은 기존과 동일하므로 생략하지 않고 전체 코드 유지) ...
 
     private void openMenuGuide() {
         previousPanelName = currentPanelName;
