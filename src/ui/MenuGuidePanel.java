@@ -210,7 +210,7 @@ public class MenuGuidePanel extends JPanel {
         imgLabel.setPreferredSize(new Dimension(imgW, imgH));
 
         if (isUnlocked) {
-            String imagePath = "/resources/image/menu/" + item.getImagePath();
+            String imagePath = "/image/menu/" + item.getImagePath();
             ImageIcon originalIcon = ImageManager.getImageIcon(imagePath);
             if (originalIcon != null && originalIcon.getIconWidth() > 0) {
                 Image scaledImg = originalIcon.getImage().getScaledInstance(imgW, imgH, Image.SCALE_SMOOTH);
