@@ -1,0 +1,20 @@
+샷추가 500 resources/image/ingredient_image/coffee.png
+휘핑추가 400 resources/image/ingredient_image/whipped_cream.png
+시럽추가 300 resources/image/ingredient_image/syrup.png
+얼음조절 0 resources/image/ingredient_image/ice.png
+디카페인변경 300 resources/image/ingredient_image/decaffeinated_coffee.png
+라지사이즈 700
+오트밀크변경 500 resources/image/ingredient_image/oatmeal.png
+두유변경 400 resources/image/ingredient_image/soymilk.png
+무얼음 0
+진하게 0
+연하게 0
+차갑게 0
+따뜻하게 0
+토핑추가 400
+설탕추가 100 resources/image/ingredient_image/sugar.png
+시나몬추가 200 resources/image/ingredient_image/cinnamon.png
+생크림추가 500 resources/image/ingredient_image/whipped_cream.png
+컵홀더추가 100 
+포장하기 200
+테이크아웃 100
