@@ -4,14 +4,18 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Menu {
-    String name;
-    int ingredientCount;
-    ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
-    int price;
+    private int isCoffee;
+    private String name;
+    private int ingredientCount;
+    private ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
+    private int price;
+    protected String imgPath; //이미지 경로
+    protected java.io.File img; //이미지 파일
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
+        this.isCoffee = Integer.parseInt(scanner.next());
         this.name = scanner.next();
-        this.ingredientCount = scanner.nextInt();
+        this.ingredientCount = Integer.parseInt(scanner.next());
         this.items = new ArrayList<MenuItem>();
         for (int i = 0; i < this.ingredientCount; i++) {
             String ingredientName = scanner.next();
@@ -23,11 +27,22 @@ public class Menu {
                 }
             }
         }
-        if (this.items.size() != ingredientCount) {
+        if (this.items.size() != ingredientCount)
             throw new IllegalArgumentException("Ingredient not found for menu: " + this.name + " only found " + this.items.size() + " ingredients.");
+
+        this.price = Integer.parseInt(scanner.next());
+
+        this.imgPath = scanner.next();
+        // 이미지 파일 로드 ===========================================
+        java.io.File file = new java.io.File(this.imgPath);
+        if (file.exists()) { // 이미지 파일이 존재하는지 확인
+            this.img = file;
+        } else {
+            throw new IllegalArgumentException("Image file not found: " + this.imgPath);
         }
-        this.price = scanner.nextInt();
+        // 이미지 파일 로드 ===========================================
     }
+
 
     public ArrayList<MenuItem> getItems() {
         return this.items;
@@ -45,13 +60,13 @@ public class Menu {
     }
 
     // 하위 호환성을 위한 메서드
-    public void addOptions(Ingredient ingredient) {
-        this.items.add(ingredient);
+    public void addOptions(final Option option) {
+        this.items.add(option);
         this.ingredientCount = this.items.size();
     }
 
-    public Menu getMenu() {
-        return this;
+    public int getIsCoffee() {
+        return isCoffee;
     }
 
     public String getName() {

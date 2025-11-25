@@ -2,6 +2,7 @@ package core;
 
 import entities.BrewingSlot;
 import entities.DeadLine;
+import util.KoreanInputAssembler;
 import util.MessageQueue;
 import graphics.RenderQueue;
 import graphics.TextBox;
@@ -18,13 +19,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.beancontext.BeanContext;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameCanvas extends Canvas implements Runnable {
 
     private RenderQueue renderQueue;
     private MessageQueue messageQueue;
+    private KoreanInputAssembler korean;
     FPSCounter frameCounter;
 
     public boolean shouldRun;
@@ -35,7 +36,7 @@ public class GameCanvas extends Canvas implements Runnable {
 
     private class InputBox {
         public static TextBox box;
-
+        // Handle
         public static StringBuffer text;
 
         public static void init(int width, int height) {
@@ -43,14 +44,14 @@ public class GameCanvas extends Canvas implements Runnable {
                     new Vector2f(width / 2.F, height / 4.F),
                     0.F,
                     new StringBuffer(),
-                    new Font("Arial", Font.ITALIC, 30));
+                    new Font("Malgun Gothic", Font.ITALIC, 30));
             text = box.getBufferHandle();
         }
     }
 
     private class FailLine {
         public static DeadLine line;
-
+        // Handle
         public static Vector2f move;
         public static void init(int width, int height) {
             line = new DeadLine(width, height / 3, new Vector2f(), 15.F);
@@ -63,18 +64,19 @@ public class GameCanvas extends Canvas implements Runnable {
         renderQueue = new RenderQueue(width, height);
         messageQueue = new MessageQueue();
         frameCounter = new FPSCounter();
+        korean = new KoreanInputAssembler();
         setSize(width, height);
         Toolkit.getDefaultToolkit().addAWTEventListener(messageQueue, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
     }
 
     private void init() {
-
+        // Initialize game objects
         int width = getWidth();
         int height = getHeight();
 
         InputBox.init(width, height);
         FailLine.init(width, height);
-        Font dropsFont = new Font("Arial", Font.BOLD, 12);
+        Font dropsFont = new Font("Malgun Gothic", Font.BOLD, 12);
         drops = new ArrayList<DropItem>();
         for (int i = 0; i < 10; ++i) {
             drops.add(new DropItem(
@@ -85,18 +87,18 @@ public class GameCanvas extends Canvas implements Runnable {
         brewingSlots.add(new BrewingSlot(drops, width, height, 0));
 
 
-
+        // Start game loop;
         lastTime = System.nanoTime();
         shouldRun = true;
     }
 
     private void update() {
-
+        // Get delta time;
         long currentTime = System.nanoTime();
         float deltaTime = (currentTime - lastTime) / (float) FPSCounter.secondInNanoTime;
         lastTime = currentTime;
 
-
+        // update
         InputBox.box.update(deltaTime);
         FailLine.line.update(deltaTime);
         for (BrewingSlot i : brewingSlots) {
@@ -105,13 +107,13 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void render() {
-
+        // Add rendering object
         renderQueue.add(InputBox.box);
         renderQueue.add(FailLine.line);
         for (BrewingSlot i : brewingSlots) {
             renderQueue.add(i);
         }
-
+        // Draw
         drawCanvas();
     }
 
@@ -122,13 +124,14 @@ public class GameCanvas extends Canvas implements Runnable {
         MouseEvent mi;
 
         while (shouldRun) {
-
+            // message handling
             AWTEvent input = messageQueue.poll();
 
             if (input != null) {
                 switch (input.getID()) {
                     case KeyEvent.KEY_TYPED:
                         ki = (KeyEvent)input;
+                        korean.input(InputBox.text, ki);
                         if (ki.isControlDown()) {
                             break;
                         }
@@ -146,26 +149,38 @@ public class GameCanvas extends Canvas implements Runnable {
                             }
                             InputBox.text.setLength(0);
                         } else {
-                            InputBox.text.append(c);
+                            if (!korean.isActivated()) {
+                                InputBox.text.append(c);
+                            }
+
                         }
 
                         break;
                     case KeyEvent.KEY_PRESSED:
                         ki = (KeyEvent)input;
-                        if (ki.getKeyCode() == KeyEvent.VK_UP) {
+                        if (ki.getKeyCode() == KeyEvent.VK_ALT) {
+                            korean.toggleActivation();
+                        } else if (ki.getKeyCode() == KeyEvent.VK_UP) {
                             int newSlotCount = brewingSlots.size() + 1;
                             int newWidth = getWidth() / newSlotCount;
                             int height = getHeight();
-                            for (int i = 0; i < newSlotCount; ++i) {
-                                brewingSlots.add(new BrewingSlot(drops, newWidth, height, newWidth * (newSlotCount - 1)));
-                            }
+                            brewingSlots.add(new BrewingSlot(new ArrayList<DropItem>(), newWidth, height, newWidth * (newSlotCount - 1)));
+
                             for (int i = 0; i < newSlotCount - 1; ++i) {
                                 brewingSlots.get(i).resize(newWidth, height, i * newWidth);
                             }
 
 
                         } else if (ki.getKeyCode() == KeyEvent.VK_DOWN) {
-
+                            int newSlotCount = brewingSlots.size() - 1;
+                            if (newSlotCount > 0) {
+                                int newWidth = getWidth() / newSlotCount;
+                                int height = getHeight();
+                                brewingSlots.remove(newSlotCount);
+                                for (int i = 0; i < newSlotCount; ++i) {
+                                    brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+                                }
+                            }
                         }
 
                         break;
@@ -182,7 +197,7 @@ public class GameCanvas extends Canvas implements Runnable {
             }
             update();
             render();
-
+            // frameCounter.limitFPS(60);
             frameCounter.printFPS();
         }
         shutdown();
@@ -197,8 +212,11 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void shutdown() {
-        //System.exit(0);
-        System.out.println("Game Canvas Thread Stopped.");
+        System.exit(0);
+    }
+
+    private MessageQueue getMessageQueue() {
+        return messageQueue;
     }
 
 }
