@@ -11,21 +11,16 @@ public class MenuGuidePanel extends JPanel {
     private final Runnable backAction;
     private JPanel contentContainer;
 
-    // [추가] 배경 이미지 변수
     private Image backgroundImage;
 
     public MenuGuidePanel(List<MenuItem> allMenuItems, Runnable backAction) {
         this.backAction = backAction;
 
-        // [추가] 배경 이미지 로드
         backgroundImage = ImageManager.getImage(ImageManager.IMG_MENU_BG);
 
         setLayout(new BorderLayout());
-        // [삭제] 배경색 설정 제거 (이미지가 대신함)
-        // setBackground(new Color(210, 230, 255));
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
-        // ======= 상단 영역 (GridBagLayout 사용) =======
         JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -72,11 +67,10 @@ public class MenuGuidePanel extends JPanel {
         topPanel.add(titlePanel, BorderLayout.CENTER);
         topPanel.add(tabButtonPanel, BorderLayout.EAST);
 
-        topPanel.setBorder(new EmptyBorder(20, 30, 0, 30));
+        topPanel.setBorder(new EmptyBorder(30, 30, 0, 30));
 
         add(topPanel, BorderLayout.NORTH);
 
-        // ======= 가운데 영역 =======
         contentContainer = new JPanel(new BorderLayout());
         contentContainer.setOpaque(false);
         contentContainer.setBorder(new EmptyBorder(0, 10, 10, 10));
@@ -99,7 +93,6 @@ public class MenuGuidePanel extends JPanel {
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
-    // [추가] 배경 이미지 그리기
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -108,7 +101,6 @@ public class MenuGuidePanel extends JPanel {
         }
     }
 
-    // ... (이하 showContentPanel, createCategoryPanel, createMenuCardPanel 메서드는 기존과 동일) ...
     private void showContentPanel(JPanel panel) {
         contentContainer.removeAll();
         contentContainer.add(panel, BorderLayout.CENTER);
@@ -155,9 +147,7 @@ public class MenuGuidePanel extends JPanel {
         scrollPane.getViewport().setOpaque(false);
 
         JPanel wrapper = new JPanel(new BorderLayout());
-        // [수정] 래퍼 패널도 투명하게 설정 (배경 이미지 보이게)
         wrapper.setOpaque(false);
-        // wrapper.setBackground(new Color(210, 230, 255)); // 삭제
         wrapper.add(scrollPane, BorderLayout.CENTER);
 
         return wrapper;
@@ -183,7 +173,6 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // ===== 상단 헤더 =====
         JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
@@ -199,7 +188,6 @@ public class MenuGuidePanel extends JPanel {
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
 
-        // ===== 이미지 영역 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -227,7 +215,6 @@ public class MenuGuidePanel extends JPanel {
 
         imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
-        // ===== 레시피 =====
         String recipeText = "???";
         if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
             recipeText = String.join(", ", item.getIngredients());
