@@ -9,13 +9,13 @@ import java.util.Map;
 public class ImageManager {
 
     // ==========================================================
-    // [수정] 경로에서 '/resources' 제거 (/image/... 로 시작)
+    // 이미지 경로 설정
     // ==========================================================
 
     // 1. 배경 이미지
     public static final String IMG_START_BG = "/image/background/background_2.jpg";
     public static final String IMG_SETUP_BG = "/image/background/background_2.jpg";
-    public static final String IMG_MAIN_BG  = "/image/background/background_2.jpg";
+    public static final String IMG_MAIN_BG  = "/image/background/background_GamePlayArea.jpg";
     public static final String IMG_MENU_BG  = "/image/background/background_GamePlayArea.jpg";
 
     // 2. 버튼 이미지
@@ -25,9 +25,10 @@ public class ImageManager {
     public static final String BTN_EXIT     = "/image/button/exit_button.png";
     public static final String BTN_DEFAULT  = "/image/button/default_button.png";
     public static final String BTN_MINI     = "/image/button/mini_button.png";
-
-    // [추가] 뒤로가기 버튼
     public static final String BTN_BACK     = "/image/button/back_button.png";
+
+    // [추가] 메뉴 도감 토글 버튼
+    public static final String BTN_MENU_TOGGLE = "/image/button/menu_toggle_button.png";
 
 
     private static final Map<String, Image> imageCache = new HashMap<>();

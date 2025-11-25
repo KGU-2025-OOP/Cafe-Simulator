@@ -21,6 +21,7 @@ public class MenuGuidePanel extends JPanel {
         setLayout(new BorderLayout());
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
+        // ======= 상단 영역 (GridBagLayout) =======
         JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -40,18 +41,44 @@ public class MenuGuidePanel extends JPanel {
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("메뉴 도감");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
+        // [수정] 타이틀 라벨 꾸미기 (그림자 효과 추가)
+        JLabel titleLabel = new JLabel("메뉴 도감") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                // 텍스트 부드럽게 처리 (안티앨리어싱)
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                String text = getText();
+                FontMetrics fm = g2.getFontMetrics();
+
+                // 중앙 정렬 좌표 계산
+                int x = (getWidth() - fm.stringWidth(text)) / 2;
+                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+
+                // 1. 그림자 그리기 (검은색 반투명, 약간 오른쪽 아래로)
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.drawString(text, x + 3, y + 3);
+
+                // 2. 메인 텍스트 그리기 (흰색)
+                g2.setColor(Color.WHITE);
+                g2.drawString(text, x, y);
+            }
+        };
+
+        // 폰트 설정 (맑은 고딕, 굵게, 크기 40)
+        titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
+        // 라벨 크기 넉넉하게 지정 (글자가 잘리지 않도록)
+        titleLabel.setPreferredSize(new Dimension(250, 60));
+
         titlePanel.add(titleLabel);
+
 
         JPanel tabButtonPanel = new JPanel(new GridBagLayout());
         tabButtonPanel.setOpaque(false);
 
-        JButton coffeeButton = new JButton("커피");
-        JButton nonCoffeeButton = new JButton("논커피");
-
-        coffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
-        nonCoffeeButton.setFont(new Font("SansSerif", Font.BOLD, 18));
+        JButton coffeeButton = createToggleButton("커피");
+        JButton nonCoffeeButton = createToggleButton("논커피");
 
         GridBagConstraints gbc = new GridBagConstraints();
 
@@ -97,6 +124,22 @@ public class MenuGuidePanel extends JPanel {
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
+    // 토글 버튼 스타일 헬퍼
+    private JButton createToggleButton(String text) {
+        JButton btn = new JButton(text);
+        btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MENU_TOGGLE)); // 이미지가 있다면 적용됨
+        btn.setHorizontalTextPosition(JButton.CENTER);
+        btn.setVerticalTextPosition(JButton.CENTER);
+        btn.setFont(new Font("Malgun Gothic", Font.BOLD, 18));
+        btn.setForeground(Color.WHITE);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setOpaque(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        return btn;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -132,7 +175,8 @@ public class MenuGuidePanel extends JPanel {
 
         if (items.isEmpty()) {
             JLabel emptyLabel = new JLabel("해당 카테고리의 메뉴가 없습니다.");
-            emptyLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+            emptyLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
+            emptyLabel.setForeground(Color.WHITE); // 배경이 어두울 수 있으니 흰색
             inner.add(emptyLabel);
         } else {
             for (MenuItem item : items) {
@@ -180,21 +224,23 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
+        // ===== 헤더 =====
         JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
 
         JLabel nameLabel = new JLabel(isUnlocked ? name : "???", JLabel.CENTER);
-        nameLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        nameLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20)); // 폰트 통일
 
         String priceText = isUnlocked ? String.format("%,d원", price) : "-";
         JLabel priceLabel = new JLabel(priceText, JLabel.CENTER);
-        priceLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        priceLabel.setFont(new Font("Malgun Gothic", Font.PLAIN, 14));
         priceLabel.setForeground(Color.DARK_GRAY);
 
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
 
+        // ===== 이미지 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -215,20 +261,21 @@ public class MenuGuidePanel extends JPanel {
             }
         } else {
             imgLabel.setText("???");
-            imgLabel.setFont(new Font("SansSerif", Font.PLAIN, 20));
+            imgLabel.setFont(new Font("Malgun Gothic", Font.PLAIN, 20));
             imgLabel.setOpaque(true);
             imgLabel.setBackground(new Color(220, 220, 220));
         }
 
         imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
+        // ===== 레시피 =====
         String recipeText = "???";
         if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
             recipeText = String.join(", ", item.getIngredients());
         }
 
         JLabel recipeLabel = new JLabel(recipeText, JLabel.CENTER);
-        recipeLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        recipeLabel.setFont(new Font("Malgun Gothic", Font.PLAIN, 14));
         recipeLabel.setBorder(new EmptyBorder(8, 5, 10, 5));
 
         card.add(headerPanel, BorderLayout.NORTH);
