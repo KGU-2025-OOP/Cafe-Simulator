@@ -61,7 +61,7 @@ public class NewGameSetupPanel extends JPanel {
         titlePanel.setOpaque(false);
 
         JLabel titleLabel = new JLabel("카페 이름을 입력하세요!");
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
+        titleLabel.setFont(new Font("Monospaced", Font.BOLD, 32));
 
         titlePanel.add(titleLabel, BorderLayout.WEST);
         boxPanel.add(titlePanel, BorderLayout.NORTH);
@@ -80,7 +80,7 @@ public class NewGameSetupPanel extends JPanel {
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setBackground(new Color(255, 248, 220));
         nameField.setBorder(
-                BorderFactory.createLineBorder(Color.RED, 3, true)
+                BorderFactory.createLineBorder(new Color(139, 0, 26), 3, true)
         );
 
         inputPanel.add(nameField, ic);

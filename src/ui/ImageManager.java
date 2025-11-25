@@ -15,7 +15,7 @@ public class ImageManager {
     // 1. 배경 이미지
     public static final String IMG_START_BG = "/image/background/background_2.jpg";
     public static final String IMG_SETUP_BG = "/image/background/background_2.jpg";
-    public static final String IMG_MAIN_BG  = "/image/background/background_2.jpg";
+    public static final String IMG_MAIN_BG  = "/image/background/background_GamePlayArea.jpg";
 
     // 2. 버튼 이미지
     public static final String BTN_CONTINUE = "/image/button/play_button.png";

@@ -16,7 +16,6 @@ import core.GameCanvas;
 public class GameplayPanel extends JPanel {
 
     private JLabel dayLabel;
-    // private JLabel timeLabel; // [삭제됨] 타이머 라벨
     private JButton endDayButton;
 
     private GameCanvas gameCanvas;

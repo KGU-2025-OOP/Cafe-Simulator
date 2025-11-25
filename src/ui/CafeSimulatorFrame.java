@@ -147,7 +147,12 @@ public class CafeSimulatorFrame extends JFrame {
     private void createBottomBar() {
         bottomBarPanel = new JPanel(new BorderLayout());
 
+        // [수정] 하단 바 배경색 설정 (연한 갈색 - BurlyWood)
+        Color barColor = new Color(112, 70, 15);
+        bottomBarPanel.setBackground(barColor);
+
         bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomLeftPanel.setOpaque(false); // 투명하게 설정
 
         Font btnFont = new Font("Malgun Gothic", Font.BOLD, 14);
 
@@ -164,6 +169,7 @@ public class CafeSimulatorFrame extends JFrame {
         bottomLeftPanel.add(giveUpButton);
 
         bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomRightPanel.setOpaque(false); // 투명하게 설정
 
         menuButton = new JButton("메뉴도감");
         menuButton.setFont(btnFont);
@@ -224,19 +230,16 @@ public class CafeSimulatorFrame extends JFrame {
     private void initializeMenuItems() {
         allMenuItems = new ArrayList<>();
 
-        // 텍스트 파일에서 로딩
         List<MenuItem> loadedItems = MenuTextLoader.loadMenuData();
 
         if (!loadedItems.isEmpty()) {
             allMenuItems.addAll(loadedItems);
         } else {
-            // 로딩 실패 시 기본값 (타입 변경됨: Beverage -> Coffee)
             System.out.println("메뉴 파일 로드 실패. 기본 메뉴 사용.");
             allMenuItems.add(new MenuItem("아메리카노", MenuItem.MenuType.Coffee, true));
             allMenuItems.add(new MenuItem("카페 라떼", MenuItem.MenuType.Coffee, true));
         }
 
-        // 디저트 (하드코딩 유지)
         allMenuItems.add(new MenuItem("치즈 케이크", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("초코 쿠키", MenuItem.MenuType.Dessert, true));
         allMenuItems.add(new MenuItem("마카롱", MenuItem.MenuType.Dessert, false));
