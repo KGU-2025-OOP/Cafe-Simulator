@@ -5,12 +5,12 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.awt.event.ActionListener;
 
 public class MenuGuidePanel extends JPanel {
 
     private final Runnable backAction;
     private JPanel contentContainer;
-
     private Image backgroundImage;
 
     public MenuGuidePanel(List<MenuItem> allMenuItems, Runnable backAction) {
@@ -25,9 +25,13 @@ public class MenuGuidePanel extends JPanel {
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
 
-        JButton backButton = new JButton("<-");
-        backButton.setFont(new Font("SansSerif", Font.BOLD, 25));
-        backButton.setMargin(new Insets(0, 10, 0, 10));
+        JButton backButton = new JButton(ImageManager.getImageIcon(ImageManager.BTN_BACK));
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
+        backButton.setFocusPainted(false);
+        backButton.setOpaque(false);
+        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
         backButton.addActionListener(e -> {
             if (backAction != null) backAction.run();
         });
@@ -67,7 +71,7 @@ public class MenuGuidePanel extends JPanel {
         topPanel.add(titlePanel, BorderLayout.CENTER);
         topPanel.add(tabButtonPanel, BorderLayout.EAST);
 
-        topPanel.setBorder(new EmptyBorder(30, 30, 0, 30));
+        topPanel.setBorder(new EmptyBorder(20, 30, 0, 30));
 
         add(topPanel, BorderLayout.NORTH);
 
@@ -142,7 +146,10 @@ public class MenuGuidePanel extends JPanel {
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
         );
         scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(20);
+        scrollPane.getHorizontalScrollBar().setUI(new CafeScrollBarUI());
+
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
 
@@ -229,5 +236,43 @@ public class MenuGuidePanel extends JPanel {
         card.add(recipeLabel, BorderLayout.SOUTH);
 
         return card;
+    }
+
+    private static class CafeScrollBarUI extends javax.swing.plaf.basic.BasicScrollBarUI {
+        @Override
+        protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+        }
+
+        @Override
+        protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+            if (thumbBounds.isEmpty() || !scrollbar.isEnabled()) {
+                return;
+            }
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            g2.setColor(new Color(160, 110, 80));
+            g2.fillRoundRect(thumbBounds.x + 2, thumbBounds.y + 2,
+                    thumbBounds.width - 4, thumbBounds.height - 4,
+                    10, 10);
+        }
+
+        @Override
+        protected JButton createDecreaseButton(int orientation) {
+            return createZeroButton();
+        }
+
+        @Override
+        protected JButton createIncreaseButton(int orientation) {
+            return createZeroButton();
+        }
+
+        private JButton createZeroButton() {
+            JButton jbutton = new JButton();
+            jbutton.setPreferredSize(new Dimension(0, 0));
+            jbutton.setMinimumSize(new Dimension(0, 0));
+            jbutton.setMaximumSize(new Dimension(0, 0));
+            return jbutton;
+        }
     }
 }

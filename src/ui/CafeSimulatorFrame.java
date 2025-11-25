@@ -158,7 +158,7 @@ public class CafeSimulatorFrame extends JFrame {
 
         // 1. 종료하기 버튼 (미니 버튼 스타일 적용)
         exitButton = createMiniButton("종료하기");
-        exitButton.setForeground(Color.RED); // 종료는 빨간 글씨 유지? (필요 없으면 삭제 가능)
+        exitButton.setForeground(new Color(139, 0, 26));
         exitButton.addActionListener(e -> showExitConfirmation());
 
         // 2. 포기하기 버튼
