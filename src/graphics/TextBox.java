@@ -44,7 +44,7 @@ public class TextBox implements IGameObject {
         g.setFont(font);
         int width = g.getFontMetrics().stringWidth(outStr);
 
-        g.setColor(Color.RED);
+        g.setColor(Color.WHITE);
         g.drawString(outStr, (int)pos.x - width / 2 + 1, CoordSystem.getFlippedY(pos.y));
         g.drawString(outStr, (int)pos.x - width / 2 - 1, CoordSystem.getFlippedY(pos.y));
         g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) + 1);

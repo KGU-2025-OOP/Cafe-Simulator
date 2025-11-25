@@ -1,10 +1,12 @@
 package entities;
 
 import graphics.TextBox;
+import util.CoordSystem;
 import util.Vector2f;
 
 import java.awt.Graphics2D;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
 
 public class DropItem extends TextBox {
     private boolean isValid;
@@ -12,14 +14,16 @@ public class DropItem extends TextBox {
     private Vector2f adder;
     private float speed;
     private DeadLine deadLine;
+    private BufferedImage background;
 
-    public DropItem(Vector2f pos, Vector2f move, float speed, String str, Font font, DeadLine deadLine) {
+    public DropItem(Vector2f pos, Vector2f move, float speed, String str, Font font, BufferedImage background, DeadLine deadLine) {
         super(new Vector2f(pos), 1.0F, new StringBuffer(str), font);
         this.move = new Vector2f(move);
         adder = new Vector2f();
         this.deadLine = deadLine;
         this.speed = speed;
         isValid = true;
+        this.background = background;
     }
 
     @Override
@@ -36,6 +40,9 @@ public class DropItem extends TextBox {
     @Override
     public void draw(Graphics2D g) {
         if (isValid) {
+            if (background != null) {
+                g.drawImage(background, null, (int)pos.x - background.getWidth() / 2, CoordSystem.getFlippedY(pos.y - background.getHeight() / 2));
+            }
             super.draw(g);
         }
     }

@@ -1,102 +1,52 @@
 package order;
 
 import menu.Menu;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Order {
+    private ArrayList<Menu> items;
+    private ArrayList<Boolean> served;
+    private static int dailyOrderCount = 0;
+    private int orderID;
+    private int price;
+    private long timestamp;
 
-    // 개별 메뉴 주문 항목
-    public static class OrderItem {
-        private Menu menu;                 // 메뉴
-        private List<String> options;      // 옵션 리스트
-        private int price;                 // 메뉴 + 옵션 가격
-
-        public OrderItem(Menu menu) {
-            this.menu = menu;
-            this.options = new ArrayList<>();
-            this.price = menu.getPrice();
-        }
-
-        public void addOption(String optionName, int optionPrice) {
-            options.add(optionName);
-            price += optionPrice;
-        }
-
-        public Menu getMenu() {
-            return menu;
-        }
-
-        public List<String> getOptions() {
-            return options;
-        }
-
-        public int getPrice() {
-            return price;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(menu.getName())
-                    .append(" (").append(menu.getPrice()).append("원)");
-
-            if (!options.isEmpty()) {
-                sb.append("\n  옵션:");
-                for (String opt : options) {
-                    sb.append("\n    - ").append(opt);
-                }
-            }
-
-            sb.append("\n  가격: ").append(price).append("원\n");
-            return sb.toString();
-        }
+    public Order(Menu firstMenu) {
+        items = new ArrayList<Menu>();
+        items.add(firstMenu);
+        served = new ArrayList<Boolean>();
+        served.add(false);
+        price += firstMenu.getPrice();
+        orderID = dailyOrderCount;
+        ++dailyOrderCount;
+        timestamp = System.currentTimeMillis();
     }
 
-    private List<OrderItem> items;     // 여러 개의 메뉴
-    private int totalPrice;
-
-    public Order() {
-        this.items = new ArrayList<>();
-        this.totalPrice = 0;
-    }
-
-    // 메뉴 1개 추가
-    public OrderItem addMenu(Menu menu) {
-        OrderItem item = new OrderItem(menu);
+    public void addMenu(Menu item) {
         items.add(item);
-        totalPrice += menu.getPrice();
-        return item;
+        price += item.getPrice();
     }
 
-    // 총 가격 업데이트
-    public void addToTotal(int amount) {
-        totalPrice += amount;
+    public int getMenuLength() {
+        return items.size();
     }
 
-    public List<OrderItem> getItems() {
-        return items;
+    public Menu getMenu(int idx) {
+        return items.get(idx);
     }
 
-    public int getTotalPrice() {
-        return totalPrice;
-    }
+    public boolean serve(int idx) {
+        served.set(idx, true);
 
-    // 영수증 출력
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("------ 영수증 ------\n");
-
-        for (OrderItem item : items) {
-            sb.append(item.toString()).append("\n");
+        for (var i : served) {
+            if (i == false) {
+                return false;
+            }
         }
-
-        sb.append("총 결제 금액: ").append(totalPrice).append("원\n");
-        sb.append("-------------------\n");
-
-        return sb.toString();
+        return true;
+    }
+    public static void nextDay() {
+        dailyOrderCount = 0;
     }
 }

@@ -2,6 +2,7 @@ package core;
 
 import entities.BrewingSlot;
 import entities.DeadLine;
+import order.OrderManager;
 import util.KoreanInputAssembler;
 import util.MessageQueue;
 import graphics.RenderQueue;
@@ -31,8 +32,9 @@ public class GameCanvas extends Canvas implements Runnable {
     public boolean shouldRun;
     private long lastTime;
 
-    private ArrayList<DropItem> drops;
     private ArrayList<BrewingSlot> brewingSlots;
+    private OrderManager coffeeshopManager;
+    private static int day;
 
     private class InputBox {
         public static TextBox box;
@@ -44,7 +46,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     new Vector2f(width / 2.F, height / 4.F),
                     0.F,
                     new StringBuffer(),
-                    new Font("Batang", Font.ITALIC, 30));
+                    new Font("Batang", Font.PLAIN, 30));
             text = box.getBufferHandle();
         }
     }
@@ -76,15 +78,11 @@ public class GameCanvas extends Canvas implements Runnable {
 
         InputBox.init(width, height);
         FailLine.init(width, height);
-        Font dropsFont = new Font("Malgun Gothic", Font.BOLD, 12);
-        drops = new ArrayList<DropItem>();
-        for (int i = 0; i < 10; ++i) {
-            drops.add(new DropItem(
-                    new Vector2f(width / 10 * i, height),
-                    new Vector2f(0, -1.F), 25.F, "temp str " + i, dropsFont, FailLine.line));
-        }
+        coffeeshopManager = new OrderManager(FailLine.line, day);
+        coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
-        brewingSlots.add(new BrewingSlot(drops, width, height, 0));
+        brewingSlots.add(new BrewingSlot(width, height, 0));
+        brewingSlots.get(0).loadMenu(coffeeshopManager.getMenuName(0, 0), coffeeshopManager.getDrops(0,0));
 
 
         // Start game loop;
@@ -164,7 +162,7 @@ public class GameCanvas extends Canvas implements Runnable {
                             int newSlotCount = brewingSlots.size() + 1;
                             int newWidth = getWidth() / newSlotCount;
                             int height = getHeight();
-                            brewingSlots.add(new BrewingSlot(new ArrayList<DropItem>(), newWidth, height, newWidth * (newSlotCount - 1)));
+                            brewingSlots.add(new BrewingSlot(newWidth, height, newWidth * (newSlotCount - 1)));
 
                             for (int i = 0; i < newSlotCount - 1; ++i) {
                                 brewingSlots.get(i).resize(newWidth, height, i * newWidth);

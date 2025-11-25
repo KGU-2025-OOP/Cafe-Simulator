@@ -1,6 +1,7 @@
 package entities;
 
 import java.awt.Graphics2D;
+import java.awt.Font;
 import java.util.ArrayList;
 
 import util.Vector2f;
@@ -13,9 +14,11 @@ public class BrewingSlot implements IGameObject {
     private ArrayList<DropItem> queue; // Items waiting to be processed
     private int slotWidth; // Current slot width
     private int xPos;
+    private String menuName;
+    private Font menuFont;
 
-    public BrewingSlot(ArrayList<DropItem> queue, int slotWidth, int height, int xPos) {
-        this.queue = new ArrayList<DropItem>(queue);
+    public BrewingSlot(int slotWidth, int height, int xPos) {
+        menuFont = new Font("Batang", Font.BOLD, 24);
         this.slotWidth = slotWidth;
         this.slots = new DropItem[SLOT_COUNT];
         slotPos = new Vector2f[SLOT_COUNT];
@@ -25,6 +28,13 @@ public class BrewingSlot implements IGameObject {
         this.xPos = xPos;
         fillEmptySlots(false);
     }
+
+    public void loadMenu(String menuName, ArrayList<DropItem> items) {
+        queue = new ArrayList<DropItem>(items);
+        this.menuName = menuName;
+    }
+
+
 
     /*
      * Fill empty slots with items from the queue

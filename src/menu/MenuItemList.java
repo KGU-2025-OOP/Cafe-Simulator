@@ -1,5 +1,6 @@
 package menu;
 
+import java.awt.image.BufferedImage;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -60,4 +61,5 @@ public abstract class MenuItemList<T extends MenuItem> {
     public T get(int index) {
         return itemList.get(index);
     }
+
 }
