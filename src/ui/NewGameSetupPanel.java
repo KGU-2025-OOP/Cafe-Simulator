@@ -8,10 +8,11 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Graphics;
-import java.awt.Graphics2D; // 추가
-import java.awt.BasicStroke; // 추가
-import java.awt.RenderingHints; // 추가
+import java.awt.Graphics2D;
+import java.awt.BasicStroke;
+import java.awt.RenderingHints;
 import java.awt.Image;
+import java.awt.Cursor; // 커서 추가
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,32 +32,31 @@ public class NewGameSetupPanel extends JPanel {
 
         setLayout(new GridBagLayout());
 
-        // [수정] 박스 패널을 익명 클래스로 만들어 둥근 모서리와 테두리를 직접 그립니다.
+        // 둥근 박스 패널
         JPanel boxPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 1. 둥근 배경 (반투명 흰색)
+                // 둥근 배경 (반투명 흰색)
                 g2.setColor(new Color(255, 255, 255, 200));
                 g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
 
-                // 2. 둥근 테두리 (검정색, 두께 2)
+                // 둥근 테두리
                 g2.setColor(Color.BLACK);
                 g2.setStroke(new BasicStroke(2f));
                 g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
 
-                super.paintComponent(g); // 내부 컴포넌트 그리기
+                super.paintComponent(g);
             }
         };
 
         boxPanel.setPreferredSize(new Dimension(800, 400));
-        boxPanel.setOpaque(false); // 배경은 위에서 직접 그리므로 투명 처리
-
-        // 기존의 LineBorder는 제거하고, 내부 여백(Padding)만 남깁니다.
+        boxPanel.setOpaque(false);
         boxPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
+        // 상단 타이틀
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
 
@@ -66,6 +66,7 @@ public class NewGameSetupPanel extends JPanel {
         titlePanel.add(titleLabel, BorderLayout.WEST);
         boxPanel.add(titlePanel, BorderLayout.NORTH);
 
+        // 입력창
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -78,7 +79,6 @@ public class NewGameSetupPanel extends JPanel {
         nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setBackground(new Color(255, 248, 220));
-        // 입력창 자체의 테두리는 유지 (빨간색)
         nameField.setBorder(
                 BorderFactory.createLineBorder(Color.RED, 3, true)
         );
@@ -86,12 +86,33 @@ public class NewGameSetupPanel extends JPanel {
         inputPanel.add(nameField, ic);
         boxPanel.add(inputPanel, BorderLayout.CENTER);
 
+        // 하단 버튼 패널
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setOpaque(false);
 
-        startButton = new JButton("창업하기");
-        startButton.setFont(new Font("SansSerif", Font.BOLD, 24));
-        startButton.setPreferredSize(new Dimension(140, 50));
+        // [수정] 창업하기 버튼 디자인 변경
+        startButton = new JButton("창업하기"); // 텍스트 설정
+
+        // 1. 배경 이미지 설정
+        startButton.setIcon(ImageManager.getImageIcon(ImageManager.BTN_DEFAULT));
+
+        // 2. 텍스트 위치 설정 (이미지 중앙에 글씨 올리기)
+        startButton.setHorizontalTextPosition(JButton.CENTER);
+        startButton.setVerticalTextPosition(JButton.CENTER);
+
+        // 3. 폰트 및 색상 설정 (흰색 글씨, 맑은 고딕)
+        startButton.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
+        startButton.setForeground(Color.WHITE);
+
+        // 4. 버튼 스타일 제거 (투명하게)
+        startButton.setContentAreaFilled(false);
+        startButton.setBorderPainted(false);
+        startButton.setFocusPainted(false);
+        startButton.setOpaque(false);
+
+        // 5. 커서 및 크기 설정
+        startButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        startButton.setPreferredSize(new Dimension(150, 50)); // 이미지 크기에 맞춰 조절 가능
 
         buttonPanel.add(startButton, BorderLayout.EAST);
         boxPanel.add(buttonPanel, BorderLayout.SOUTH);
