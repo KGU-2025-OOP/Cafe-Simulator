@@ -2,6 +2,7 @@ package core;
 
 import entities.BrewingSlot;
 import entities.DeadLine;
+import util.KoreanInputAssembler;
 import util.MessageQueue;
 import graphics.RenderQueue;
 import graphics.TextBox;
@@ -18,13 +19,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.beancontext.BeanContext;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameCanvas extends Canvas implements Runnable {
 
     private RenderQueue renderQueue;
     private MessageQueue messageQueue;
+    private KoreanInputAssembler korean;
     FPSCounter frameCounter;
 
     public boolean shouldRun;
@@ -43,7 +44,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     new Vector2f(width / 2.F, height / 4.F),
                     0.F,
                     new StringBuffer(),
-                    new Font("Arial", Font.ITALIC, 30));
+                    new Font("Malgun Gothic", Font.ITALIC, 30));
             text = box.getBufferHandle();
         }
     }
@@ -63,6 +64,7 @@ public class GameCanvas extends Canvas implements Runnable {
         renderQueue = new RenderQueue(width, height);
         messageQueue = new MessageQueue();
         frameCounter = new FPSCounter();
+        korean = new KoreanInputAssembler();
         setSize(width, height);
         Toolkit.getDefaultToolkit().addAWTEventListener(messageQueue, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
     }
@@ -74,7 +76,7 @@ public class GameCanvas extends Canvas implements Runnable {
 
         InputBox.init(width, height);
         FailLine.init(width, height);
-        Font dropsFont = new Font("Arial", Font.BOLD, 12);
+        Font dropsFont = new Font("Malgun Gothic", Font.BOLD, 12);
         drops = new ArrayList<DropItem>();
         for (int i = 0; i < 10; ++i) {
             drops.add(new DropItem(
@@ -129,6 +131,7 @@ public class GameCanvas extends Canvas implements Runnable {
                 switch (input.getID()) {
                     case KeyEvent.KEY_TYPED:
                         ki = (KeyEvent)input;
+                        korean.input(InputBox.text, ki);
                         if (ki.isControlDown()) {
                             break;
                         }
@@ -146,13 +149,18 @@ public class GameCanvas extends Canvas implements Runnable {
                             }
                             InputBox.text.setLength(0);
                         } else {
-                            InputBox.text.append(c);
+                            if (!korean.isActivated()) {
+                                InputBox.text.append(c);
+                            }
+
                         }
 
                         break;
                     case KeyEvent.KEY_PRESSED:
                         ki = (KeyEvent)input;
-                        if (ki.getKeyCode() == KeyEvent.VK_UP) {
+                        if (ki.getKeyCode() == KeyEvent.VK_ALT) {
+                            korean.toggleActivation();
+                        } else if (ki.getKeyCode() == KeyEvent.VK_UP) {
                             int newSlotCount = brewingSlots.size() + 1;
                             int newWidth = getWidth() / newSlotCount;
                             int height = getHeight();
@@ -205,6 +213,10 @@ public class GameCanvas extends Canvas implements Runnable {
 
     private void shutdown() {
         System.exit(0);
+    }
+
+    private MessageQueue getMessageQueue() {
+        return messageQueue;
     }
 
 }

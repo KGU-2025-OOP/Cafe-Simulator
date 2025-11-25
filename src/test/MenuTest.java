@@ -48,8 +48,8 @@ public class MenuTest {
         System.out.println("=== OPTIONS ===");
         for (Option option : optionList) {
             System.out.println("Option Name: " + option.getName());
-            System.out.println("Making Time: " + option.getMakingTime());
-            System.out.println("Max Wait Time: " + option.getMaxWaitTime());
+            // System.out.println("Making Time: " + option.getMakingTime());
+            // System.out.println("Max Wait Time: " + option.getMaxWaitTime());
             System.out.println("Price: " + option.getPrice());
             System.out.println();
         }

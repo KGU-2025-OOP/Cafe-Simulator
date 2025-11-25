@@ -25,10 +25,6 @@ public class GameTest {
             }
         });
 
-
-        InputContext ic = gameCanvas.getInputContext();
-        ic.selectInputMethod(Locale.KOREAN);
-
         Thread gameThread = new Thread(gameCanvas);
         gameThread.start();
     }
