@@ -12,7 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Image;
-import java.awt.Cursor; // 커서 추가
+import java.awt.Cursor;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -61,7 +61,7 @@ public class NewGameSetupPanel extends JPanel {
         titlePanel.setOpaque(false);
 
         JLabel titleLabel = new JLabel("카페 이름을 입력하세요!");
-        titleLabel.setFont(new Font("Monospaced", Font.BOLD, 32));
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
 
         titlePanel.add(titleLabel, BorderLayout.WEST);
         boxPanel.add(titlePanel, BorderLayout.NORTH);
@@ -80,7 +80,7 @@ public class NewGameSetupPanel extends JPanel {
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setBackground(new Color(255, 248, 220));
         nameField.setBorder(
-                BorderFactory.createLineBorder(new Color(139, 0, 26), 3, true)
+                BorderFactory.createLineBorder(new Color(129,0,26), 3, true)
         );
 
         inputPanel.add(nameField, ic);
@@ -90,29 +90,26 @@ public class NewGameSetupPanel extends JPanel {
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setOpaque(false);
 
-        // [수정] 창업하기 버튼 디자인 변경
-        startButton = new JButton("창업하기"); // 텍스트 설정
+        // 창업하기 버튼
+        startButton = new JButton("창업하기");
 
-        // 1. 배경 이미지 설정
         startButton.setIcon(ImageManager.getImageIcon(ImageManager.BTN_DEFAULT));
-
-        // 2. 텍스트 위치 설정 (이미지 중앙에 글씨 올리기)
         startButton.setHorizontalTextPosition(JButton.CENTER);
         startButton.setVerticalTextPosition(JButton.CENTER);
 
-        // 3. 폰트 및 색상 설정 (흰색 글씨, 맑은 고딕)
-        startButton.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
+        startButton.setFont(new Font("Malgun Gothic", Font.BOLD, 18));
         startButton.setForeground(Color.WHITE);
 
-        // 4. 버튼 스타일 제거 (투명하게)
         startButton.setContentAreaFilled(false);
         startButton.setBorderPainted(false);
         startButton.setFocusPainted(false);
         startButton.setOpaque(false);
-
-        // 5. 커서 및 크기 설정
         startButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        startButton.setPreferredSize(new Dimension(150, 50)); // 이미지 크기에 맞춰 조절 가능
+
+        startButton.setPreferredSize(new Dimension(120, 45));
+
+        // [추가] 텍스트 필드에서 엔터 키를 누르면 버튼 클릭 효과 발생
+        nameField.addActionListener(e -> startButton.doClick());
 
         buttonPanel.add(startButton, BorderLayout.EAST);
         boxPanel.add(buttonPanel, BorderLayout.SOUTH);
