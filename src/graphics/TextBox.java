@@ -40,9 +40,16 @@ public class TextBox implements IGameObject {
     @Override
     public void draw(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setColor(Color.BLACK);
+
         g.setFont(font);
         int width = g.getFontMetrics().stringWidth(outStr);
+
+        g.setColor(Color.RED);
+        g.drawString(outStr, (int)pos.x - width / 2 + 1, CoordSystem.getFlippedY(pos.y));
+        g.drawString(outStr, (int)pos.x - width / 2 - 1, CoordSystem.getFlippedY(pos.y));
+        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) + 1);
+        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) - 1);
+        g.setColor(Color.BLACK);
         g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y));
         lastTextWidth = width;
     }

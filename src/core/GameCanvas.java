@@ -44,7 +44,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     new Vector2f(width / 2.F, height / 4.F),
                     0.F,
                     new StringBuffer(),
-                    new Font("Malgun Gothic", Font.ITALIC, 30));
+                    new Font("Batang", Font.ITALIC, 30));
             text = box.getBufferHandle();
         }
     }
@@ -200,7 +200,7 @@ public class GameCanvas extends Canvas implements Runnable {
             // frameCounter.limitFPS(60);
             frameCounter.printFPS();
         }
-        shutdown();
+        nextLevel();
     }
 
     private void drawCanvas() {
@@ -211,6 +211,9 @@ public class GameCanvas extends Canvas implements Runnable {
         g.dispose();
     }
 
+    private void nextLevel() {
+
+    }
     private void shutdown() {
         System.exit(0);
     }

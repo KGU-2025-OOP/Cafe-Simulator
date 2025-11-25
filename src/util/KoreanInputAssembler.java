@@ -308,10 +308,18 @@ public class KoreanInputAssembler {
                     }
                     // 종성음 합성
                     finalCode = finalMap.get(QWERTY_BIND[in]);
+                    if (finalCode == null) {
+                        stage = Stage.INITIAL;
+                        cond = true;
+                        finalHolder = 0;
+                        break;
+                    }
                     char buf = targetHandle.charAt(idx);
                     if (finalHolder == 0) {
                         lastBak = targetHandle.substring(idx);
                         targetHandle.setLength(idx);
+                        System.out.println(buf);
+                        System.out.println(finalCode);
                         targetHandle.append((char) ((int) buf + finalCode));
                         stage = Stage.FINAL;
                         finalHolder = in;
