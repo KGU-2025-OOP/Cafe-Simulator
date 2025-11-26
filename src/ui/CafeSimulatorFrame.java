@@ -145,6 +145,8 @@ public class CafeSimulatorFrame extends JFrame {
         pack();
         setLocationRelativeTo(null);
 
+        BgmManager.setOn(true);
+        
         showPanel("Start");
 
         addComponentListener(new ComponentAdapter() {
@@ -195,11 +197,15 @@ public class CafeSimulatorFrame extends JFrame {
         bgmButton.setPreferredSize(new Dimension(100, 40));
 
         bgmButton.addActionListener(e -> {
-            if (bgmButton.isSelected()) {
+            boolean selected = bgmButton.isSelected();
+
+            if (selected) {
                 bgmButton.setText("BGM ON");
+                BgmManager.setOn(true);   // ★ BGM 켜기
                 System.out.println("BGM 켜기");
             } else {
                 bgmButton.setText("BGM OFF");
+                BgmManager.setOn(false);  // ★ BGM 끄기
                 System.out.println("BGM 끄기");
             }
         });

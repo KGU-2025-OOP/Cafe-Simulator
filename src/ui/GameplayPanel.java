@@ -76,10 +76,11 @@ public class GameplayPanel extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
+        /*
         JPanel topPathPanel = createTopPathPanel();
         topPathPanel.setPreferredSize(new Dimension(0, 100));
         mainPanel.add(topPathPanel, BorderLayout.NORTH);
-        /*
+        
 
         JPanel bottomPathPanel = createBottomPathPanel();
         JPanel leftPathPanel = createLeftPathPanel();
