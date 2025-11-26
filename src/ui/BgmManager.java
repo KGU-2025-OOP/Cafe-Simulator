@@ -11,7 +11,6 @@ public class BgmManager {
     private static Clip clip;
     private static boolean on = false;
 
-    // 내부에서만 쓰는: 실제로 로딩 & 루프 재생
     private static void startLoopInternal() {
         try {
             if (clip == null) {
@@ -26,9 +25,8 @@ public class BgmManager {
                 clip.open(ais);
             }
 
-            // 이미 재생 중이면 다시 시작하지 않기 (패널 바뀐다고 리스타트 안 되도록)
             if (!clip.isRunning()) {
-                clip.loop(Clip.LOOP_CONTINUOUSLY);  // 계속 반복 재생
+                clip.loop(Clip.LOOP_CONTINUOUSLY);
             }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
@@ -41,7 +39,6 @@ public class BgmManager {
         }
     }
 
-    // 외부에서 사용할 ON/OFF 함수
     public static void setOn(boolean turnOn) {
         on = turnOn;
         if (on) {
