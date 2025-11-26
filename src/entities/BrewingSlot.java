@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 import java.util.ArrayList;
 
+import graphics.TextBox;
 import util.Vector2f;
 
 public class BrewingSlot implements IGameObject {
@@ -14,27 +15,27 @@ public class BrewingSlot implements IGameObject {
     private ArrayList<DropItem> queue; // Items waiting to be processed
     private int slotWidth; // Current slot width
     private int xPos;
-    private String menuName;
+    private TextBox currentMenu;
     private Font menuFont;
+    private int height;
 
     public BrewingSlot(int slotWidth, int height, int xPos) {
         menuFont = new Font("Batang", Font.BOLD, 24);
         this.slotWidth = slotWidth;
+        this.height = height;
         this.slots = new DropItem[SLOT_COUNT];
         slotPos = new Vector2f[SLOT_COUNT];
         for (int i = 0; i < SLOT_COUNT; ++i) {
             slotPos[i] = new Vector2f(slotWidth / SLOT_COUNT * i + slotWidth / (2 * SLOT_COUNT) + xPos, height);
         }
         this.xPos = xPos;
-        fillEmptySlots(false);
     }
 
     public void loadMenu(String menuName, ArrayList<DropItem> items) {
         queue = new ArrayList<DropItem>(items);
-        this.menuName = menuName;
+        currentMenu = new TextBox(new Vector2f(xPos + slotWidth / 2, height - 80), 0.F, new StringBuffer(menuName), menuFont);
+        fillEmptySlots(false);
     }
-
-
 
     /*
      * Fill empty slots with items from the queue
@@ -74,16 +75,18 @@ public class BrewingSlot implements IGameObject {
             }
         }
         // Ensure all empty slots are filled
-        fillEmptySlots(true);
+        fillEmptySlots(false);
     }
 
     @Override
     public void draw(Graphics2D g) {
+        // draw menu name
         for (int i = 0; i < SLOT_COUNT; i++) {
             if (slots[i] != null) {
                 slots[i].draw(g);
             }
         }
+        currentMenu.draw(g);
     }
 
     /*
@@ -98,6 +101,10 @@ public class BrewingSlot implements IGameObject {
             }
         }
         return false;
+    }
+
+    public boolean isEmpty() {
+        return queue.isEmpty();
     }
 
     /*

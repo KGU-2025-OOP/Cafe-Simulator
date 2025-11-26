@@ -78,11 +78,13 @@ public class GameCanvas extends Canvas implements Runnable {
 
         InputBox.init(width, height);
         FailLine.init(width, height);
-        coffeeshopManager = new OrderManager(FailLine.line, day);
+        coffeeshopManager = new OrderManager(day);
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
         brewingSlots.add(new BrewingSlot(width, height, 0));
-        brewingSlots.get(0).loadMenu(coffeeshopManager.getMenuName(0, 0), coffeeshopManager.getDrops(0,0));
+        brewingSlots.get(0).loadMenu(
+                coffeeshopManager.getOrder(0).getMenu(0).getName(),
+                coffeeshopManager.getOrder(0).getMenu(0).getDrops(0, FailLine.line));
 
 
         // Start game loop;
@@ -198,6 +200,7 @@ public class GameCanvas extends Canvas implements Runnable {
             // frameCounter.limitFPS(60);
             frameCounter.printFPS();
         }
+        // shutdown();
         nextLevel();
     }
 

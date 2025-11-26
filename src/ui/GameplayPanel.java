@@ -76,39 +76,42 @@ public class GameplayPanel extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
-        /*
         JPanel topPathPanel = createTopPathPanel();
+        topPathPanel.setPreferredSize(new Dimension(0, 100));
+        mainPanel.add(topPathPanel, BorderLayout.NORTH);
+        /*
+
         JPanel bottomPathPanel = createBottomPathPanel();
         JPanel leftPathPanel = createLeftPathPanel();
         JPanel rightPathPanel = createRightPathPanel();
 
-        topPathPanel.setPreferredSize(new Dimension(0, 100));
+
         bottomPathPanel.setPreferredSize(new Dimension(0, 100));
         leftPathPanel.setPreferredSize(new Dimension(100, 0));
         rightPathPanel.setPreferredSize(new Dimension(100, 0));
 
-        mainPanel.add(topPathPanel, BorderLayout.NORTH);
+
         mainPanel.add(bottomPathPanel, BorderLayout.SOUTH);
         mainPanel.add(leftPathPanel, BorderLayout.WEST);
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
 		*/
 
         gameCanvas = new GameCanvas(
-                ScreenConfig.WIDTH - 200,
-                ScreenConfig.HEIGHT - 200
+                ScreenConfig.WIDTH,
+                ScreenConfig.HEIGHT -100
         );
         mainPanel.add(gameCanvas, BorderLayout.CENTER);
 
         return mainPanel;
     }
 
-    /*
+
     private JPanel createTopPathPanel() {
         JPanel topPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         topPathPanel.setBackground(Color.RED);
         return topPathPanel;
     }
-
+/*
     private JPanel createBottomPathPanel() {
         JPanel bottomPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         bottomPathPanel.setBackground(Color.GREEN);

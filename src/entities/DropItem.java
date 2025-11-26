@@ -15,6 +15,7 @@ public class DropItem extends TextBox {
     private float speed;
     private DeadLine deadLine;
     private BufferedImage background;
+    public static Font dropsFont = new Font("Batang", Font.ITALIC, 12);
 
     public DropItem(Vector2f pos, Vector2f move, float speed, String str, Font font, BufferedImage background, DeadLine deadLine) {
         super(new Vector2f(pos), 1.0F, new StringBuffer(str), font);
@@ -41,7 +42,7 @@ public class DropItem extends TextBox {
     public void draw(Graphics2D g) {
         if (isValid) {
             if (background != null) {
-                g.drawImage(background, null, (int)pos.x - background.getWidth() / 2, CoordSystem.getFlippedY(pos.y - background.getHeight() / 2));
+                g.drawImage(background, null, (int)pos.x - background.getWidth() / 2, CoordSystem.getFlippedY(pos.y + background.getHeight() / 2));
             }
             super.draw(g);
         }

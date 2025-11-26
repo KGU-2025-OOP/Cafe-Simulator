@@ -32,15 +32,19 @@ public class KoreanInputAssembler {
     private int medialHolder;
     private int finalHolder;
     private String lastBak;
+    private String prevBak;
     boolean doubledFinal;
+    boolean deleting;
 
     public KoreanInputAssembler() {
         initialHolder = 0;
         medialHolder = 0;
         finalHolder = 0;
         lastBak = null;
+        prevBak = null;
         doubledFinal = false;
         ignore = false;
+        deleting = false;
         stage = Stage.INITIAL;
         /// UTF-16 encoding:  0xac00 + 588 * initial_idx + 28 * medial_idx + final_idx
         initialMap = new HashMap<String, Integer>();
@@ -119,11 +123,14 @@ public class KoreanInputAssembler {
         }
         int in = (int) e.getKeyChar();
         // Space bar, tab, backspace, enter keys break combining
-        if (in == 0x20 || in == '\t' || in == 8 || in == 0xa) {
+        if (in == 0xa) {
             stage = Stage.INITIAL;
             return;
         }
-        if ('a' > (in | 0x20) || (in | 0x20) > 'z') {
+        if (in == 0x20 || in == '\t') {
+            targetHandle.append((char) in);
+        }
+        if (('a' > (in | 0x20) || (in | 0x20) > 'z') && in != 8) {
             return;
         }
 
@@ -134,6 +141,53 @@ public class KoreanInputAssembler {
             Integer medialCode = null;
             Integer finalCode = null;
             int idx = targetHandle.length() - 1;
+
+            if (in == 8) {
+                // TODO: 결합 분리 구현 예정
+                if (deleting) {
+                    stage = Stage.INITIAL;
+                    return;
+                }
+                if (idx >= 0) {
+                    int base = targetHandle.charAt(idx);
+                    if (!isValid((char)base)) {
+                        stage = Stage.INITIAL;
+                        return;
+                    }
+                    base = base - 0xac00;
+                    initialCode = base / 588 * 588;
+                    medialCode = (base % 588) / 28 * 28;
+                    finalCode = base % 28;
+                    if (finalCode == 0) {
+                        stage = Stage.MEDIAL;
+                        targetHandle.setLength(idx);
+                        targetHandle.append(INITIAL_SOUND[initialCode / 588]);
+                        deleting = true;
+                    } else if (1 < finalCode && finalCode <= 3) {
+                        targetHandle.setLength(idx);
+                        targetHandle.append((char)(0xac00 + initialCode + medialCode + finalMap.get("ㄱ")));
+                    } else if (4 < finalCode && finalCode <= 6) {
+                        targetHandle.setLength(idx);
+                        targetHandle.append((char)(0xac00 + initialCode + medialCode + finalMap.get("ㄴ")));
+                    } else if (8 < finalCode && finalCode <= 14) {
+                        targetHandle.setLength(idx);
+                        targetHandle.append((char)(0xac00 + initialCode + medialCode + finalMap.get("ㄹ")));
+                    } else if (finalCode == 18) {
+                        targetHandle.setLength(idx);
+                        targetHandle.append((char)(0xac00 + initialCode + medialCode + finalMap.get("ㅂ")));
+                    } else {
+                        targetHandle.setLength(idx);
+                        targetHandle.append((char)(0xac00 + initialCode + medialCode + 0));
+                        stage = Stage.FINAL;
+                    }
+                    // placeholder
+                    targetHandle.append('d');
+                }
+
+                return;
+            } else {
+                deleting = false;
+            }
             switch (stage) {
                 case INITIAL:
                     medialCode = medialMap.get(QWERTY_BIND[in]);
@@ -302,7 +356,7 @@ public class KoreanInputAssembler {
                         targetHandle.setLength(idx);
                         targetHandle.append((char) (0xac00 + initialMap.get(QWERTY_BIND[initialHolder]) + medialMap.get(medialKey)));
 
-                        
+
                         stage = Stage.FINAL;
                         break;
                     }
@@ -318,12 +372,10 @@ public class KoreanInputAssembler {
                     if (finalHolder == 0) {
                         lastBak = targetHandle.substring(idx);
                         targetHandle.setLength(idx);
-                        System.out.println(buf);
-                        System.out.println(finalCode);
                         targetHandle.append((char) ((int) buf + finalCode));
                         stage = Stage.FINAL;
                         finalHolder = in;
-                    } else if (!doubledFinal){
+                    } else if (!doubledFinal) {
                         if (QWERTY_BIND[finalHolder].equals("ㄱ") && QWERTY_BIND[in].equals("ㅅ")) {
                             finalCode = finalMap.get("ㄳ");
                         } else if (QWERTY_BIND[finalHolder].equals("ㄴ") && QWERTY_BIND[in].equals("ㅈ")) {

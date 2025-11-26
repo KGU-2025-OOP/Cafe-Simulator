@@ -3,7 +3,6 @@ package graphics;
 import entities.IGameObject;
 import util.CoordSystem;
 import util.Vector2f;
-import util.ImageUtils;
 
 import java.awt.Graphics2D;
 import java.awt.Font;
@@ -44,11 +43,12 @@ public class TextBox implements IGameObject {
         g.setFont(font);
         int width = g.getFontMetrics().stringWidth(outStr);
 
+        final int highlight = 2;
         g.setColor(Color.WHITE);
-        g.drawString(outStr, (int)pos.x - width / 2 + 1, CoordSystem.getFlippedY(pos.y));
-        g.drawString(outStr, (int)pos.x - width / 2 - 1, CoordSystem.getFlippedY(pos.y));
-        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) + 1);
-        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) - 1);
+        g.drawString(outStr, (int)pos.x - width / 2 + highlight, CoordSystem.getFlippedY(pos.y));
+        g.drawString(outStr, (int)pos.x - width / 2 - highlight, CoordSystem.getFlippedY(pos.y));
+        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) + highlight);
+        g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y) - highlight);
         g.setColor(Color.BLACK);
         g.drawString(outStr, (int)pos.x - width / 2, CoordSystem.getFlippedY(pos.y));
         lastTextWidth = width;

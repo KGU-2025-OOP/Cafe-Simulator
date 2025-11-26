@@ -1,7 +1,12 @@
 package order;
 
+import entities.DeadLine;
+import entities.DropItem;
+import menu.Ingredient;
 import menu.Menu;
+import util.Vector2f;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Order {
@@ -12,6 +17,9 @@ public class Order {
     private int price;
     private long timestamp;
 
+
+    private float dropSpeed;
+
     public Order(Menu firstMenu) {
         items = new ArrayList<Menu>();
         items.add(firstMenu);
@@ -21,6 +29,7 @@ public class Order {
         orderID = dailyOrderCount;
         ++dailyOrderCount;
         timestamp = System.currentTimeMillis();
+        dropSpeed = 15.F;
     }
 
     public void addMenu(Menu item) {
@@ -49,4 +58,5 @@ public class Order {
     public static void nextDay() {
         dailyOrderCount = 0;
     }
+
 }

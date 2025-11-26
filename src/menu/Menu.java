@@ -1,5 +1,9 @@
 package menu;
 
+import entities.DeadLine;
+import entities.DropItem;
+import util.Vector2f;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -86,5 +90,19 @@ public class Menu {
             totalCost += item.getPrice();
         }
         return totalCost + this.price;  // 메뉴 가격 + 재료 가격
+    }
+    public ArrayList<DropItem> getDrops(int idx, DeadLine deadline) {
+        int tempDropSpeed = 15; // Ingredients의 처리 시간에 비례해서 값을 키울 에정이였음
+        ArrayList<Ingredient> ingredients = this.getIngredients();
+        ArrayList<DropItem> res = new ArrayList<DropItem>();
+        int length = ingredients.size();
+        for (int i = 0; i < length; ++i) {
+            DropItem newDrop = new DropItem(new Vector2f(), new Vector2f(0, -1), tempDropSpeed,
+                    ingredients.get(i).getName(), DropItem.dropsFont,
+                    ingredients.get(i).getBufferedImage(), deadline);
+            res.add(newDrop);
+        }
+
+        return res;
     }
 }
