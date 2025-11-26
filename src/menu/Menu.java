@@ -13,12 +13,15 @@ public class Menu {
     protected java.io.File img; //이미지 파일
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
-        this.isCoffee = Integer.parseInt(scanner.next());
-        this.name = scanner.next();
-        this.ingredientCount = Integer.parseInt(scanner.next());
+        String line = scanner.nextLine();
+        String[] tokens = line.split(" ");
+
+        this.isCoffee = Integer.parseInt(tokens[0]);
+        this.name = tokens[1];
+        this.ingredientCount = Integer.parseInt(tokens[2]);
         this.items = new ArrayList<MenuItem>();
         for (int i = 0; i < this.ingredientCount; i++) {
-            String ingredientName = scanner.next();
+            String ingredientName = tokens[3 + i];
             for (Ingredient ingredient : ingredientList) {
                 MenuItem matchedItem = ingredient.matches("재료", ingredientName);
                 if (matchedItem != null) {
@@ -30,9 +33,9 @@ public class Menu {
         if (this.items.size() != ingredientCount)
             throw new IllegalArgumentException("Ingredient not found for menu: " + this.name + " only found " + this.items.size() + " ingredients.");
 
-        this.price = Integer.parseInt(scanner.next());
+        this.price = Integer.parseInt(tokens[3 + this.ingredientCount]);
 
-        this.imgPath = scanner.next();
+        this.imgPath = tokens[4 + this.ingredientCount];
         // 이미지 파일 로드 ===========================================
         java.io.File file = new java.io.File(this.imgPath);
         if (file.exists()) { // 이미지 파일이 존재하는지 확인

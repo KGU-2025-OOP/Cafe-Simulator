@@ -25,6 +25,6 @@
 0 청포도에이드 3 청포도시럽 탄산수 얼음 5500 resources/image/menu_image/greengrape_ade.png
 0 유자차 2 유자 물 4800 resources/image/menu_image/citron_tea.png
 0 자스민차 2 자스민 물 4700 resources/image/menu_image/jasmine_tea.png
-0 얼그레이티 2 얼그레이 물 4700 resources/image/menu_image/earlgrey.png
+0 얼그레이티 2 얼그레이 물 4700 resources/image/menu_image/earlgrey_tea.png
 0 허니자몽티 3 자몽시럽 물 꿀 5000 resources/image/menu_image/honey_jamonti.png
 0 딸기라떼 3 딸기 우유 설탕 5600 resources/image/menu_image/strawberry_latte.png

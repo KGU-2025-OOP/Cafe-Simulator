@@ -18,10 +18,13 @@ public abstract class MenuItem {
     public static int imageSize = 45;
 
     public MenuItem(Scanner scan) {
-        this.name = scan.next();
-        this.price = scan.nextInt();
-        if (scan.hasNext()) {
-            this.imgPath = scan.next();
+        String line = scan.nextLine();
+        String[] parts = line.split(" ");
+
+        this.name = parts[0];
+        this.price = Integer.parseInt(parts[1]);
+        if (parts.length > 2) {
+            this.imgPath = parts[2];
             // 이미지 파일 로드 ===========================================
             java.io.File file = new java.io.File(this.imgPath);
             if (file.exists()) { // 이미지 파일이 존재하는지 확인

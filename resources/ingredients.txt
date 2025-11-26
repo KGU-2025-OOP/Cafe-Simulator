@@ -4,7 +4,7 @@
 우유 0 resources/image/ingredient_image/milk.png
 바닐라시럽 0 resources/image/ingredient_image/syrup.png
 카라멜시럽 0 resources/image/ingredient_image/syrup.png
-초콜릿시 0 resources/image/ingredient_image/chocolate_syrup.png
+초콜릿시럽 0 resources/image/ingredient_image/chocolate_syrup.png
 화이트초콜릿시럽 0 resources/image/ingredient_image/whitechocolate_syrup.png
 헤이즐넛시럽 0 resources/image/ingredient_image/syrup.png
 생크림 0 resources/image/ingredient_image/whipped_cream.png
