@@ -11,31 +11,63 @@ import java.util.List;
 import java.util.Map;
 
 public class SalesStatisticsPanel extends JPanel {
-	
-	private JButton backButton;
+
+    private JButton backButton;
     private GraphDisplayPanel graphDisplayPanel;
 
     private Map<Integer, Integer> dailySalesHistory;
 
+    private Image backgroundImage;
+
     public SalesStatisticsPanel(Map<Integer, Integer> dailySalesHistory) {
         this.dailySalesHistory = dailySalesHistory;
+
+        backgroundImage = ImageManager.getImage(ImageManager.IMG_MENU_BG);
+
         setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
+        setOpaque(false);
+        setPreferredSize(ScreenConfig.FRAME_SIZE);
         setBorder(new EmptyBorder(20, 30, 20, 30));
 
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
 
-        backButton = new JButton("돌아가기");
-        backButton.setFont(new Font("Malgun Gothic", Font.BOLD, 16));
+        backButton = new JButton(ImageManager.getImageIcon(ImageManager.BTN_BACK));
+        backButton.setContentAreaFilled(false);
+        backButton.setBorderPainted(false);
+        backButton.setFocusPainted(false);
+        backButton.setOpaque(false);
+        backButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         JPanel backButtonWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
         backButtonWrapper.setOpaque(false);
         backButtonWrapper.add(backButton);
 
-        JLabel titleLabel = new JLabel("성장도 그래프 (일일 수익)", JLabel.CENTER);
-        titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 32));
-        titleLabel.setForeground(new Color(60, 60, 60));
+        JPanel titlePanel = new JPanel(new GridBagLayout());
+        titlePanel.setOpaque(false);
+
+        JLabel titleLabel = new JLabel("성장도 그래프          ") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                String text = getText();
+                FontMetrics fm = g2.getFontMetrics();
+
+                int x = (getWidth() - fm.stringWidth(text)) / 2;
+                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.drawString(text, x + 3, y + 3);
+
+                g2.setColor(Color.WHITE);
+                g2.drawString(text, x, y);
+            }
+        };
+
+        titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
+        titleLabel.setPreferredSize(new Dimension(250, 60));
 
         topPanel.add(backButtonWrapper, BorderLayout.WEST);
         topPanel.add(titleLabel, BorderLayout.CENTER);
@@ -50,6 +82,14 @@ public class SalesStatisticsPanel extends JPanel {
         return backButton;
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (backgroundImage != null) {
+            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+        }
+    }
+
     private class GraphDisplayPanel extends JPanel {
         private static final int PADDING = 60;
         private static final int POINT_RADIUS = 5;
@@ -58,8 +98,8 @@ public class SalesStatisticsPanel extends JPanel {
         private static final int Y_AXIS_INTERVAL = 10000;
 
         private static final Color COLOR_BACKGROUND = new Color(248, 248, 248);
-        private static final Color COLOR_LINE = new Color(0, 120, 200);
-        private static final Color COLOR_POINT = new Color(220, 50, 50);
+        private static final Color COLOR_LINE = new Color(139, 69, 19);
+        private static final Color COLOR_POINT = new Color(210, 180, 140);
         private static final Color COLOR_AXIS = Color.BLACK;
         private static final Color COLOR_GRID = new Color(220, 220, 220);
 
@@ -127,8 +167,8 @@ public class SalesStatisticsPanel extends JPanel {
             int maxSales = salesData.isEmpty() ? 0 : Collections.max(salesData);
             int minSales = salesData.isEmpty() ? 0 : Collections.min(salesData);
 
-            int yMax = (int) (Math.ceil(Math.max(maxSales, 0) / (double)Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
-            int yMin = (int) (Math.floor(Math.min(minSales, 0) / (double)Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
+            int yMax = (int) (Math.ceil(Math.max(maxSales, 0) / (double) Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
+            int yMin = (int) (Math.floor(Math.min(minSales, 0) / (double) Y_AXIS_INTERVAL) * Y_AXIS_INTERVAL);
 
             if (yMax == 0 && maxSales > 0) yMax = Y_AXIS_INTERVAL;
             if (yMax == 0 && yMin == 0) yMax = Y_AXIS_INTERVAL;

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class MenuItem {
     public enum MenuType {
-        Coffee,    // 1: 커피
-        NonCoffee, // 0: 논커피
+        Coffee,
+        NonCoffee,
         Dessert    // 베이커리/디저트 (기존 유지)
     }
 

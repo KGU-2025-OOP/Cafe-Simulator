@@ -46,6 +46,7 @@ public class CafeSimulatorFrame extends JFrame {
     private GameplayAreaPanel gameSpacePanel;
     private SalesStatisticsPanel salesGraphPanel;
     private MenuGuidePanel menuGuidePanel;
+    private StatisticsSearchPanel statisticsSearchPanel;
 
     private int currentDayNumber;
     private Map<Integer, Integer> dailySalesHistory;
@@ -119,6 +120,9 @@ public class CafeSimulatorFrame extends JFrame {
 
         menuGuidePanel = new MenuGuidePanel(allMenuItems, this::handleMenuBack);
         mainPanel.add(menuGuidePanel, "MenuGuide");
+        
+        statisticsSearchPanel = new StatisticsSearchPanel();
+        mainPanel.add(statisticsSearchPanel, "StatisticsSearch");
 
         addListenersToStartPanel(hasSaveFile);
         addListenersToNewGamePanel();
@@ -126,6 +130,10 @@ public class CafeSimulatorFrame extends JFrame {
         addListenersToGameSpacePanel();
 
         salesGraphPanel.getBackButton().addActionListener(e -> {
+            showPanel("GameSpaceHub");
+        });
+        
+        statisticsSearchPanel.getBackButton().addActionListener(e -> {
             showPanel("GameSpaceHub");
         });
 
@@ -146,7 +154,6 @@ public class CafeSimulatorFrame extends JFrame {
         });
     }
 
-    // [수정] 하단 바 버튼 생성 로직 변경
     private void createBottomBar() {
         bottomBarPanel = new JPanel(new BorderLayout());
 
@@ -171,24 +178,21 @@ public class CafeSimulatorFrame extends JFrame {
         bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomRightPanel.setOpaque(false);
 
-        // 3. 메뉴도감 버튼
         menuButton = createMiniButton("메뉴도감");
         menuButton.addActionListener(e -> openMenuGuide());
 
-        // 4. BGM 버튼 (JToggleButton이라 따로 설정)
         bgmButton = new JToggleButton("BGM ON", true);
-        // 미니 버튼 스타일 수동 적용
         bgmButton.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MINI));
         bgmButton.setHorizontalTextPosition(JButton.CENTER);
         bgmButton.setVerticalTextPosition(JButton.CENTER);
         bgmButton.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
-        bgmButton.setForeground(Color.WHITE); // 글씨 흰색
+        bgmButton.setForeground(Color.WHITE);
         bgmButton.setContentAreaFilled(false);
         bgmButton.setBorderPainted(false);
         bgmButton.setFocusPainted(false);
         bgmButton.setOpaque(false);
         bgmButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        bgmButton.setPreferredSize(new Dimension(100, 40)); // 크기 조정
+        bgmButton.setPreferredSize(new Dimension(100, 40));
 
         bgmButton.addActionListener(e -> {
             if (bgmButton.isSelected()) {
@@ -207,35 +211,27 @@ public class CafeSimulatorFrame extends JFrame {
         bottomBarPanel.add(bottomRightPanel, BorderLayout.EAST);
     }
 
-    // [추가] 미니 버튼 생성 헬퍼 메서드
     private JButton createMiniButton(String text) {
         JButton btn = new JButton(text);
 
-        // 배경 이미지 설정
         btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MINI));
 
-        // 텍스트 중앙 정렬
         btn.setHorizontalTextPosition(JButton.CENTER);
         btn.setVerticalTextPosition(JButton.CENTER);
 
-        // 폰트 및 색상
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
-        btn.setForeground(Color.WHITE); // 흰색 글씨 (배경에 따라 변경 가능)
+        btn.setForeground(Color.WHITE); 
 
-        // 투명화 및 커서
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setOpaque(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // 크기 설정 (이미지 크기에 맞춤, 예: 100x40)
         btn.setPreferredSize(new Dimension(100, 40));
 
         return btn;
     }
-
-    // ... (이하 메서드들은 기존과 동일하므로 생략하지 않고 전체 코드 유지) ...
 
     private void openMenuGuide() {
         previousPanelName = currentPanelName;
@@ -323,9 +319,20 @@ public class CafeSimulatorFrame extends JFrame {
             gameScreen.startGame();
         });
 
-        gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
+        gameSpacePanel.getBtn2().addActionListener(e -> {
+        	System.out.println("메뉴도감 버튼 클릭됨 -> 메뉴도감 화면으로");
+        	openMenuGuide();
+        });
 
-        gameSpacePanel.getBtn3().addActionListener(e -> showPanel("Graph"));
+        gameSpacePanel.getBtn3().addActionListener(e -> {
+        	System.out.println("성장도그래프 버튼 클릭됨 -> 성장도그래프 화면으로");
+        	showPanel("Graph");
+        });
+        
+        gameSpacePanel.getBtn4().addActionListener(e -> {
+            System.out.println("통계검색 버튼 클릭됨 -> 통계검색 화면으로");
+            showPanel("StatisticsSearch");
+        });
     }
 
     private void addListenersToGameScreen() {
@@ -333,6 +340,7 @@ public class CafeSimulatorFrame extends JFrame {
         addExitBinding(newGamePanel);
         addExitBinding(gameSpacePanel);
         addExitBinding(salesGraphPanel);
+        addExitBinding(statisticsSearchPanel);
         gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog());
     }
 

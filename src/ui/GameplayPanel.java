@@ -40,14 +40,11 @@ public class GameplayPanel extends JPanel {
         dayLabel = new JLabel("1일차");
         dayLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
 
-        // timeLabel 코드 제거
-
         endDayButton = new JButton("하루 마감 (임시)");
         endDayButton.setFont(new Font("맑은 고딕", Font.BOLD, 16));
 
         topBarPanel.add(dayLabel, BorderLayout.WEST);
         topBarPanel.add(endDayButton, BorderLayout.CENTER);
-        // topBarPanel.add(timeLabel, BorderLayout.EAST); // 제거됨
 
         return topBarPanel;
     }
@@ -79,6 +76,7 @@ public class GameplayPanel extends JPanel {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.WHITE);
 
+        /*
         JPanel topPathPanel = createTopPathPanel();
         JPanel bottomPathPanel = createBottomPathPanel();
         JPanel leftPathPanel = createLeftPathPanel();
@@ -93,6 +91,7 @@ public class GameplayPanel extends JPanel {
         mainPanel.add(bottomPathPanel, BorderLayout.SOUTH);
         mainPanel.add(leftPathPanel, BorderLayout.WEST);
         mainPanel.add(rightPathPanel, BorderLayout.EAST);
+		*/
 
         gameCanvas = new GameCanvas(
                 ScreenConfig.WIDTH - 200,
@@ -103,6 +102,7 @@ public class GameplayPanel extends JPanel {
         return mainPanel;
     }
 
+    /*
     private JPanel createTopPathPanel() {
         JPanel topPathPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         topPathPanel.setBackground(Color.RED);
@@ -128,4 +128,5 @@ public class GameplayPanel extends JPanel {
         rightPathPanel.setBackground(Color.YELLOW);
         return rightPathPanel;
     }
+    */
 }
