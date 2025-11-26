@@ -1,11 +1,35 @@
 package ui;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.awt.event.ActionListener;
 
 public class MenuGuidePanel extends JPanel {
 
@@ -21,7 +45,6 @@ public class MenuGuidePanel extends JPanel {
         setLayout(new BorderLayout());
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
-        // ======= 상단 영역 (GridBagLayout) =======
         JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -41,34 +64,27 @@ public class MenuGuidePanel extends JPanel {
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setOpaque(false);
 
-        // [수정] 타이틀 라벨 꾸미기 (그림자 효과 추가)
         JLabel titleLabel = new JLabel("메뉴 도감") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
-                // 텍스트 부드럽게 처리 (안티앨리어싱)
                 g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
                 String text = getText();
                 FontMetrics fm = g2.getFontMetrics();
 
-                // 중앙 정렬 좌표 계산
                 int x = (getWidth() - fm.stringWidth(text)) / 2;
                 int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
 
-                // 1. 그림자 그리기 (검은색 반투명, 약간 오른쪽 아래로)
                 g2.setColor(new Color(0, 0, 0, 150));
                 g2.drawString(text, x + 3, y + 3);
 
-                // 2. 메인 텍스트 그리기 (흰색)
                 g2.setColor(Color.WHITE);
                 g2.drawString(text, x, y);
             }
         };
 
-        // 폰트 설정 (맑은 고딕, 굵게, 크기 40)
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
-        // 라벨 크기 넉넉하게 지정 (글자가 잘리지 않도록)
         titleLabel.setPreferredSize(new Dimension(250, 60));
 
         titlePanel.add(titleLabel);
@@ -124,7 +140,6 @@ public class MenuGuidePanel extends JPanel {
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
-    // 토글 버튼 스타일 헬퍼
     private JButton createToggleButton(String text) {
         JButton btn = new JButton(text);
         btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MENU_TOGGLE)); // 이미지가 있다면 적용됨
@@ -224,7 +239,6 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // ===== 헤더 =====
         JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
@@ -240,7 +254,6 @@ public class MenuGuidePanel extends JPanel {
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
 
-        // ===== 이미지 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -268,7 +281,6 @@ public class MenuGuidePanel extends JPanel {
 
         imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
-        // ===== 레시피 =====
         String recipeText = "???";
         if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
             recipeText = String.join(", ", item.getIngredients());
