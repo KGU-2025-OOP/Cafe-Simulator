@@ -1,41 +1,20 @@
 package ui;
 
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.awt.event.ActionListener;
 
 public class MenuGuidePanel extends JPanel {
 
     private final Runnable backAction;
     private JPanel contentContainer;
     private Image backgroundImage;
+
+    // [추가] 초기화를 위해 멤버 변수로 선언
+    private JPanel coffeePanel;
 
     public MenuGuidePanel(List<MenuItem> allMenuItems, Runnable backAction) {
         this.backAction = backAction;
@@ -45,6 +24,7 @@ public class MenuGuidePanel extends JPanel {
         setLayout(new BorderLayout());
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
+        // ======= 상단 영역 =======
         JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -64,31 +44,9 @@ public class MenuGuidePanel extends JPanel {
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("메뉴 도감") {
-            @Override
-            protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-                String text = getText();
-                FontMetrics fm = g2.getFontMetrics();
-
-                int x = (getWidth() - fm.stringWidth(text)) / 2;
-                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
-
-                g2.setColor(new Color(0, 0, 0, 150));
-                g2.drawString(text, x + 3, y + 3);
-
-                g2.setColor(Color.WHITE);
-                g2.drawString(text, x, y);
-            }
-        };
-
+        JLabel titleLabel = new JLabel("메뉴 도감");
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
-        titleLabel.setPreferredSize(new Dimension(250, 60));
-
         titlePanel.add(titleLabel);
-
 
         JPanel tabButtonPanel = new JPanel(new GridBagLayout());
         tabButtonPanel.setOpaque(false);
@@ -118,6 +76,7 @@ public class MenuGuidePanel extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
+        // ======= 가운데 영역 =======
         contentContainer = new JPanel(new BorderLayout());
         contentContainer.setOpaque(false);
         contentContainer.setBorder(new EmptyBorder(0, 10, 10, 10));
@@ -131,13 +90,21 @@ public class MenuGuidePanel extends JPanel {
                 .filter(m -> m.getType() == MenuItem.MenuType.NonCoffee)
                 .collect(Collectors.toList());
 
-        JPanel coffeePanel = createCategoryPanel(coffeeList);
+        // [수정] 멤버 변수에 할당
+        this.coffeePanel = createCategoryPanel(coffeeList);
         JPanel nonCoffeePanel = createCategoryPanel(nonCoffeeList);
 
         showContentPanel(coffeePanel);
 
         coffeeButton.addActionListener(e -> showContentPanel(coffeePanel));
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
+    }
+
+    // [추가] 외부에서 탭을 초기화할 수 있는 메서드
+    public void resetToDefaultTab() {
+        if (coffeePanel != null) {
+            showContentPanel(coffeePanel);
+        }
     }
 
     private JButton createToggleButton(String text) {
@@ -191,7 +158,7 @@ public class MenuGuidePanel extends JPanel {
         if (items.isEmpty()) {
             JLabel emptyLabel = new JLabel("해당 카테고리의 메뉴가 없습니다.");
             emptyLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
-            emptyLabel.setForeground(Color.WHITE); // 배경이 어두울 수 있으니 흰색
+            emptyLabel.setForeground(Color.WHITE);
             inner.add(emptyLabel);
         } else {
             for (MenuItem item : items) {
@@ -239,12 +206,13 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
+        // ===== 헤더 =====
         JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
 
         JLabel nameLabel = new JLabel(isUnlocked ? name : "???", JLabel.CENTER);
-        nameLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20)); // 폰트 통일
+        nameLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
 
         String priceText = isUnlocked ? String.format("%,d원", price) : "-";
         JLabel priceLabel = new JLabel(priceText, JLabel.CENTER);
@@ -254,6 +222,7 @@ public class MenuGuidePanel extends JPanel {
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
 
+        // ===== 이미지 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -281,6 +250,7 @@ public class MenuGuidePanel extends JPanel {
 
         imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
+        // ===== 레시피 =====
         String recipeText = "???";
         if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
             recipeText = String.join(", ", item.getIngredients());

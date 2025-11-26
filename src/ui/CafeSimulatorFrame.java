@@ -15,8 +15,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Cursor; // 커서 추가
-import java.awt.Dimension; // 치수 추가
 import java.awt.event.KeyEvent;
 import javax.swing.KeyStroke;
 import javax.swing.InputMap;
@@ -28,6 +26,8 @@ import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
+import java.awt.Cursor;
+import java.awt.Dimension;
 
 public class CafeSimulatorFrame extends JFrame {
 
@@ -45,8 +45,8 @@ public class CafeSimulatorFrame extends JFrame {
     private GameplayPanel gameScreen;
     private GameplayAreaPanel gameSpacePanel;
     private SalesStatisticsPanel salesGraphPanel;
-    private MenuGuidePanel menuGuidePanel;
     private StatisticsSearchPanel statisticsSearchPanel;
+    private MenuGuidePanel menuGuidePanel;
 
     private int currentDayNumber;
     private Map<Integer, Integer> dailySalesHistory;
@@ -118,11 +118,11 @@ public class CafeSimulatorFrame extends JFrame {
         salesGraphPanel = new SalesStatisticsPanel(dailySalesHistory);
         mainPanel.add(salesGraphPanel, "Graph");
 
+        statisticsSearchPanel = new StatisticsSearchPanel();
+        mainPanel.add(statisticsSearchPanel, "Search");
+
         menuGuidePanel = new MenuGuidePanel(allMenuItems, this::handleMenuBack);
         mainPanel.add(menuGuidePanel, "MenuGuide");
-        
-        statisticsSearchPanel = new StatisticsSearchPanel();
-        mainPanel.add(statisticsSearchPanel, "StatisticsSearch");
 
         addListenersToStartPanel(hasSaveFile);
         addListenersToNewGamePanel();
@@ -132,7 +132,7 @@ public class CafeSimulatorFrame extends JFrame {
         salesGraphPanel.getBackButton().addActionListener(e -> {
             showPanel("GameSpaceHub");
         });
-        
+
         statisticsSearchPanel.getBackButton().addActionListener(e -> {
             showPanel("GameSpaceHub");
         });
@@ -157,18 +157,16 @@ public class CafeSimulatorFrame extends JFrame {
     private void createBottomBar() {
         bottomBarPanel = new JPanel(new BorderLayout());
 
-        Color barColor = new Color(112, 70, 15);
+        Color barColor = new Color(222, 184, 135);
         bottomBarPanel.setBackground(barColor);
 
         bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         bottomLeftPanel.setOpaque(false);
 
-        // 1. 종료하기 버튼 (미니 버튼 스타일 적용)
         exitButton = createMiniButton("종료하기");
-        exitButton.setForeground(new Color(139, 0, 26));
+        exitButton.setForeground(Color.RED);
         exitButton.addActionListener(e -> showExitConfirmation());
 
-        // 2. 포기하기 버튼
         giveUpButton = createMiniButton("포기하기");
         giveUpButton.addActionListener(e -> showGiveUpConfirmation());
 
@@ -215,22 +213,35 @@ public class CafeSimulatorFrame extends JFrame {
         JButton btn = new JButton(text);
 
         btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MINI));
-
         btn.setHorizontalTextPosition(JButton.CENTER);
         btn.setVerticalTextPosition(JButton.CENTER);
-
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, 14));
-        btn.setForeground(Color.WHITE); 
-
+        btn.setForeground(Color.WHITE);
         btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setOpaque(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         btn.setPreferredSize(new Dimension(100, 40));
 
         return btn;
+    }
+
+    public void showPanel(String panelName) {
+        currentPanelName = panelName;
+        cardLayout.show(mainPanel, panelName);
+
+        if (panelName.equals("Order") || panelName.equals("Start") || panelName.equals("Nickname")) {
+            bottomBarPanel.setVisible(false);
+        } else {
+            bottomBarPanel.setVisible(true);
+        }
+
+        if (panelName.equals("GameSpaceHub") || panelName.equals("MenuGuide")) {
+            menuButton.setVisible(false);
+        } else {
+            menuButton.setVisible(true);
+        }
     }
 
     private void openMenuGuide() {
@@ -239,6 +250,11 @@ public class CafeSimulatorFrame extends JFrame {
         if ("Game".equals(currentPanelName)) {
             gameScreen.stopGame();
             System.out.println("게임 중 메뉴 열기 -> 게임 중지");
+        }
+
+        // [수정] 항상 커피 탭으로 초기화
+        if (menuGuidePanel != null) {
+            menuGuidePanel.resetToDefaultTab();
         }
 
         showPanel("MenuGuide");
@@ -250,19 +266,6 @@ public class CafeSimulatorFrame extends JFrame {
         if ("Game".equals(previousPanelName)) {
             System.out.println("메뉴 닫힘 -> 게임 재시작");
             gameScreen.startGame();
-        }
-    }
-
-    public void showPanel(String panelName) {
-        currentPanelName = panelName;
-        cardLayout.show(mainPanel, panelName);
-
-        if (panelName.equals("Order")) {
-            bottomBarPanel.setVisible(false);
-        } else if (panelName.equals("Start") || panelName.equals("Nickname")) {
-            bottomBarPanel.setVisible(false);
-        } else {
-            bottomBarPanel.setVisible(true);
         }
     }
 
@@ -286,17 +289,10 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToStartPanel(boolean hasSaveFile) {
         if (hasSaveFile) {
-            startPanel.getContinueButton().addActionListener(e -> {
-                showPanel("GameSpaceHub");
-            });
+            startPanel.getContinueButton().addActionListener(e -> showPanel("GameSpaceHub"));
         }
-        startPanel.getNewGameButton().addActionListener(e -> {
-            System.out.println("시작/새로하기 버튼 클릭됨");
-            showPanel("Nickname");
-        });
-        startPanel.getExitButton().addActionListener(e -> {
-            showExitConfirmation();
-        });
+        startPanel.getNewGameButton().addActionListener(e -> showPanel("Nickname"));
+        startPanel.getExitButton().addActionListener(e -> showExitConfirmation());
     }
 
     private void addListenersToNewGamePanel() {
@@ -319,20 +315,16 @@ public class CafeSimulatorFrame extends JFrame {
             gameScreen.startGame();
         });
 
-        gameSpacePanel.getBtn2().addActionListener(e -> {
-        	System.out.println("메뉴도감 버튼 클릭됨 -> 메뉴도감 화면으로");
-        	openMenuGuide();
-        });
+        gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
 
-        gameSpacePanel.getBtn3().addActionListener(e -> {
-        	System.out.println("성장도그래프 버튼 클릭됨 -> 성장도그래프 화면으로");
-        	showPanel("Graph");
-        });
-        
-        gameSpacePanel.getBtn4().addActionListener(e -> {
-            System.out.println("통계검색 버튼 클릭됨 -> 통계검색 화면으로");
-            showPanel("StatisticsSearch");
-        });
+        gameSpacePanel.getBtn3().addActionListener(e -> showPanel("Graph"));
+
+        if (gameSpacePanel.getBtn4() != null) {
+            gameSpacePanel.getBtn4().addActionListener(e -> {
+                System.out.println("통계 검색 버튼 클릭됨 -> 통계 검색 화면으로");
+                showPanel("Search");
+            });
+        }
     }
 
     private void addListenersToGameScreen() {
@@ -362,7 +354,6 @@ public class CafeSimulatorFrame extends JFrame {
         if ("Game".equals(currentPanelName)) {
             gameScreen.stopGame();
         }
-
         int confirmExit = JOptionPane.showConfirmDialog(
                 this, "게임을 종료하시겠습니까?", "종료 확인", JOptionPane.YES_NO_OPTION
         );
@@ -379,12 +370,10 @@ public class CafeSimulatorFrame extends JFrame {
         if ("Game".equals(currentPanelName)) {
             gameScreen.stopGame();
         }
-
         int confirmGiveUp = JOptionPane.showConfirmDialog(
                 this, "정말 포기하고 처음으로 돌아가시겠습니까?\n(현재 진행 상황이 모두 초기화됩니다)",
                 "포기 확인", JOptionPane.YES_NO_OPTION
         );
-
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
             System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
             currentDayNumber = 1;
@@ -404,17 +393,13 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void showDayEndDialog() {
         gameScreen.stopGame();
-
         int dayNumber = currentDayNumber;
-
         System.out.println(dayNumber + "일차 장사를 마감합니다.");
 
         Random rand = new Random();
         int customerCount = MIN_CUSTOMERS + rand.nextInt(MAX_EXTRA_CUSTOMERS);
         int revenue = customerCount * (AVG_SPEND_PER_CUSTOMER + rand.nextInt(SPEND_VARIANCE));
-
         totalAccumulatedRevenue += revenue;
-
         int netProfit = revenue;
 
         DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue, totalAccumulatedRevenue);
@@ -424,11 +409,9 @@ public class CafeSimulatorFrame extends JFrame {
         bottomBarPanel.setVisible(true);
 
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
-
         System.out.println(dayNumber + "일차 순수익 " + netProfit + "원 저장됨.");
 
         currentDayNumber++;
-
         showPanel("GameSpaceHub");
     }
 }
