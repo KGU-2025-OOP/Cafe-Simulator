@@ -6,7 +6,7 @@ import java.net.URL;
 
 public class BgmManager {
 
-    private static final String BGM_PATH = "/image/background_music/main_bgm.wav";
+    private static final String BGM_PATH = "/image/background_music/Tomorrow's Light - Telecasted.wav";
 
     private static Clip clip;
     private static boolean on = false;
