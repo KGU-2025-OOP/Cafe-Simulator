@@ -3,19 +3,18 @@ package ui;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 
 public class StatisticsSearchPanel extends JPanel {
-	
+
     private JPanel contentContainer;
     private JButton backButton;
     private Image backgroundImage;
-    
+
     private JTextField searchField;
     private JButton searchButton;
     private JTable resultTable;
-    private DefaultTableModel tableModel;    
+    private DefaultTableModel tableModel;
 
     public StatisticsSearchPanel() {
         backgroundImage = ImageManager.getImage(ImageManager.IMG_MENU_BG);
@@ -59,7 +58,7 @@ public class StatisticsSearchPanel extends JPanel {
                 g2.drawString(text, x, y);
             }
         };
-        
+
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
         titleLabel.setPreferredSize(new Dimension(250, 60));
         titlePanel.add(titleLabel);
@@ -75,12 +74,12 @@ public class StatisticsSearchPanel extends JPanel {
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setBorder(new EmptyBorder(10, 30, 30, 30));
         contentPane.setOpaque(false);
-        
+
         contentContainer = new JPanel(new BorderLayout());
         contentContainer.setOpaque(true);
         contentContainer.setBorder(new EmptyBorder(20, 20, 20, 20));
         contentContainer.setBackground(new Color(255, 255, 255, 180));
-        
+
         JPanel searchOuter = new JPanel(new GridBagLayout());
         searchOuter.setOpaque(false);
 
@@ -105,13 +104,11 @@ public class StatisticsSearchPanel extends JPanel {
         searchOuter.add(searchBoxPanel);
         contentContainer.add(searchOuter, BorderLayout.NORTH);
 
-        // ---------- 2) 중앙 영역: 좌측 요약 / 우측 테이블 ----------
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         centerPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
         contentContainer.add(centerPanel, BorderLayout.CENTER);
 
-        // 2-1) 왼쪽: 요약 정보 레이블들
         JPanel summaryPanel = new JPanel();
         summaryPanel.setOpaque(false);
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
@@ -139,15 +136,14 @@ public class StatisticsSearchPanel extends JPanel {
 
         centerPanel.add(summaryPanel, BorderLayout.WEST);
 
-        String[] columnNames = { "순위", "일자", "메뉴", "판매지수", "판매금액" };
+        String[] columnNames = {"순위", "일자", "메뉴", "판매지수", "판매금액"};
         tableModel = new DefaultTableModel(columnNames, 0);
         resultTable = new JTable(tableModel);
         resultTable.setFillsViewportHeight(true);
         resultTable.setRowHeight(24);
         resultTable.getTableHeader().setFont(new Font("Malgun Gothic", Font.BOLD, 16));
-
         resultTable.getTableHeader().setReorderingAllowed(false);
-        
+
         JScrollPane scrollPane = new JScrollPane(resultTable);
         scrollPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         centerPanel.add(scrollPane, BorderLayout.CENTER);
@@ -163,7 +159,7 @@ public class StatisticsSearchPanel extends JPanel {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
     }
-    
+
     public JButton getBackButton() {
         return backButton;
     }

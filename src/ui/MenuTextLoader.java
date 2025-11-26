@@ -9,24 +9,18 @@ import java.util.List;
 
 public class MenuTextLoader {
 
-    // [수정] src 폴더 기준 경로: /resources/text/menu.txt
     private static final String MENU_FILE_PATH = "/text/menu.txt";
 
     public static List<MenuItem> loadMenuData() {
         List<MenuItem> loadedItems = new ArrayList<>();
-
         InputStream is = MenuTextLoader.class.getResourceAsStream(MENU_FILE_PATH);
 
         if (is == null) {
-            System.err.println("[에러] 메뉴 파일을 찾을 수 없습니다: " + MENU_FILE_PATH);
-            // 파일이 text 폴더 안에 있는지 확인해주세요!
             return loadedItems;
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String line;
-            System.out.println("=== 메뉴 데이터 로딩 시작 ===");
-
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
                 if (line.isEmpty() || !Character.isDigit(line.charAt(0))) {
@@ -54,11 +48,9 @@ public class MenuTextLoader {
                     loadedItems.add(item);
 
                 } catch (Exception e) {
-                    System.err.println("파싱 오류 (라인 무시됨): " + line);
+                    e.printStackTrace();
                 }
             }
-            System.out.println("=== 메뉴 데이터 로딩 완료 (총 " + loadedItems.size() + "개) ===");
-
         } catch (Exception e) {
             e.printStackTrace();
         }

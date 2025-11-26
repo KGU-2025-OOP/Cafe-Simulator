@@ -1,25 +1,24 @@
 package ui;
 
 import java.awt.BorderLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.RenderingHints;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.Cursor;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.ImageIcon;
 
 public class NewGameSetupPanel extends JPanel {
 
@@ -32,21 +31,18 @@ public class NewGameSetupPanel extends JPanel {
 
         setLayout(new GridBagLayout());
 
-        // 둥근 박스 패널
         JPanel boxPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                // 둥근 배경 (반투명 흰색)
                 g2.setColor(new Color(255, 255, 255, 200));
-                g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 40, 40);
 
-                // 둥근 테두리
                 g2.setColor(Color.BLACK);
                 g2.setStroke(new BasicStroke(2f));
-                g2.drawRoundRect(0, 0, getWidth()-1, getHeight()-1, 40, 40);
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 40, 40);
 
                 super.paintComponent(g);
             }
@@ -56,7 +52,6 @@ public class NewGameSetupPanel extends JPanel {
         boxPanel.setOpaque(false);
         boxPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-        // 상단 타이틀
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setOpaque(false);
 
@@ -66,7 +61,6 @@ public class NewGameSetupPanel extends JPanel {
         titlePanel.add(titleLabel, BorderLayout.WEST);
         boxPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // 입력창
         JPanel inputPanel = new JPanel(new GridBagLayout());
         inputPanel.setOpaque(false);
 
@@ -80,17 +74,15 @@ public class NewGameSetupPanel extends JPanel {
         nameField.setHorizontalAlignment(JTextField.CENTER);
         nameField.setBackground(new Color(255, 248, 220));
         nameField.setBorder(
-                BorderFactory.createLineBorder(new Color(129,0,26), 3, true)
+                BorderFactory.createLineBorder(new Color(129, 0, 26), 3, true)
         );
 
         inputPanel.add(nameField, ic);
         boxPanel.add(inputPanel, BorderLayout.CENTER);
 
-        // 하단 버튼 패널
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setOpaque(false);
 
-        // 창업하기 버튼
         startButton = new JButton("창업하기");
 
         startButton.setIcon(ImageManager.getImageIcon(ImageManager.BTN_DEFAULT));
@@ -108,7 +100,6 @@ public class NewGameSetupPanel extends JPanel {
 
         startButton.setPreferredSize(new Dimension(120, 45));
 
-        // [추가] 텍스트 필드에서 엔터 키를 누르면 버튼 클릭 효과 발생
         nameField.addActionListener(e -> startButton.doClick());
 
         buttonPanel.add(startButton, BorderLayout.EAST);

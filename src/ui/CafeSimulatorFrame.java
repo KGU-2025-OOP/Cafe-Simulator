@@ -146,7 +146,7 @@ public class CafeSimulatorFrame extends JFrame {
         setLocationRelativeTo(null);
 
         BgmManager.setOn(true);
-        
+
         showPanel("Start");
 
         addComponentListener(new ComponentAdapter() {
@@ -195,16 +195,12 @@ public class CafeSimulatorFrame extends JFrame {
         bgmButton.setPreferredSize(new Dimension(100, 40));
 
         bgmButton.addActionListener(e -> {
-            boolean selected = bgmButton.isSelected();
-
-            if (selected) {
+            if (bgmButton.isSelected()) {
                 bgmButton.setText("BGM ON");
-                BgmManager.setOn(true);   // ★ BGM 켜기
-                System.out.println("BGM 켜기");
+                BgmManager.setOn(true);
             } else {
                 bgmButton.setText("BGM OFF");
-                BgmManager.setOn(false);  // ★ BGM 끄기
-                System.out.println("BGM 끄기");
+                BgmManager.setOn(false);
             }
         });
 
@@ -255,10 +251,8 @@ public class CafeSimulatorFrame extends JFrame {
 
         if ("Game".equals(currentPanelName)) {
             gameScreen.stopGame();
-            System.out.println("게임 중 메뉴 열기 -> 게임 중지");
         }
 
-        // [수정] 항상 커피 탭으로 초기화
         if (menuGuidePanel != null) {
             menuGuidePanel.resetToDefaultTab();
         }
@@ -270,7 +264,6 @@ public class CafeSimulatorFrame extends JFrame {
         showPanel(previousPanelName);
 
         if ("Game".equals(previousPanelName)) {
-            System.out.println("메뉴 닫힘 -> 게임 재시작");
             gameScreen.startGame();
         }
     }
@@ -308,14 +301,12 @@ public class CafeSimulatorFrame extends JFrame {
                 JOptionPane.showMessageDialog(this, "카페 이름을 입력해주세요.", "입력 오류", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            System.out.println("카페 이름 (" + cafeName + ") 확정 -> 메인 허브로 이동");
             showPanel("GameSpaceHub");
         });
     }
 
     private void addListenersToGameSpacePanel() {
         gameSpacePanel.getBtn1().addActionListener(e -> {
-            System.out.println("운영시작 버튼 클릭됨 -> 게임 화면으로");
             gameScreen.setDayLabel(currentDayNumber + "일차");
             showPanel("Game");
             gameScreen.startGame();
@@ -327,7 +318,6 @@ public class CafeSimulatorFrame extends JFrame {
 
         if (gameSpacePanel.getBtn4() != null) {
             gameSpacePanel.getBtn4().addActionListener(e -> {
-                System.out.println("통계 검색 버튼 클릭됨 -> 통계 검색 화면으로");
                 showPanel("Search");
             });
         }
@@ -381,7 +371,6 @@ public class CafeSimulatorFrame extends JFrame {
                 "포기 확인", JOptionPane.YES_NO_OPTION
         );
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
-            System.out.println("데이터 초기화... 시작 화면으로 돌아갑니다.");
             currentDayNumber = 1;
             dailySalesHistory.clear();
             totalAccumulatedRevenue = 0;
@@ -400,7 +389,6 @@ public class CafeSimulatorFrame extends JFrame {
     private void showDayEndDialog() {
         gameScreen.stopGame();
         int dayNumber = currentDayNumber;
-        System.out.println(dayNumber + "일차 장사를 마감합니다.");
 
         Random rand = new Random();
         int customerCount = MIN_CUSTOMERS + rand.nextInt(MAX_EXTRA_CUSTOMERS);
@@ -415,7 +403,6 @@ public class CafeSimulatorFrame extends JFrame {
         bottomBarPanel.setVisible(true);
 
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
-        System.out.println(dayNumber + "일차 순수익 " + netProfit + "원 저장됨.");
 
         currentDayNumber++;
         showPanel("GameSpaceHub");

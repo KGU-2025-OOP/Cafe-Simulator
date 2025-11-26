@@ -15,9 +15,8 @@ import java.awt.Font;
 import java.awt.Color;
 
 public class PauseMenuDialog extends JDialog {
-	
+
     private static final String DIALOG_TITLE = "일시정지";
-    private static final String CALENDAR_BUTTON_TEXT = "달력";
     private static final String MENU_BUTTON_TEXT = "메뉴판";
     private static final String CONTINUE_BUTTON_TEXT = "계속하기";
     private static final String GIVE_UP_BUTTON_TEXT = "포기하기 (데이터 초기화)";
@@ -40,7 +39,7 @@ public class PauseMenuDialog extends JDialog {
     public PauseMenuDialog(JFrame parent) {
         super(parent, DIALOG_TITLE, true);
         this.result = PauseResult.NONE;
-        
+
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -84,36 +83,35 @@ public class PauseMenuDialog extends JDialog {
         button.setMaximumSize(buttonSize);
         button.setFont(mainFont);
         button.setForeground(buttonTextColor);
-        
+
         if (isWarning) {
             button.setBackground(warnButtonColor);
-        }
-        else {
+        } else {
             button.setBackground(buttonColor);
         }
         button.setOpaque(true);
-        
+
         if (button instanceof AbstractButton) {
             ((AbstractButton) button).setBorderPainted(false);
         }
     }
 
-    private void addListeners() {        
+    private void addListeners() {
         this.menuButton.addActionListener(e -> {
             this.result = PauseResult.MENU;
             this.dispose();
         });
-        
+
         this.continueButton.addActionListener(e -> {
             this.result = PauseResult.CONTINUE;
             this.dispose();
         });
-        
+
         this.giveUpButton.addActionListener(e -> {
             this.result = PauseResult.GIVE_UP;
             this.dispose();
         });
-        
+
         this.exitButton.addActionListener(e -> {
             this.result = PauseResult.EXIT;
             this.dispose();

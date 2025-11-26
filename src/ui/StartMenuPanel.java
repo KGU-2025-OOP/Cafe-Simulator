@@ -22,9 +22,6 @@ import java.awt.GridBagLayout;
 
 public class StartMenuPanel extends JPanel {
 
-    // [삭제] 이미지로 대체하므로 텍스트 상수 제거
-    // private static final String EXIT_BUTTON_TEXT = "종료하기";
-
     private JButton continueButton;
     private JButton newGameButton;
     private JButton exitButton;
@@ -74,8 +71,6 @@ public class StartMenuPanel extends JPanel {
         menuBox.setOpaque(false);
         menuBox.setBorder(new EmptyBorder(40, 60, 40, 60));
 
-        // [수정] 종료 버튼도 이미지로 생성하고 스타일 적용 (true)
-        // ImageManager.BTN_EXIT 상수가 ImageManager에 정의되어 있어야 합니다!
         exitButton = new JButton(ImageManager.getImageIcon(ImageManager.BTN_EXIT));
         setCenterButtonProperties(exitButton, true);
 
@@ -100,7 +95,7 @@ public class StartMenuPanel extends JPanel {
         }
 
         menuBox.add(Box.createVerticalStrut(20));
-        menuBox.add(exitButton); // 이미지로 바뀐 종료 버튼 추가
+        menuBox.add(exitButton);
 
         outerPanel.add(menuBox);
 
@@ -108,7 +103,6 @@ public class StartMenuPanel extends JPanel {
     }
 
     private void setCenterButtonProperties(JComponent component, boolean isImageButton) {
-        // 버튼 크기 (이미지 크기에 맞춰 조절하세요)
         Dimension centerButtonSize = new Dimension(250, 70);
 
         if (!isImageButton) {
@@ -124,7 +118,6 @@ public class StartMenuPanel extends JPanel {
             JButton button = (JButton) component;
 
             if (isImageButton) {
-                // 이미지 버튼 스타일 (투명 배경, 테두리 없음)
                 button.setText("");
                 button.setContentAreaFilled(false);
                 button.setBorderPainted(false);
@@ -132,7 +125,6 @@ public class StartMenuPanel extends JPanel {
                 button.setOpaque(false);
                 button.setCursor(new Cursor(Cursor.HAND_CURSOR));
             } else {
-                // 텍스트 버튼 스타일
                 Font mainFont = new Font("Malgun Gothic", Font.BOLD, 14);
                 Color buttonColor = new Color(59, 89, 182);
                 Color buttonTextColor = Color.WHITE;

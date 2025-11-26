@@ -15,28 +15,28 @@ public class GameplayAreaPanel extends JPanel {
     public GameplayAreaPanel() {
         backgroundImage = ImageManager.getImage(ImageManager.IMG_MAIN_BG);
 
-        this.setLayout(new GridBagLayout());
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.insets = new Insets(15, 10, 15, 10);
         gbc.fill = GridBagConstraints.NONE;
 
-        this.btn1 = createStyledButton("운영시작");
-        this.btn2 = createStyledButton("메뉴도감");
-        this.btn3 = createStyledButton("성장도그래프");
-        this.btn4 = createStyledButton("통계검색");
+        btn1 = createStyledButton("운영시작");
+        btn2 = createStyledButton("메뉴도감");
+        btn3 = createStyledButton("성장도그래프");
+        btn4 = createStyledButton("통계검색");
 
         gbc.gridy = 0;
-        this.add(this.btn1, gbc);
+        add(btn1, gbc);
 
         gbc.gridy = 1;
-        this.add(this.btn2, gbc);
+        add(btn2, gbc);
 
         gbc.gridy = 2;
-        this.add(this.btn3, gbc);
-        
+        add(btn3, gbc);
+
         gbc.gridy = 3;
-        this.add(this.btn4, gbc);
+        add(btn4, gbc);
     }
 
     private JButton createStyledButton(String text) {
@@ -70,18 +70,18 @@ public class GameplayAreaPanel extends JPanel {
     }
 
     public JButton getBtn1() {
-        return this.btn1;
+        return btn1;
     }
 
     public JButton getBtn2() {
-        return this.btn2;
+        return btn2;
     }
 
     public JButton getBtn3() {
-        return this.btn3;
+        return btn3;
     }
-    
+
     public JButton getBtn4() {
-    	return this.btn4; 
+        return btn4;
     }
 }

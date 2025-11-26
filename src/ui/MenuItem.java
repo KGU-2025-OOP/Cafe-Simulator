@@ -1,19 +1,18 @@
 package ui;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MenuItem {
     public enum MenuType {
         Coffee,
         NonCoffee,
-        Dessert    // 베이커리/디저트 (기존 유지)
+        Dessert
     }
 
     private String name;
     private MenuType type;
     private boolean unlocked;
-
     private int price;
     private List<String> ingredients;
     private String imagePath;
@@ -31,11 +30,27 @@ public class MenuItem {
         this.imagePath = imagePath;
     }
 
-    public String getName() { return name; }
-    public MenuType getType() { return type; }
-    public boolean isUnlocked() { return unlocked; }
+    public String getName() {
+        return name;
+    }
 
-    public int getPrice() { return price; }
-    public List<String> getIngredients() { return ingredients; }
-    public String getImagePath() { return imagePath; }
+    public MenuType getType() {
+        return type;
+    }
+
+    public boolean isUnlocked() {
+        return unlocked;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public List<String> getIngredients() {
+        return ingredients;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
 }

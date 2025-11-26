@@ -5,7 +5,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.awt.event.ActionListener;
 
 public class MenuGuidePanel extends JPanel {
 
@@ -13,7 +12,6 @@ public class MenuGuidePanel extends JPanel {
     private JPanel contentContainer;
     private Image backgroundImage;
 
-    // [추가] 초기화를 위해 멤버 변수로 선언
     private JPanel coffeePanel;
 
     public MenuGuidePanel(List<MenuItem> allMenuItems, Runnable backAction) {
@@ -24,7 +22,6 @@ public class MenuGuidePanel extends JPanel {
         setLayout(new BorderLayout());
         setPreferredSize(ScreenConfig.FRAME_SIZE);
 
-        // ======= 상단 영역 =======
         JPanel backPanel = new JPanel(new GridBagLayout());
         backPanel.setOpaque(false);
         backPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -76,7 +73,6 @@ public class MenuGuidePanel extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // ======= 가운데 영역 =======
         contentContainer = new JPanel(new BorderLayout());
         contentContainer.setOpaque(false);
         contentContainer.setBorder(new EmptyBorder(0, 10, 10, 10));
@@ -90,7 +86,6 @@ public class MenuGuidePanel extends JPanel {
                 .filter(m -> m.getType() == MenuItem.MenuType.NonCoffee)
                 .collect(Collectors.toList());
 
-        // [수정] 멤버 변수에 할당
         this.coffeePanel = createCategoryPanel(coffeeList);
         JPanel nonCoffeePanel = createCategoryPanel(nonCoffeeList);
 
@@ -100,7 +95,6 @@ public class MenuGuidePanel extends JPanel {
         nonCoffeeButton.addActionListener(e -> showContentPanel(nonCoffeePanel));
     }
 
-    // [추가] 외부에서 탭을 초기화할 수 있는 메서드
     public void resetToDefaultTab() {
         if (coffeePanel != null) {
             showContentPanel(coffeePanel);
@@ -109,7 +103,7 @@ public class MenuGuidePanel extends JPanel {
 
     private JButton createToggleButton(String text) {
         JButton btn = new JButton(text);
-        btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MENU_TOGGLE)); // 이미지가 있다면 적용됨
+        btn.setIcon(ImageManager.getImageIcon(ImageManager.BTN_MENU_TOGGLE));
         btn.setHorizontalTextPosition(JButton.CENTER);
         btn.setVerticalTextPosition(JButton.CENTER);
         btn.setFont(new Font("Malgun Gothic", Font.BOLD, 18));
@@ -206,7 +200,6 @@ public class MenuGuidePanel extends JPanel {
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // ===== 헤더 =====
         JPanel headerPanel = new JPanel(new GridLayout(2, 1));
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(12, 5, 5, 5));
@@ -222,7 +215,6 @@ public class MenuGuidePanel extends JPanel {
         headerPanel.add(nameLabel);
         headerPanel.add(priceLabel);
 
-        // ===== 이미지 =====
         JPanel imgWrapper = new JPanel(new BorderLayout());
         imgWrapper.setOpaque(false);
         imgWrapper.setBorder(new EmptyBorder(5, 10, 5, 10));
@@ -250,7 +242,6 @@ public class MenuGuidePanel extends JPanel {
 
         imgWrapper.add(imgLabel, BorderLayout.CENTER);
 
-        // ===== 레시피 =====
         String recipeText = "???";
         if (isUnlocked && item.getIngredients() != null && !item.getIngredients().isEmpty()) {
             recipeText = String.join(", ", item.getIngredients());
