@@ -10,15 +10,17 @@ import java.awt.image.BufferedImage;
 
 public class DropItem extends TextBox {
     private boolean isValid;
-    private Vector2f move;
-    private Vector2f adder;
-    private float speed;
-    private DeadLine deadLine;
-    private BufferedImage background;
-    public static Font dropsFont = new Font("Batang", Font.ITALIC, 12);
+    private final Vector2f move;
+    private final Vector2f adder;
+    private final float speed;
+    private final DeadLine deadLine;
+    private final BufferedImage background;
+    public static Font defaultFont = new Font("Batang", Font.ITALIC, 24);
+    private float height;
 
     public DropItem(Vector2f pos, Vector2f move, float speed, String str, Font font, BufferedImage background, DeadLine deadLine) {
         super(new Vector2f(pos), 1.0F, new StringBuffer(str), font);
+        height = pos.y;
         this.move = new Vector2f(move);
         adder = new Vector2f();
         this.deadLine = deadLine;
@@ -33,8 +35,8 @@ public class DropItem extends TextBox {
         adder.y = move.y;
         adder.scale(deltaTime * speed);
         pos.add(adder);
-        if (deadLine.isDead(pos.y)) {
-            isValid = false;
+        if (deadLine != null && deadLine.isDead(pos.y)) {
+            pos.y = CoordSystem.getFlippedY(height);
         }
     }
 
@@ -42,7 +44,7 @@ public class DropItem extends TextBox {
     public void draw(Graphics2D g) {
         if (isValid) {
             if (background != null) {
-                g.drawImage(background, null, (int)pos.x - background.getWidth() / 2, CoordSystem.getFlippedY(pos.y + background.getHeight() / 2));
+                g.drawImage(background, null, (int)pos.x - background.getWidth() / 2, CoordSystem.getFlippedY(pos.y + (float) background.getHeight() / 2));
             }
             super.draw(g);
         }
@@ -55,6 +57,10 @@ public class DropItem extends TextBox {
             return true;
         }
         return false;
+    }
+
+    public BufferedImage getBackgroundHandle() {
+        return background;
     }
 
     public boolean shouldRemove() {

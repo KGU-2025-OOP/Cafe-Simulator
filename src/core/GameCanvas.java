@@ -1,5 +1,6 @@
 package core;
 
+import entities.Background;
 import entities.BrewingSlot;
 import entities.DeadLine;
 import order.OrderManager;
@@ -9,7 +10,8 @@ import graphics.RenderQueue;
 import graphics.TextBox;
 import graphics.FPSCounter;
 import util.Vector2f;
-import entities.DropItem;
+import util.Vector2i;
+
 
 import java.awt.Canvas;
 import java.awt.Font;
@@ -19,54 +21,39 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.beans.beancontext.BeanContext;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class GameCanvas extends Canvas implements Runnable {
 
-    private RenderQueue renderQueue;
-    private MessageQueue messageQueue;
-    private KoreanInputAssembler korean;
+    final private RenderQueue renderQueue;
+    final private MessageQueue messageQueue;
+    final private KoreanInputAssembler korean;
     FPSCounter frameCounter;
+    int menuCounter;
+    int orderCounter;
+    long roundTimer;
+    long roundTime;
 
     public boolean shouldRun;
     private long lastTime;
 
+    final private Background background;
     private ArrayList<BrewingSlot> brewingSlots;
+    private ArrayList<Vector2i> brewingID;
     private OrderManager coffeeshopManager;
-    private static int day;
-
-    private class InputBox {
-        public static TextBox box;
-        // Handle
-        public static StringBuffer text;
-
-        public static void init(int width, int height) {
-            box = new TextBox(
-                    new Vector2f(width / 2.F, height / 4.F),
-                    0.F,
-                    new StringBuffer(),
-                    new Font("Batang", Font.PLAIN, 30));
-            text = box.getBufferHandle();
-        }
-    }
-
-    private class FailLine {
-        public static DeadLine line;
-        // Handle
-        public static Vector2f move;
-        public static void init(int width, int height) {
-            line = new DeadLine(width, height / 3, new Vector2f(), 15.F);
-            move = line.getMoveHandle();
-        }
-    }
-
+    private DeadLine deadLine;
+    private TextBox inputBox;
+    private TextBox timerBox;
 
     public GameCanvas(int width, int height) {
+
+        timerBox = new TextBox(new Vector2f(width - 45, height - 45), 0.F, new StringBuffer("" + roundTimer), new Font("Batang", Font.PLAIN, 25));
         renderQueue = new RenderQueue(width, height);
         messageQueue = new MessageQueue();
         frameCounter = new FPSCounter();
         korean = new KoreanInputAssembler();
+        background = new Background(width, height);
         setSize(width, height);
         Toolkit.getDefaultToolkit().addAWTEventListener(messageQueue, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
     }
@@ -76,19 +63,42 @@ public class GameCanvas extends Canvas implements Runnable {
         int width = getWidth();
         int height = getHeight();
 
-        InputBox.init(width, height);
-        FailLine.init(width, height);
-        coffeeshopManager = new OrderManager(day);
+        inputBox =  new TextBox(
+                new Vector2f(width / 2.F, height / 4.F),
+                0.F,
+                new StringBuffer(),
+                new Font("Batang", Font.PLAIN, 30));
+        deadLine = new DeadLine(width, height / (float)4, new Vector2f(), 0.F);
+
+        coffeeshopManager = new OrderManager();
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
-        brewingSlots.add(new BrewingSlot(width, height, 0));
-        brewingSlots.get(0).loadMenu(
-                coffeeshopManager.getOrder(0).getMenu(0).getName(),
-                coffeeshopManager.getOrder(0).getMenu(0).getDrops(0, FailLine.line));
+        brewingID = new ArrayList<Vector2i>();
+        brewingSlots.add(new BrewingSlot(width, height, 0, deadLine));
+
+        orderCounter = 0;
+        menuCounter = 0;
+        brewingID.add(new Vector2i(orderCounter, menuCounter));
+        try {
+            brewingSlots.get(0).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
+            ++menuCounter;
+            if (coffeeshopManager.getOrder(orderCounter).getMenuLength() <= menuCounter) {
+                ++orderCounter;
+                menuCounter = 0;
+            }
+            if (coffeeshopManager.getOrderSize() <= orderCounter) {
+                coffeeshopManager.createRandomOrder();
+            }
+        } catch (IOException e) {
+            System.out.println("Failed load image from loadMenu");
+        }
+
 
 
         // Start game loop;
         lastTime = System.nanoTime();
+        roundTime = 45 * FPSCounter.secondInNanoTime;
+        roundTimer = lastTime + roundTime;
         shouldRun = true;
     }
 
@@ -98,18 +108,50 @@ public class GameCanvas extends Canvas implements Runnable {
         float deltaTime = (currentTime - lastTime) / (float) FPSCounter.secondInNanoTime;
         lastTime = currentTime;
 
+        if (roundTimer - lastTime > 0) {
+            StringBuffer timer = timerBox.getBufferHandle();
+            timer.setLength(0);
+            timer.append((roundTimer - lastTime) / FPSCounter.secondInNanoTime);
+        } else {
+            // TODO: 하루 마감
+            roundTimer = lastTime + roundTime;
+        }
+        timerBox.update(deltaTime);
         // update
-        InputBox.box.update(deltaTime);
-        FailLine.line.update(deltaTime);
-        for (BrewingSlot i : brewingSlots) {
-            i.update(deltaTime);
+        inputBox.update(deltaTime);
+        // FailLine.line.update(deltaTime);
+        for (int i = 0; i < brewingSlots.size(); ++i) {
+            brewingSlots.get(i).update(deltaTime);
+            if (brewingSlots.get(i).isEmpty()) {
+                if (coffeeshopManager.getOrder(brewingID.get(i).x).serve(brewingID.get(i).y)) {
+                    // TODO: 매출 기록
+                    System.out.println(coffeeshopManager.getOrder(brewingID.get(i).x).getPrice());
+                }
+                try {
+                    brewingSlots.get(i).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
+                    brewingID.get(i).x = orderCounter;
+                    brewingID.get(i).y = menuCounter;
+                    ++menuCounter;
+                    if (coffeeshopManager.getOrder(orderCounter).getMenuLength() <= menuCounter) {
+                        ++orderCounter;
+                        menuCounter = 0;
+                    }
+                    if (coffeeshopManager.getOrderSize() <= orderCounter) {
+                        coffeeshopManager.createRandomOrder();
+                    }
+                } catch (IOException e) {
+                    assert (true);
+                }
+            }
         }
     }
 
     private void render() {
         // Add rendering object
-        renderQueue.add(InputBox.box);
-        renderQueue.add(FailLine.line);
+        renderQueue.add(inputBox);
+        renderQueue.add(timerBox);
+        renderQueue.add(deadLine);
+        renderQueue.add(background);
         for (BrewingSlot i : brewingSlots) {
             renderQueue.add(i);
         }
@@ -128,64 +170,48 @@ public class GameCanvas extends Canvas implements Runnable {
             AWTEvent input = messageQueue.poll();
 
             if (input != null) {
+                StringBuffer text = inputBox.getBufferHandle();
                 switch (input.getID()) {
                     case KeyEvent.KEY_TYPED:
-                        ki = (KeyEvent)input;
-                        korean.input(InputBox.text, ki);
+                        ki = (KeyEvent) input;
+                        korean.input(text, ki);
                         if (ki.isControlDown()) {
                             break;
                         }
                         char c = ki.getKeyChar();
                         if (c == 8) {
-                            int length = InputBox.text.length();
+                            int length = text.length();
                             if (length > 0) {
-                                InputBox.text.setLength(length - 1);
+                                text.setLength(length - 1);
                             }
                         } else if (c == '\n') {
                             for (BrewingSlot i : brewingSlots) {
-                                if (i.matchInput(InputBox.text.toString())) {
+                                if (i.matchInput(text.toString())) {
                                     break;
                                 }
                             }
-                            InputBox.text.setLength(0);
+                            text.setLength(0);
                         } else {
                             if (!korean.isActivated()) {
-                                InputBox.text.append(c);
+                                text.append(c);
                             }
 
                         }
 
                         break;
                     case KeyEvent.KEY_PRESSED:
-                        ki = (KeyEvent)input;
+                        ki = (KeyEvent) input;
                         if (ki.getKeyCode() == KeyEvent.VK_ALT) {
                             korean.toggleActivation();
                         } else if (ki.getKeyCode() == KeyEvent.VK_UP) {
-                            int newSlotCount = brewingSlots.size() + 1;
-                            int newWidth = getWidth() / newSlotCount;
-                            int height = getHeight();
-                            brewingSlots.add(new BrewingSlot(newWidth, height, newWidth * (newSlotCount - 1)));
-
-                            for (int i = 0; i < newSlotCount - 1; ++i) {
-                                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
-                            }
-
-
+                            levelup();
                         } else if (ki.getKeyCode() == KeyEvent.VK_DOWN) {
-                            int newSlotCount = brewingSlots.size() - 1;
-                            if (newSlotCount > 0) {
-                                int newWidth = getWidth() / newSlotCount;
-                                int height = getHeight();
-                                brewingSlots.remove(newSlotCount);
-                                for (int i = 0; i < newSlotCount; ++i) {
-                                    brewingSlots.get(i).resize(newWidth, height, i * newWidth);
-                                }
-                            }
+                            levelDown();
                         }
 
                         break;
                     case KeyEvent.KEY_RELEASED:
-                        ki = (KeyEvent)input;
+                        ki = (KeyEvent) input;
 
                         break;
                     case MouseEvent.MOUSE_CLICKED:
@@ -200,8 +226,7 @@ public class GameCanvas extends Canvas implements Runnable {
             // frameCounter.limitFPS(60);
             frameCounter.printFPS();
         }
-        // shutdown();
-        nextLevel();
+        shutdown();
     }
 
     private void drawCanvas() {
@@ -212,8 +237,47 @@ public class GameCanvas extends Canvas implements Runnable {
         g.dispose();
     }
 
-    private void nextLevel() {
+    private void levelup() {
+        if (brewingSlots.size() < 4) {
+            int newSlotCount = brewingSlots.size() + 1;
+            int newWidth = getWidth() / newSlotCount;
+            int height = getHeight();
+            BrewingSlot newBrewingSlot = new BrewingSlot(newWidth, height, newWidth * (newSlotCount - 1), deadLine);
 
+            brewingSlots.add(newBrewingSlot);
+            try {
+                newBrewingSlot.loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
+                ++menuCounter;
+                if (coffeeshopManager.getOrder(orderCounter).getMenuLength() <= menuCounter) {
+                    ++orderCounter;
+                    menuCounter = 0;
+                }
+                if (coffeeshopManager.getOrderSize() <= orderCounter) {
+                    coffeeshopManager.createRandomOrder();
+                }
+            } catch (IOException e) {
+                assert (true);
+            }
+
+            for (int i = 0; i < newSlotCount - 1; ++i) {
+                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+            }
+        }
+        coffeeshopManager.upgrade();
+    }
+
+    private void levelDown() {
+        if (brewingSlots.size() > 1) {
+            int newSlotCount = brewingSlots.size() - 1;
+            int newWidth = getWidth() / newSlotCount;
+            int height = getHeight();
+            brewingSlots.get(newSlotCount).clear();
+            brewingSlots.remove(newSlotCount);
+            for (int i = 0; i < newSlotCount; ++i) {
+                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+            }
+        }
+        coffeeshopManager.downgrade();
     }
     private void shutdown() {
         System.exit(0);

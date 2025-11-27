@@ -307,7 +307,7 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToGameSpacePanel() {
         gameSpacePanel.getBtn1().addActionListener(e -> {
-            gameScreen.setDayLabel(currentDayNumber + "일차");
+            // gameScreen.setDayLabel(currentDayNumber + "일차");
             showPanel("Game");
             gameScreen.startGame();
         });
@@ -329,7 +329,7 @@ public class CafeSimulatorFrame extends JFrame {
         addExitBinding(gameSpacePanel);
         addExitBinding(salesGraphPanel);
         addExitBinding(statisticsSearchPanel);
-        gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog());
+        // gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog());
     }
 
     private void addExitBinding(JPanel panel) {

@@ -10,8 +10,8 @@ public class ImageManager {
 
     public static final String IMG_START_BG = "/image/background/background_2.jpg";
     public static final String IMG_SETUP_BG = "/image/background/background_2.jpg";
-    public static final String IMG_MAIN_BG  = "/image/background/background_GamePlayArea.jpg";
-    public static final String IMG_MENU_BG  = "/image/background/background_GamePlayArea.jpg";
+    public static final String IMG_MAIN_BG  = "/image/background/background_gameplay_area.jpg";
+    public static final String IMG_MENU_BG  = "/image/background/background_gameplay_area.jpg";
 
     public static final String BTN_CONTINUE = "/image/button/play_button.png";
     public static final String BTN_NEW_GAME = "/image/button/play_button.png";

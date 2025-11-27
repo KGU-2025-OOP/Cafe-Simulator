@@ -14,8 +14,8 @@ public class TextBox implements IGameObject {
     protected float depth;
     protected StringBuffer text;
     protected String outStr;
-    private StringBuffer textBak;
-    private Font font;
+    private final StringBuffer textBak;
+    private final Font font;
     private int lastTextWidth;
 
     public TextBox(Vector2f pos, float depth, StringBuffer text, Font font) {

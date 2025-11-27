@@ -34,6 +34,7 @@ public class Order {
 
     public void addMenu(Menu item) {
         items.add(item);
+        served.add(false);
         price += item.getPrice();
     }
 
@@ -55,8 +56,7 @@ public class Order {
         }
         return true;
     }
-    public static void nextDay() {
-        dailyOrderCount = 0;
+    public int getPrice() {
+        return price;
     }
-
 }

@@ -1,18 +1,13 @@
 package order;
 
-import entities.DeadLine;
-import entities.DropItem;
 import menu.*;
-import util.Vector2f;
-
-import java.awt.Font;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class OrderManager {
     private int day;
-    private ArrayList<Order> orders;
+    private final ArrayList<Order> orders;
     private IngredientList ingredientList;
     private MenuList menuList;
     private OptionList optionList;
@@ -21,22 +16,22 @@ public class OrderManager {
     private int maxMenuCount;
     private int maxOptionCount;
 
-    public OrderManager(int day) {
+    public OrderManager() {
         orders = new ArrayList<Order>();
         optionList = new OptionList();
         ingredientList = new IngredientList();
         menuList = new MenuList(ingredientList.getIngredientList());
         rand = new Random();
-        this.day = day;
-        availableMenuCount = 4;
+        day = 1;
+        // availableMenuCount = 4;
         availableMenuCount = menuList.size();
-        maxMenuCount = 3;
-        maxOptionCount = 2;
+        maxMenuCount = 2;
+        maxOptionCount = 1;
     }
 
     public void createRandomOrder() {
         Order newItem = new Order(menuList.get(rand.nextInt(availableMenuCount)));
-        int newMenuLength = rand.nextInt(maxMenuCount);
+        int newMenuLength = rand.nextInt(1, maxMenuCount);
         for (int i = 0; i < newMenuLength; ++i) {
             newItem.addMenu(menuList.get(rand.nextInt(availableMenuCount)));
         }
@@ -57,5 +52,31 @@ public class OrderManager {
 
     public int getOrderSize() {
         return orders.size();
+    }
+
+    public void nextDay() {
+        orders.clear();
+        ++day;
+        // day save routine
+    }
+
+    public void upgrade() {
+        maxMenuCount++;
+        maxOptionCount++;
+    }
+
+    public void downgrade() {
+        if (maxMenuCount >  1) {
+            maxMenuCount--;
+        }
+        if (maxOptionCount > 0) {
+            maxOptionCount--;
+        }
+    }
+
+    public String toString() {
+        StringBuffer outStr = new StringBuffer();
+        // TODO: 판매기록 출력
+        return outStr.toString();
     }
 }

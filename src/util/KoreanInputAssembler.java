@@ -141,7 +141,6 @@ public class KoreanInputAssembler {
             Integer medialCode = null;
             Integer finalCode = null;
             int idx = targetHandle.length() - 1;
-
             if (in == 8) {
                 // TODO: 결합 분리 구현 예정
                 if (deleting) {
