@@ -136,7 +136,7 @@ public class StatisticsSearchPanel extends JPanel {
 
         centerPanel.add(summaryPanel, BorderLayout.WEST);
 
-        String[] columnNames = {"순위", "일자", "메뉴", "판매지수", "판매금액"};
+        String[] columnNames = {"순위", "메뉴", "판매지수", "판매금액"};
         tableModel = new DefaultTableModel(columnNames, 0);
         resultTable = new JTable(tableModel);
         resultTable.setFillsViewportHeight(true);
