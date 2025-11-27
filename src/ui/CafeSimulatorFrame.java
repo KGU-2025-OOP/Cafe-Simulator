@@ -265,7 +265,7 @@ public class CafeSimulatorFrame extends JFrame {
         showPanel(previousPanelName);
 
         if ("Game".equals(previousPanelName)) {
-            gameScreen.startGame();
+            gameScreen.joinGame();
         }
     }
 
@@ -310,7 +310,12 @@ public class CafeSimulatorFrame extends JFrame {
         gameSpacePanel.getBtn1().addActionListener(e -> {
             // gameScreen.setDayLabel(currentDayNumber + "일차");
             showPanel("Game");
-            gameScreen.startGame();
+            if (!gameScreen.isGameLoaded()) {
+                gameScreen.startGame();
+            } else {
+                gameScreen.joinGame();
+            }
+
         });
 
         gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
@@ -334,8 +339,7 @@ public class CafeSimulatorFrame extends JFrame {
         
         //임시 마감 버튼 입니다.
         // 타이머 연동하면 지우기
-        gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog(10, 10));
-        
+        // gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog(10, 10));
         // GameCanvas → Frame 콜백 연결
         gameScreen.setDayEndListener((customerCount, revenue) -> {
             showDayEndDialog(customerCount, revenue);
@@ -367,7 +371,7 @@ public class CafeSimulatorFrame extends JFrame {
             System.exit(0);
         } else {
             if ("Game".equals(currentPanelName)) {
-                gameScreen.startGame();
+                gameScreen.joinGame();
             }
         }
     }
@@ -387,7 +391,7 @@ public class CafeSimulatorFrame extends JFrame {
             showPanel("Start");
         } else {
             if ("Game".equals(currentPanelName)) {
-                gameScreen.startGame();
+                gameScreen.joinGame();
             }
         }
     }

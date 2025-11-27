@@ -25,7 +25,7 @@ public class Background implements IGameObject{
     @Override
     public void draw(Graphics2D g) {
         g.drawImage(backgroundImage, null, 0, 0);
-        // TODO: 분할 렌더링 필요/ 스프라이트가 너무커서 느려짐
+        // TODO: 분할 렌더링 필요 스프라이트가 너무커서 느려짐
     }
 
     @Override

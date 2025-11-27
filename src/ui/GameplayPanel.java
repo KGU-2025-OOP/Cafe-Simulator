@@ -30,6 +30,10 @@ public class GameplayPanel extends JPanel {
         add(mainPanel, BorderLayout.CENTER);
     }
 
+    public boolean isGameLoaded() {
+        return gameCanvas.shouldRun;
+    }
+
 //    private JPanel createTopBar() {
 //        JPanel topBarPanel = new JPanel(new BorderLayout());
 //        topBarPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -64,9 +68,15 @@ public class GameplayPanel extends JPanel {
         }
     }
 
+    public void joinGame() {
+        if (gameCanvas != null) {
+            gameCanvas.pause = false;
+        }
+    }
+
     public void stopGame() {
         if (gameCanvas != null) {
-            gameCanvas.shouldRun = false;
+            gameCanvas.pause = true;
         }
     }
     

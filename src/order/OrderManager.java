@@ -61,7 +61,9 @@ public class OrderManager {
     }
 
     public void upgrade() {
-        maxMenuCount++;
+        if (maxMenuCount < 6) {
+            maxMenuCount++;
+        }
         maxOptionCount++;
     }
 
@@ -78,5 +80,9 @@ public class OrderManager {
         StringBuffer outStr = new StringBuffer();
         // TODO: 판매기록 출력
         return outStr.toString();
+    }
+
+    public void setDay(int day) {
+        this.day = day;
     }
 }

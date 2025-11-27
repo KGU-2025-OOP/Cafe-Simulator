@@ -355,7 +355,6 @@ public class KoreanInputAssembler {
                         targetHandle.setLength(idx);
                         targetHandle.append((char) (0xac00 + initialMap.get(QWERTY_BIND[initialHolder]) + medialMap.get(medialKey)));
 
-
                         stage = Stage.FINAL;
                         break;
                     }
