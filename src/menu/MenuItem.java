@@ -15,9 +15,10 @@ public abstract class MenuItem {
     protected String imgPath; //이미지 경로
     protected java.io.File imagePath; //이미지 파일
     protected BufferedImage image;
-    public static int imageSize = 45;
+
 
     public MenuItem(Scanner scan) {
+        final int imageSize = 70;
         String line = scan.nextLine();
         String[] parts = line.split(" ");
 

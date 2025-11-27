@@ -141,7 +141,6 @@ public class KoreanInputAssembler {
             Integer medialCode = null;
             Integer finalCode = null;
             int idx = targetHandle.length() - 1;
-
             if (in == 8) {
                 // TODO: 결합 분리 구현 예정
                 if (deleting) {
@@ -355,7 +354,6 @@ public class KoreanInputAssembler {
                         }
                         targetHandle.setLength(idx);
                         targetHandle.append((char) (0xac00 + initialMap.get(QWERTY_BIND[initialHolder]) + medialMap.get(medialKey)));
-
 
                         stage = Stage.FINAL;
                         break;

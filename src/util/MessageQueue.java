@@ -27,4 +27,8 @@ public class MessageQueue implements AWTEventListener {
         return queue.poll();
 
     }
+
+    public void clear() {
+        queue.clear();
+    }
 }

@@ -25,9 +25,10 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
 import java.awt.Cursor;
 import java.awt.Dimension;
+
+import core.DayEndListener;
 
 public class CafeSimulatorFrame extends JFrame {
 
@@ -264,7 +265,7 @@ public class CafeSimulatorFrame extends JFrame {
         showPanel(previousPanelName);
 
         if ("Game".equals(previousPanelName)) {
-            gameScreen.startGame();
+            gameScreen.joinGame();
         }
     }
 
@@ -307,9 +308,14 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToGameSpacePanel() {
         gameSpacePanel.getBtn1().addActionListener(e -> {
-            gameScreen.setDayLabel(currentDayNumber + "일차");
+            // gameScreen.setDayLabel(currentDayNumber + "일차");
             showPanel("Game");
-            gameScreen.startGame();
+            if (!gameScreen.isGameLoaded()) {
+                gameScreen.startGame();
+            } else {
+                gameScreen.joinGame();
+            }
+
         });
 
         gameSpacePanel.getBtn2().addActionListener(e -> openMenuGuide());
@@ -329,7 +335,15 @@ public class CafeSimulatorFrame extends JFrame {
         addExitBinding(gameSpacePanel);
         addExitBinding(salesGraphPanel);
         addExitBinding(statisticsSearchPanel);
-        gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog());
+
+        
+        //임시 마감 버튼 입니다.
+        // 타이머 연동하면 지우기
+        // gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog(10, 10));
+        // GameCanvas → Frame 콜백 연결
+        gameScreen.setDayEndListener((customerCount, revenue) -> {
+            showDayEndDialog(customerCount, revenue);
+        });
     }
 
     private void addExitBinding(JPanel panel) {
@@ -357,7 +371,7 @@ public class CafeSimulatorFrame extends JFrame {
             System.exit(0);
         } else {
             if ("Game".equals(currentPanelName)) {
-                gameScreen.startGame();
+                gameScreen.joinGame();
             }
         }
     }
@@ -377,33 +391,30 @@ public class CafeSimulatorFrame extends JFrame {
             showPanel("Start");
         } else {
             if ("Game".equals(currentPanelName)) {
-                gameScreen.startGame();
+                gameScreen.joinGame();
             }
         }
     }
 
-    private void showMenuGuideFromHub() {
-        openMenuGuide();
-    }
-
-    private void showDayEndDialog() {
+    private void showDayEndDialog(int customerCount, int revenue) {
         gameScreen.stopGame();
         int dayNumber = currentDayNumber;
 
-        Random rand = new Random();
-        int customerCount = MIN_CUSTOMERS + rand.nextInt(MAX_EXTRA_CUSTOMERS);
-        int revenue = customerCount * (AVG_SPEND_PER_CUSTOMER + rand.nextInt(SPEND_VARIANCE));
+        // 누적 매출 갱신
         totalAccumulatedRevenue += revenue;
-        int netProfit = revenue;
+        int netProfit = revenue;  // 아직 비용 안 빼면 그냥 revenue == netProfit
 
-        DaySummaryDialog dayEndDialog = new DaySummaryDialog(this, dayNumber, customerCount, revenue, totalAccumulatedRevenue);
+        DaySummaryDialog dayEndDialog =
+                new DaySummaryDialog(this, dayNumber, customerCount, revenue, totalAccumulatedRevenue);
 
         bottomBarPanel.setVisible(false);
-        dayEndDialog.setVisible(true);
+        dayEndDialog.setVisible(true);   // 모달 → 닫힐 때까지 여기서 블록됨
         bottomBarPanel.setVisible(true);
 
+        // 일별 기록 저장
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
 
+        // 다음 날로 넘어가기
         currentDayNumber++;
         showPanel("GameSpaceHub");
     }

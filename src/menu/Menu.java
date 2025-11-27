@@ -6,15 +6,16 @@ import util.Vector2f;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.io.File;
 
 public class Menu {
     private int isCoffee;
     private String name;
     private int ingredientCount;
-    private ArrayList<MenuItem> items;  // Ingredient와 Option을 모두 담을 수 있도록 변경
+    private ArrayList<MenuItem> items;
     private int price;
     protected String imgPath; //이미지 경로
-    protected java.io.File img; //이미지 파일
+    protected File img; //이미지 파일
 
     public void readMenu(Scanner scanner, ArrayList<Ingredient> ingredientList) {
         String line = scanner.nextLine();
@@ -69,6 +70,7 @@ public class Menu {
     // 하위 호환성을 위한 메서드
     public void addOptions(final Option option) {
         this.items.add(option);
+        price += option.price;
         this.ingredientCount = this.items.size();
     }
 
@@ -91,18 +93,21 @@ public class Menu {
         }
         return totalCost + this.price;  // 메뉴 가격 + 재료 가격
     }
-    public ArrayList<DropItem> getDrops(int idx, DeadLine deadline) {
+    public ArrayList<DropItem> getDrops(DeadLine deadline) {
         int tempDropSpeed = 15; // Ingredients의 처리 시간에 비례해서 값을 키울 에정이였음
-        ArrayList<Ingredient> ingredients = this.getIngredients();
+
         ArrayList<DropItem> res = new ArrayList<DropItem>();
-        int length = ingredients.size();
-        for (int i = 0; i < length; ++i) {
+        for (MenuItem item : items) {
             DropItem newDrop = new DropItem(new Vector2f(), new Vector2f(0, -1), tempDropSpeed,
-                    ingredients.get(i).getName(), DropItem.dropsFont,
-                    ingredients.get(i).getBufferedImage(), deadline);
+                    item.getName(), DropItem.defaultFont,
+                    item.getBufferedImage(), deadline);
             res.add(newDrop);
         }
 
         return res;
+    }
+
+    public File getImage() {
+        return img;
     }
 }

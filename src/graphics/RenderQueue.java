@@ -2,17 +2,13 @@ package graphics;
 
 import entities.IGameObject;
 import util.CoordSystem;
-import util.ImageUtils;
-import util.Vector2f;
-import util.Vector2i;
 
-import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.util.Comparator;
 import java.util.PriorityQueue;
-import java.awt.geom.AffineTransform;
 
 public class RenderQueue {
     final private PriorityQueue<IGameObject> queue;
@@ -22,7 +18,7 @@ public class RenderQueue {
     public boolean shouldClear;
     // AffineTransform yFlip;
 
-    public class PainterComparator implements Comparator<IGameObject> {
+    public static class PainterComparator implements Comparator<IGameObject> {
         public int compare(IGameObject go0, IGameObject go1) {
             float depth0 = go0.getDepth();
             float depth1 = go1.getDepth();
@@ -67,6 +63,7 @@ public class RenderQueue {
 
     public void clearBuffer() {
         Graphics g = buffer.getGraphics();
+
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, width, height);
     }
