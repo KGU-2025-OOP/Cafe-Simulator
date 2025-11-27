@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import entities.WobbleImage;
 
 public class GameCanvas extends Canvas implements Runnable {
 
@@ -41,6 +42,8 @@ public class GameCanvas extends Canvas implements Runnable {
     final private Background background;
     private ArrayList<BrewingSlot> brewingSlots;
     private ArrayList<Vector2i> brewingID;
+    private ArrayList<WobbleImage> wobbleImages; // ★ 흔들리는 이미지 리스트 추가
+
     private OrderManager coffeeshopManager;
     private DeadLine deadLine;
     private TextBox inputBox;
@@ -93,8 +96,24 @@ public class GameCanvas extends Canvas implements Runnable {
             System.out.println("Failed load image from loadMenu");
         }
 
+        coffeeshopManager = new OrderManager(day);
+        coffeeshopManager.createRandomOrder();
+        brewingSlots = new ArrayList<BrewingSlot>();
+        wobbleImages = new ArrayList<>();
+        brewingSlots.add(new BrewingSlot(width, height, 0));
+        brewingSlots.get(0).loadMenu(
+                coffeeshopManager.getOrder(0).getMenu(0).getName(),
+                coffeeshopManager.getOrder(0).getMenu(0).getDrops(0, FailLine.line));
 
 
+
+        wobbleImages.add(new WobbleImage(10, 70, "resources/image/menu_image/americano.png", 1).setSize(100).setSpeed(4f));
+        wobbleImages.add(new WobbleImage(30, 200, "resources/image/menu_image/earlgrey_tea.png", 1).setSize(100).setSpeed(3.3f));
+        wobbleImages.add(new WobbleImage(25, 330, "resources/image/menu_image/cold_brew.png", 1).setSize(100).setSpeed(6f));
+
+        wobbleImages.add(new WobbleImage(width - 90, 70, "resources/image/menu_image/einspanner.png", 1).setSize(100).setSpeed(5f));
+        wobbleImages.add(new WobbleImage(width - 100, 200, "resources/image/menu_image/apogatto.png", 1).setSize(100).setSpeed(4f));
+        wobbleImages.add(new WobbleImage(width - 85, 330, "resources/image/menu_image/lemonade.png", 1).setSize(100).setSpeed(6.3f));
         // Start game loop;
         lastTime = System.nanoTime();
         roundTime = 45 * FPSCounter.secondInNanoTime;
@@ -144,6 +163,8 @@ public class GameCanvas extends Canvas implements Runnable {
                 }
             }
         }
+        for (WobbleImage w : wobbleImages)
+            w.update(deltaTime);
     }
 
     private void render() {
@@ -157,6 +178,9 @@ public class GameCanvas extends Canvas implements Runnable {
         }
         // Draw
         drawCanvas();
+        for (WobbleImage w : wobbleImages)
+            renderQueue.add(w);
+
     }
 
     public void run() {
