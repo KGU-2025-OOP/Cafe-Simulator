@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import core.DayEndListener;
 import core.GameCanvas;
 
 public class GameplayPanel extends JPanel {
@@ -66,6 +67,12 @@ public class GameplayPanel extends JPanel {
     public void stopGame() {
         if (gameCanvas != null) {
             gameCanvas.shouldRun = false;
+        }
+    }
+    
+    public void setDayEndListener(DayEndListener listener) {
+        if (gameCanvas != null) {
+            gameCanvas.setDayEndListener(listener);
         }
     }
 
