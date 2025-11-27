@@ -237,7 +237,9 @@ public class GameCanvas extends Canvas implements Runnable {
         return messageQueue;
     }
     
+    /*
     public void setDayEndListener(DayEndListener listener) {
         this.dayEndListener = listener;
     }
+     */
 }
