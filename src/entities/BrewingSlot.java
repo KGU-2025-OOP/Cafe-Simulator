@@ -21,7 +21,7 @@ public class BrewingSlot implements IGameObject {
     private ArrayList<DropItem> queue; // Items waiting to be processed
     private int slotWidth; // Current slot width
     private final int xPos;
-    private TextBox currentMenu;
+    private DropItem currentMenu;
     private final Font menuFont;
     private final int height;
     private final int topMargin;
@@ -43,8 +43,11 @@ public class BrewingSlot implements IGameObject {
     }
 
     public void loadMenu(Menu menu) throws IOException {
-
-        final float imageSize = this.slotWidth * 0.2F;
+        final float MAX_IMAGE_SIZE = 180;
+        float imageSize = this.slotWidth * 0.15F + 60;
+        if (imageSize > MAX_IMAGE_SIZE) {
+            imageSize = MAX_IMAGE_SIZE;
+        }
         queue = menu.getDrops(deadline);
         BufferedImage menuImage = ImageIO.read(menu.getImage());
         float ratio = menuImage.getHeight() / (float) menuImage.getWidth();
@@ -153,16 +156,17 @@ public class BrewingSlot implements IGameObject {
         float scale = newWidth / (float) slotWidth; // Calculate scaling ratio
         slotWidth = newWidth;
         Vector2f cmenuPos = currentMenu.getPositionHandle();
-
         cmenuPos.x = (cmenuPos.x - this.xPos) * scale + xPos;
+
+        currentMenu.resize(currentMenu.getBackgroundHandle().getWidth() * scale + 70);
 
         // Scale positions of items in slots
         for (int i = 0; i < SLOT_COUNT; i++) {
             slotPos[i].x = (slotPos[i].x - this.xPos) * scale + xPos;
             slotPos[i].y = height;
-
             if (slots[i] != null) {
                 slots[i].getPositionHandle().x = slotPos[i].x;
+                slots[i].resize(slots[i].getBackgroundHandle().getWidth() * scale + 25);
             }
         }
     }

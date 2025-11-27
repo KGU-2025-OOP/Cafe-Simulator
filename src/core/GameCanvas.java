@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import entities.WobbleImage;
 
 public class GameCanvas extends Canvas implements Runnable {
@@ -41,7 +42,7 @@ public class GameCanvas extends Canvas implements Runnable {
 
     final private Background background;
     private ArrayList<BrewingSlot> brewingSlots;
-    private ArrayList<Vector2i> brewingID;
+    private ArrayList<Vector2i> brewingIDs;
     private ArrayList<WobbleImage> wobbleImages; // ★ 흔들리는 이미지 리스트 추가
 
     private OrderManager coffeeshopManager;
@@ -66,22 +67,22 @@ public class GameCanvas extends Canvas implements Runnable {
         int width = getWidth();
         int height = getHeight();
 
-        inputBox =  new TextBox(
+        inputBox = new TextBox(
                 new Vector2f(width / 2.F, height / 4.F),
                 0.F,
                 new StringBuffer(),
                 new Font("Batang", Font.PLAIN, 30));
-        deadLine = new DeadLine(width, height / (float)4, new Vector2f(), 0.F);
+        deadLine = new DeadLine(width, height / (float) 4, new Vector2f(), 0.F);
 
         coffeeshopManager = new OrderManager();
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
-        brewingID = new ArrayList<Vector2i>();
-        brewingSlots.add(new BrewingSlot(width, height, 0, deadLine));
+        brewingIDs = new ArrayList<Vector2i>();
+        brewingSlots.add(new BrewingSlot(width - 200, height, 100, deadLine));
 
         orderCounter = 0;
         menuCounter = 0;
-        brewingID.add(new Vector2i(orderCounter, menuCounter));
+        brewingIDs.add(new Vector2i(orderCounter, menuCounter));
         try {
             brewingSlots.get(0).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
             ++menuCounter;
@@ -96,24 +97,27 @@ public class GameCanvas extends Canvas implements Runnable {
             System.out.println("Failed load image from loadMenu");
         }
 
-        coffeeshopManager = new OrderManager(day);
+        coffeeshopManager = new OrderManager();
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
         wobbleImages = new ArrayList<>();
-        brewingSlots.add(new BrewingSlot(width, height, 0));
-        brewingSlots.get(0).loadMenu(
-                coffeeshopManager.getOrder(0).getMenu(0).getName(),
-                coffeeshopManager.getOrder(0).getMenu(0).getDrops(0, FailLine.line));
+        brewingSlots.add(new BrewingSlot(width, height, 0, deadLine));
+        try {
+            brewingSlots.get(0).loadMenu(coffeeshopManager.getOrder(0).getMenu(0));
+        } catch (IOException e) {
+            assert (true);
+        }
 
 
+        float bgObjDepth = 4.5F;
 
-        wobbleImages.add(new WobbleImage(10, 70, "resources/image/menu_image/americano.png", 1).setSize(100).setSpeed(4f));
-        wobbleImages.add(new WobbleImage(30, 200, "resources/image/menu_image/earlgrey_tea.png", 1).setSize(100).setSpeed(3.3f));
-        wobbleImages.add(new WobbleImage(25, 330, "resources/image/menu_image/cold_brew.png", 1).setSize(100).setSpeed(6f));
+        wobbleImages.add(new WobbleImage(10, 70, "resources/image/menu_image/americano.png", bgObjDepth).setSize(100).setSpeed(4f));
+        wobbleImages.add(new WobbleImage(30, 200, "resources/image/menu_image/earlgrey_tea.png", bgObjDepth).setSize(100).setSpeed(3.3f));
+        wobbleImages.add(new WobbleImage(25, 330, "resources/image/menu_image/cold_brew.png", bgObjDepth).setSize(100).setSpeed(6f));
 
-        wobbleImages.add(new WobbleImage(width - 90, 70, "resources/image/menu_image/einspanner.png", 1).setSize(100).setSpeed(5f));
-        wobbleImages.add(new WobbleImage(width - 100, 200, "resources/image/menu_image/apogatto.png", 1).setSize(100).setSpeed(4f));
-        wobbleImages.add(new WobbleImage(width - 85, 330, "resources/image/menu_image/lemonade.png", 1).setSize(100).setSpeed(6.3f));
+        wobbleImages.add(new WobbleImage(width - 90, 70, "resources/image/menu_image/einspanner.png", bgObjDepth).setSize(100).setSpeed(5f));
+        wobbleImages.add(new WobbleImage(width - 100, 200, "resources/image/menu_image/apogatto.png", bgObjDepth).setSize(100).setSpeed(4f));
+        wobbleImages.add(new WobbleImage(width - 85, 330, "resources/image/menu_image/lemonade.png", bgObjDepth).setSize(100).setSpeed(6.3f));
         // Start game loop;
         lastTime = System.nanoTime();
         roundTime = 45 * FPSCounter.secondInNanoTime;
@@ -142,14 +146,15 @@ public class GameCanvas extends Canvas implements Runnable {
         for (int i = 0; i < brewingSlots.size(); ++i) {
             brewingSlots.get(i).update(deltaTime);
             if (brewingSlots.get(i).isEmpty()) {
-                if (coffeeshopManager.getOrder(brewingID.get(i).x).serve(brewingID.get(i).y)) {
+                System.out.println(brewingIDs.get(i));
+                if (coffeeshopManager.getOrder(brewingIDs.get(i).x).serve(brewingIDs.get(i).y)) {
                     // TODO: 매출 기록
-                    System.out.println(coffeeshopManager.getOrder(brewingID.get(i).x).getPrice());
+                    System.out.println(coffeeshopManager.getOrder(brewingIDs.get(i).x).getPrice());
                 }
                 try {
                     brewingSlots.get(i).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
-                    brewingID.get(i).x = orderCounter;
-                    brewingID.get(i).y = menuCounter;
+                    brewingIDs.get(i).x = orderCounter;
+                    brewingIDs.get(i).y = menuCounter;
                     ++menuCounter;
                     if (coffeeshopManager.getOrder(orderCounter).getMenuLength() <= menuCounter) {
                         ++orderCounter;
@@ -264,11 +269,11 @@ public class GameCanvas extends Canvas implements Runnable {
     private void levelup() {
         if (brewingSlots.size() < 4) {
             int newSlotCount = brewingSlots.size() + 1;
-            int newWidth = getWidth() / newSlotCount;
+            int newWidth = (getWidth() - 200) / newSlotCount;
             int height = getHeight();
-            BrewingSlot newBrewingSlot = new BrewingSlot(newWidth, height, newWidth * (newSlotCount - 1), deadLine);
-
+            BrewingSlot newBrewingSlot = new BrewingSlot(newWidth, height, newWidth * (newSlotCount - 1) + 100, deadLine);
             brewingSlots.add(newBrewingSlot);
+            brewingIDs.add(new Vector2i(orderCounter, menuCounter));
             try {
                 newBrewingSlot.loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
                 ++menuCounter;
@@ -282,11 +287,12 @@ public class GameCanvas extends Canvas implements Runnable {
             } catch (IOException e) {
                 assert (true);
             }
-
             for (int i = 0; i < newSlotCount - 1; ++i) {
-                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+                brewingSlots.get(i).resize(newWidth, height, newWidth * i + 100);
             }
+
         }
+
         coffeeshopManager.upgrade();
     }
 
@@ -297,12 +303,14 @@ public class GameCanvas extends Canvas implements Runnable {
             int height = getHeight();
             brewingSlots.get(newSlotCount).clear();
             brewingSlots.remove(newSlotCount);
+            brewingIDs.remove(newSlotCount);
             for (int i = 0; i < newSlotCount; ++i) {
                 brewingSlots.get(i).resize(newWidth, height, i * newWidth);
             }
         }
         coffeeshopManager.downgrade();
     }
+
     private void shutdown() {
         System.exit(0);
     }
