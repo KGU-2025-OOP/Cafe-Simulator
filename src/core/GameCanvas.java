@@ -264,6 +264,7 @@ public class GameCanvas extends Canvas implements Runnable {
             }
 
             coffeeshopManager.nextDay();
+            inputBox.getBufferHandle().setLength(0);
             lastTime = System.nanoTime();
             roundTime = DAY_TIME * FPSCounter.secondInNanoTime;
             roundTimer = lastTime + roundTime;
