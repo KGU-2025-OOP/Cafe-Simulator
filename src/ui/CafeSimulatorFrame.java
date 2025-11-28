@@ -1,10 +1,14 @@
 package ui;
 
+import core.GameCanvas;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 import java.awt.CardLayout;
+import java.io.*;
+import java.nio.CharBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JToggleButton;
@@ -64,9 +68,12 @@ public class CafeSimulatorFrame extends JFrame {
 
     private String currentPanelName = "Start";
     private String previousPanelName = "GameSpaceHub";
+    public static final String SAVE_FILE_PATH = "cafename.txt";
+    private String cafeName;
 
     public static void mymain(String[] args) {
-        final boolean MOCK_SAVE_FILE_EXISTS = false;
+        File saveFile = new File(SAVE_FILE_PATH);
+        final boolean MOCK_SAVE_FILE_EXISTS = saveFile.exists();
         SwingUtilities.invokeLater(() -> {
             CafeSimulatorFrame game = new CafeSimulatorFrame(MOCK_SAVE_FILE_EXISTS);
             game.setVisible(true);
@@ -82,7 +89,23 @@ public class CafeSimulatorFrame extends JFrame {
 
         setLayout(new BorderLayout());
 
-        currentDayNumber = 1;
+        if (hasSaveFile) {
+            try {
+                FileReader fr = new FileReader(CafeSimulatorFrame.SAVE_FILE_PATH);
+                BufferedReader br = new BufferedReader(fr);
+                String[] saveData = br.readLine().split(" ");
+                cafeName = saveData[0];
+                currentDayNumber = Integer.parseInt(saveData[1]);
+                br.close();
+            } catch (FileNotFoundException e) {
+                assert(true);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            currentDayNumber = 1;
+        }
+
         dailySalesHistory = new LinkedHashMap<>();
         totalAccumulatedRevenue = 0;
 
@@ -110,6 +133,7 @@ public class CafeSimulatorFrame extends JFrame {
 
         gameScreen = new GameplayPanel();
         mainPanel.add(gameScreen, "Game");
+        gameScreen.setDay(currentDayNumber);
 
         gameSpacePanel = new GameplayAreaPanel();
         mainPanel.add(gameSpacePanel, "GameSpaceHub");
@@ -295,11 +319,12 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToNewGamePanel() {
         newGamePanel.getStartButton().addActionListener(e -> {
-            String cafeName = newGamePanel.getNameField().getText().trim();
+            cafeName = newGamePanel.getNameField().getText().trim();
             if (cafeName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "카페 이름을 입력해주세요.", "입력 오류", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
             showPanel("GameSpaceHub");
         });
     }
@@ -366,6 +391,17 @@ public class CafeSimulatorFrame extends JFrame {
                 this, "게임을 종료하시겠습니까?", "종료 확인", JOptionPane.YES_NO_OPTION
         );
         if (confirmExit == JOptionPane.YES_OPTION) {
+            try {
+                FileWriter fw = new FileWriter(SAVE_FILE_PATH, false);
+                fw.append(cafeName);
+                fw.append(" ");
+                fw.append(currentDayNumber + "");
+                fw.close();
+            } catch (IOException e) {
+                System.out.println("게임 저장 실패");
+                throw new RuntimeException(e);
+            }
+
             System.exit(0);
         } else {
             if ("Game".equals(currentPanelName)) {
@@ -383,10 +419,19 @@ public class CafeSimulatorFrame extends JFrame {
                 "포기 확인", JOptionPane.YES_NO_OPTION
         );
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
-            currentDayNumber = 1;
-            dailySalesHistory.clear();
-            totalAccumulatedRevenue = 0;
-            showPanel("Start");
+            File save = new File(SAVE_FILE_PATH);
+            File revenue = new File(GameCanvas.REVENUE_SAVE_PATH);
+            File sales = new File(GameCanvas.SALES_SAVE_PATH);
+            if (save.exists()) {
+                save.delete();
+            }
+            if (revenue.exists()) {
+                revenue.delete();
+            }
+            if (sales.exists()) {
+                sales.delete();
+            }
+            System.exit(0);
         } else {
             if ("Game".equals(currentPanelName)) {
                 gameScreen.joinGame();

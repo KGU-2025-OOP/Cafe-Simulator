@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class Background implements IGameObject{
-    private static final String IMAGE_PATH = "resources/image/background/game_background.jpg";
+    private static final String IMAGE_PATH = "resources/image/background/game_background2.jpg";
     private BufferedImage backgroundImage;
     public Background(int width, int height) {
         try {

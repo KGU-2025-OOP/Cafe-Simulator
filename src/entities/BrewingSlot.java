@@ -20,7 +20,7 @@ public class BrewingSlot implements IGameObject {
     private final Vector2f[] slotPos;
     private ArrayList<DropItem> queue; // Items waiting to be processed
     private int slotWidth; // Current slot width
-    private final int xPos;
+    private int xPos;
     private DropItem currentMenu;
     private final Font menuFont;
     private final int height;
@@ -36,7 +36,7 @@ public class BrewingSlot implements IGameObject {
         this.slots = new DropItem[SLOT_COUNT];
         slotPos = new Vector2f[SLOT_COUNT];
         for (int i = 0; i < SLOT_COUNT; ++i) {
-            slotPos[i] = new Vector2f(slotWidth / (float)SLOT_COUNT * i + slotWidth / (2 * (float)SLOT_COUNT) + xPos, height - topMargin);
+            slotPos[i] = new Vector2f(slotWidth / (float) SLOT_COUNT * i + slotWidth / (2 * (float) SLOT_COUNT) + xPos, height - topMargin);
         }
         this.xPos = xPos;
         this.deadline = deadline;
@@ -52,7 +52,7 @@ public class BrewingSlot implements IGameObject {
         BufferedImage menuImage = ImageIO.read(menu.getImage());
         float ratio = menuImage.getHeight() / (float) menuImage.getWidth();
 
-        currentMenu = new DropItem(new Vector2f(xPos + slotWidth / (float)2, height - topMargin), new Vector2f(), 0.F,
+        currentMenu = new DropItem(new Vector2f(xPos + slotWidth / (float) 2, height - topMargin), new Vector2f(), 0.F,
                 menu.getName(), menuFont, ImageUtils.resize(menuImage, (int) imageSize, (int) (imageSize * ratio)), null);
         fillEmptySlots(false);
     }
@@ -145,6 +145,7 @@ public class BrewingSlot implements IGameObject {
             slots[i] = null;
         }
     }
+
     /*
      * Resize slot width and reposition items proportionally
      */
@@ -154,11 +155,13 @@ public class BrewingSlot implements IGameObject {
         }
 
         float scale = newWidth / (float) slotWidth; // Calculate scaling ratio
+
         slotWidth = newWidth;
         Vector2f cmenuPos = currentMenu.getPositionHandle();
-        cmenuPos.x = (cmenuPos.x - this.xPos) * scale + xPos;
 
-        currentMenu.resize(currentMenu.getBackgroundHandle().getWidth() * scale + 70);
+        cmenuPos.x = (cmenuPos.x - this.xPos) * scale + xPos;
+        System.out.println(cmenuPos.x);
+        currentMenu.resize(newWidth * 0.15F);
 
         // Scale positions of items in slots
         for (int i = 0; i < SLOT_COUNT; i++) {
@@ -166,9 +169,13 @@ public class BrewingSlot implements IGameObject {
             slotPos[i].y = height;
             if (slots[i] != null) {
                 slots[i].getPositionHandle().x = slotPos[i].x;
-                slots[i].resize(slots[i].getBackgroundHandle().getWidth() * scale + 25);
+                if (slots[i].getBackgroundHandle() != null) {
+                    slots[i].resize(slots[i].getBackgroundHandle().getWidth() * scale);
+                }
+
             }
         }
+        this.xPos = xPos;
     }
 
     @Override

@@ -1,7 +1,9 @@
 package order;
 
 import menu.*;
+import stats.DailyRevenueRecord;
 
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -26,7 +28,7 @@ public class OrderManager {
         // availableMenuCount = 4;
         availableMenuCount = menuList.size();
         maxMenuCount = 2;
-        maxOptionCount = 1;
+        maxOptionCount = 2;
     }
 
     public void createRandomOrder() {
@@ -61,17 +63,17 @@ public class OrderManager {
     }
 
     public void upgrade() {
-        if (maxMenuCount < 6) {
+        if (maxMenuCount < 7) {
             maxMenuCount++;
         }
         maxOptionCount++;
     }
 
     public void downgrade() {
-        if (maxMenuCount >  1) {
+        if (maxMenuCount >  2) {
             maxMenuCount--;
         }
-        if (maxOptionCount > 0) {
+        if (maxOptionCount > 2) {
             maxOptionCount--;
         }
     }

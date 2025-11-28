@@ -28,7 +28,12 @@ import java.util.ArrayList;
 import entities.WobbleImage;
 
 public class GameCanvas extends Canvas implements Runnable {
-    private static final long DAY_TIME = 15;
+
+    public boolean shouldRun;
+    public boolean pause;
+    public static String SALES_SAVE_PATH = "sales.txt";
+    public static String REVENUE_SAVE_PATH = "daily_revenue.txt";
+    private static final long DAY_TIME = 35;
     private final RenderQueue renderQueue;
     private final MessageQueue messageQueue;
     private final KoreanInputAssembler korean;
@@ -38,7 +43,6 @@ public class GameCanvas extends Canvas implements Runnable {
     private long roundTimer;
     private long roundTime;
 
-    public boolean shouldRun;
     private long lastTime;
 
     private final Background background;
@@ -52,7 +56,7 @@ public class GameCanvas extends Canvas implements Runnable {
     private final TextBox timerBox;
     private DayEndListener endEvent;
     private boolean paused;
-    public boolean pause;
+
 
     public GameCanvas(int width, int height) {
 
@@ -62,6 +66,7 @@ public class GameCanvas extends Canvas implements Runnable {
         frameCounter = new FPSCounter();
         korean = new KoreanInputAssembler();
         background = new Background(width, height);
+        coffeeshopManager = new OrderManager();
         setSize(width, height);
         Toolkit.getDefaultToolkit().addAWTEventListener(messageQueue, AWTEvent.KEY_EVENT_MASK | AWTEvent.MOUSE_EVENT_MASK);
         paused = false;
@@ -70,6 +75,10 @@ public class GameCanvas extends Canvas implements Runnable {
 
     public void setDayEndListener(DayEndListener listener) {
         this.endEvent = listener;
+    }
+
+    public void setDay(int day) {
+        coffeeshopManager.setDay(day);
     }
 
     public void run() {
@@ -179,7 +188,7 @@ public class GameCanvas extends Canvas implements Runnable {
                 new Font("Batang", Font.PLAIN, 30));
         deadLine = new DeadLine(width, height / (float) 4, new Vector2f(), 0.F);
 
-        coffeeshopManager = new OrderManager();
+
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
         brewingIDs = new ArrayList<Vector2i>();
@@ -201,8 +210,7 @@ public class GameCanvas extends Canvas implements Runnable {
         } catch (IOException e) {
             System.out.println("Failed load image from loadMenu");
         }
-
-        coffeeshopManager = new OrderManager();
+        coffeeshopManager.createRandomOrder();
         coffeeshopManager.createRandomOrder();
         brewingSlots = new ArrayList<BrewingSlot>();
         wobbleImages = new ArrayList<>();
@@ -243,7 +251,7 @@ public class GameCanvas extends Canvas implements Runnable {
         } else {
             // TODO: File IO append
             try {
-                FileWriter salesFW = new FileWriter("sales.txt", true);
+                FileWriter salesFW = new FileWriter(SALES_SAVE_PATH, true);
                 salesFW.append(coffeeshopManager.toString());
                 salesFW.close();
             } catch (IOException e) {
@@ -255,7 +263,7 @@ public class GameCanvas extends Canvas implements Runnable {
                 revenue += coffeeshopManager.getOrder(i).getPrice();
             }
             try {
-                FileWriter revenueFW = new FileWriter("daily_revenue.txt", true);
+                FileWriter revenueFW = new FileWriter(REVENUE_SAVE_PATH, true);
                 String content = coffeeshopManager.getDay() + " " + revenue + "\n";
                 revenueFW.append(content);
                 revenueFW.close();
@@ -368,7 +376,7 @@ public class GameCanvas extends Canvas implements Runnable {
             } catch (IOException e) {
                 assert (true);
             }
-            for (int i = 0; i < newSlotCount - 1; ++i) {
+            for (int i = 0; i < newSlotCount; ++i) {
                 brewingSlots.get(i).resize(newWidth, height, newWidth * i + 100);
             }
 
@@ -386,7 +394,7 @@ public class GameCanvas extends Canvas implements Runnable {
             brewingSlots.remove(newSlotCount);
             brewingIDs.remove(newSlotCount);
             for (int i = 0; i < newSlotCount; ++i) {
-                brewingSlots.get(i).resize(newWidth, height, i * newWidth);
+                brewingSlots.get(i).resize(newWidth, height, i * newWidth + 100);
             }
         }
         coffeeshopManager.downgrade();

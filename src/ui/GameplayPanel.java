@@ -59,6 +59,11 @@ public class GameplayPanel extends JPanel {
 //        dayLabel.setText(text);
 //    }
 
+    public void setDay(int day) {
+        gameCanvas.setDay(day);
+    }
+
+
     public void startGame() {
         if (gameCanvas != null) {
             gameCanvas.shouldRun = true;

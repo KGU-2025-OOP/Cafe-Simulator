@@ -19,6 +19,7 @@ import java.awt.RenderingHints;
 import java.awt.Image;
 import java.awt.Cursor;
 import java.awt.GridBagLayout;
+import java.io.File;
 
 public class StartMenuPanel extends JPanel {
 

@@ -125,6 +125,8 @@ public class NewGameSetupPanel extends JPanel {
         return nameField;
     }
 
+
+
     public JButton getStartButton() {
         return startButton;
     }
