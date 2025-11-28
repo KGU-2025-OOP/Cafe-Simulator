@@ -77,12 +77,29 @@ public class OrderManager {
     }
 
     public String toString() {
-        StringBuffer outStr = new StringBuffer();
-        // TODO: 판매기록 출력
-        return outStr.toString();
+        StringBuffer strBuf = new StringBuffer();
+        for (var i : orders) {
+            if (!i.isServed()) {
+                break;
+            }
+            int menuLength = i.getMenuLength();
+            for (int j = 0; j < menuLength; ++j) {
+                strBuf.append(day);
+                strBuf.append(" ");
+                strBuf.append(i.toString());
+                strBuf.append(" ");
+                strBuf.append(i.getMenu(j).toString());
+                strBuf.append('\n');
+            }
+        }
+        return strBuf.toString();
     }
 
     public void setDay(int day) {
         this.day = day;
+    }
+
+    public int getDay() {
+        return day;
     }
 }

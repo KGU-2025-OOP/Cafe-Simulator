@@ -21,6 +21,7 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -29,9 +30,9 @@ import entities.WobbleImage;
 public class GameCanvas extends Canvas implements Runnable {
     private static final long DAY_TIME = 15;
     private final RenderQueue renderQueue;
-    private final  MessageQueue messageQueue;
-    private final  KoreanInputAssembler korean;
-    private FPSCounter frameCounter;
+    private final MessageQueue messageQueue;
+    private final KoreanInputAssembler korean;
+    private final FPSCounter frameCounter;
     private int menuCounter;
     private int orderCounter;
     private long roundTimer;
@@ -48,7 +49,7 @@ public class GameCanvas extends Canvas implements Runnable {
     private OrderManager coffeeshopManager;
     private DeadLine deadLine;
     private TextBox inputBox;
-    private TextBox timerBox;
+    private final TextBox timerBox;
     private DayEndListener endEvent;
     private boolean paused;
     public boolean pause;
@@ -240,11 +241,28 @@ public class GameCanvas extends Canvas implements Runnable {
             timer.setLength(0);
             timer.append((roundTimer - lastTime) / FPSCounter.secondInNanoTime);
         } else {
-            // TODO: 하루마감(하루매출기록)
+            // TODO: File IO append
+            try {
+                FileWriter salesFW = new FileWriter("sales.txt", true);
+                salesFW.append(coffeeshopManager.toString());
+                salesFW.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             int revenue = 0;
-            for (int i = 0; i < orderCounter; ++i) {
+            for (int i = 0; i < orderCounter - 1; ++i) {
                 revenue += coffeeshopManager.getOrder(i).getPrice();
             }
+            try {
+                FileWriter revenueFW = new FileWriter("daily_revenue.txt", true);
+                String content = coffeeshopManager.getDay() + " " + revenue + "\n";
+                revenueFW.append(content);
+                revenueFW.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             coffeeshopManager.nextDay();
             lastTime = System.nanoTime();
             roundTime = DAY_TIME * FPSCounter.secondInNanoTime;
@@ -270,7 +288,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     assert (true);
                 }
             }
-            endEvent.onDayEnd(orderCounterBak, revenue);
+            endEvent.onDayEnd(orderCounterBak - 1, revenue);
         }
         timerBox.update(deltaTime);
         // update
@@ -280,8 +298,8 @@ public class GameCanvas extends Canvas implements Runnable {
             brewingSlots.get(i).update(deltaTime);
             if (brewingSlots.get(i).isEmpty()) {
                 if (coffeeshopManager.getOrder(brewingIDs.get(i).x).serve(brewingIDs.get(i).y)) {
-                    // TODO: 매출 기록(
-                    System.out.println(coffeeshopManager.getOrder(brewingIDs.get(i).x).getPrice());
+                    // order 서빙완료
+                    // Placeholder
                 }
                 try {
                     brewingSlots.get(i).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));

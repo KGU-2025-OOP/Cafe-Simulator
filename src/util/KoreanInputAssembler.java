@@ -115,8 +115,7 @@ public class KoreanInputAssembler {
         QWERTY_BIND['O'] = "ㅒ";
         QWERTY_BIND['P'] = "ㅖ";
     }
-
-    // TODO: combination consonant and vowel
+    
     public void input(StringBuffer targetHandle, KeyEvent e) {
         if (ignore) {
             return;
@@ -142,7 +141,6 @@ public class KoreanInputAssembler {
             Integer finalCode = null;
             int idx = targetHandle.length() - 1;
             if (in == 8) {
-                // TODO: 결합 분리 구현 예정
                 if (deleting) {
                     stage = Stage.INITIAL;
                     return;

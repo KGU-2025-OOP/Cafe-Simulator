@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
-import core.DayEndListener;
-
 public class CafeSimulatorFrame extends JFrame {
 
     private static final int MIN_CUSTOMERS = 10;
@@ -336,7 +334,7 @@ public class CafeSimulatorFrame extends JFrame {
         addExitBinding(salesGraphPanel);
         addExitBinding(statisticsSearchPanel);
 
-        
+
         //임시 마감 버튼 입니다.
         // 타이머 연동하면 지우기
         // gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog(10, 10));

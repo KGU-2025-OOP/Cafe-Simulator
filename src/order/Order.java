@@ -56,7 +56,25 @@ public class Order {
         }
         return true;
     }
+
+    public boolean isServed() {
+        for (var i : served) {
+            if (i == false) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public int getPrice() {
         return price;
+    }
+
+    public String toString() {
+        StringBuffer strBuf = new StringBuffer();
+        strBuf.append(timestamp);
+        strBuf.append(" ");
+        strBuf.append(orderID);
+        return strBuf.toString();
     }
 }

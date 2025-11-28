@@ -67,6 +67,16 @@ public class Menu {
         return ingredients;
     }
 
+    public ArrayList<Option> getOptions() {
+        ArrayList<Option> ingredients = new ArrayList<Option>();
+        for (MenuItem item : this.items) {
+            if (item instanceof Option) {
+                ingredients.add((Option) item);
+            }
+        }
+        return ingredients;
+    }
+
     // 하위 호환성을 위한 메서드
     public void addOptions(final Option option) {
         this.items.add(option);
@@ -109,5 +119,19 @@ public class Menu {
 
     public File getImage() {
         return img;
+    }
+
+    public String toString() {
+        StringBuffer strBuf = new StringBuffer();
+        strBuf.append(price);
+        strBuf.append(" ");
+        strBuf.append(name);
+        var iter = getOptions();
+        for (var i : iter) {
+            strBuf.append(" ");
+            strBuf.append(i.getName());
+
+        }
+        return strBuf.toString();
     }
 }
