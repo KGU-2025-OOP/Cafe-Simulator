@@ -1,6 +1,7 @@
 package ui;
 
 import core.GameCanvas;
+import stats.StatsService;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,7 +9,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
 import java.awt.CardLayout;
 import java.io.*;
-import java.nio.CharBuffer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.JToggleButton;
@@ -110,7 +110,7 @@ public class CafeSimulatorFrame extends JFrame {
         totalAccumulatedRevenue = 0;
 
         initializeMenuItems();
-
+        initStatsService();
         cardLayout = new CardLayout();
 
         mainPanel = new JPanel(cardLayout) {
@@ -141,7 +141,7 @@ public class CafeSimulatorFrame extends JFrame {
         salesGraphPanel = new SalesStatisticsPanel(dailySalesHistory);
         mainPanel.add(salesGraphPanel, "Graph");
 
-        statisticsSearchPanel = new StatisticsSearchPanel();
+        statisticsSearchPanel = new StatisticsSearchPanel(statsService);
         mainPanel.add(statisticsSearchPanel, "Search");
 
         menuGuidePanel = new MenuGuidePanel(allMenuItems, this::handleMenuBack);
@@ -460,5 +460,34 @@ public class CafeSimulatorFrame extends JFrame {
         // 다음 날로 넘어가기
         currentDayNumber++;
         showPanel("GameSpaceHub");
+    }
+    
+ // 예시: CafeSimulatorFrame 안에서
+    private StatsService statsService;
+
+    private void initStatsService() {
+        try {
+            statsService = StatsService.fromFiles(
+                    GameCanvas.SALES_SAVE_PATH,
+                    GameCanvas.REVENUE_SAVE_PATH,
+                    SAVE_FILE_PATH
+            );
+        } catch (java.nio.file.NoSuchFileException e) {
+            // ★ 파일이 아직 없을 때: 조용히 빈 데이터로 시작
+            statsService = new StatsService(
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    null
+            );
+            // 굳이 메시지 안 띄우고 무시해도 됨
+        } catch (IOException e) {
+            // 다른 IO 문제는 한 번 정도는 로그 찍어두는 게 좋음
+            e.printStackTrace();
+            statsService = new StatsService(
+                    new ArrayList<>(),
+                    new ArrayList<>(),
+                    null
+            );
+        }
     }
 }

@@ -65,20 +65,43 @@ public class StatsFileLoader {
                 line = line.trim();
                 if (line.isEmpty()) continue;
 
-                String[] tokens = line.split(",");
-                if (tokens.length < 2) {
-                    System.err.println("일일 매출 포맷 오류: " + line);
-                    continue;
+                int revenue;
+                int round;
+
+                if (line.contains(",")) {
+                    // 새 포맷: "매출,라운드"
+                    String[] tokens = line.split(",");
+                    if (tokens.length < 2) {
+                        System.err.println("일일 매출 포맷 오류: " + line);
+                        continue;
+                    }
+                    try {
+                        revenue = Integer.parseInt(tokens[0].trim());
+                        round   = Integer.parseInt(tokens[1].trim());
+                    } catch (NumberFormatException ex) {
+                        System.err.println("일일 매출 숫자 파싱 오류: " + line);
+                        continue;
+                    }
+                } else {
+                    // 옛 포맷: "라운드 매출" (예: "1 32900")
+                    String[] tokens = line.split("\\s+");
+                    if (tokens.length < 2) {
+                        System.err.println("일일 매출 포맷 오류: " + line);
+                        continue;
+                    }
+                    try {
+                        // ★ 여기서 어떤 게 day/매출인지 헷갈릴 수 있는데,
+                        //   로그 "1 32900"을 보면 1=일차, 32900=매출로 보는 게 자연스러워서 이렇게 둠
+                        round   = Integer.parseInt(tokens[0].trim());
+                        revenue = Integer.parseInt(tokens[1].trim());
+                    } catch (NumberFormatException ex) {
+                        System.err.println("일일 매출 숫자 파싱 오류: " + line);
+                        continue;
+                    }
                 }
 
-                try {
-                    int revenue = Integer.parseInt(tokens[0].trim());
-                    int round = Integer.parseInt(tokens[1].trim());
-                    DailyRevenueRecord record = new DailyRevenueRecord(revenue, round);
-                    result.add(record);
-                } catch (NumberFormatException ex) {
-                    System.err.println("일일 매출 숫자 파싱 오류: " + line);
-                }
+                DailyRevenueRecord record = new DailyRevenueRecord(revenue, round);
+                result.add(record);
             }
         }
 
@@ -99,15 +122,34 @@ public class StatsFileLoader {
                 return null;
             }
 
-
+            // 1) 우선 새 포맷: "카페이름, 2"
             int idx = line.lastIndexOf(',');
-            if (idx == -1) {
+            if (idx != -1) {
+                String cafeName = line.substring(0, idx).trim();
+                String levelStr = line.substring(idx + 1).trim();
+                try {
+                    int level = Integer.parseInt(levelStr);
+                    return new GameSaveInfo(cafeName, level);
+                } catch (NumberFormatException ex) {
+                    System.err.println("게임 세이브 숫자 파싱 오류: " + line);
+                    return null;
+                }
+            }
+
+            // 2) 옛 포맷: "카페이름 2"
+            String[] tokens = line.split("\\s+");
+            if (tokens.length < 2) {
                 System.err.println("게임 세이브 포맷 오류: " + line);
                 return null;
             }
 
-            String cafeName = line.substring(0, idx).trim();
-            String levelStr = line.substring(idx + 1).trim();
+            String levelStr = tokens[tokens.length - 1];
+            StringBuilder nameBuilder = new StringBuilder();
+            for (int i = 0; i < tokens.length - 1; i++) {
+                if (i > 0) nameBuilder.append(' ');
+                nameBuilder.append(tokens[i]);
+            }
+            String cafeName = nameBuilder.toString();
 
             try {
                 int level = Integer.parseInt(levelStr);

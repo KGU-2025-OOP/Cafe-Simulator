@@ -30,7 +30,6 @@ public class StatsService {
         return new StatsService(sales, daily, saveInfo);
     }
 
-
     public List<SalesRecord> getAllSalesRecords() {
         return Collections.unmodifiableList(salesRecords);
     }
