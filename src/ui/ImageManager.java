@@ -14,8 +14,8 @@ public class ImageManager {
     public static final String IMG_MENU_BG  = "/image/background/background_gameplay_area.jpg";
 
     public static final String BTN_CONTINUE = "/image/button/play_button.png";
-    public static final String BTN_NEW_GAME = "/image/button/play_button.png";
-    public static final String BTN_START    = "/image/button/play_button.png";
+    public static final String BTN_NEW_GAME = "/image/button/start_button.png";
+    public static final String BTN_START    = "/image/button/start_button.png";
     public static final String BTN_EXIT     = "/image/button/exit_button.png";
     public static final String BTN_DEFAULT  = "/image/button/default_button.png";
     public static final String BTN_MINI     = "/image/button/mini_button.png";
