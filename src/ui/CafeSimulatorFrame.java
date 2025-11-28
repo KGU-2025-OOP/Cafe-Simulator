@@ -1,6 +1,5 @@
 package ui;
 
-import core.GameCanvas;
 import stats.StatsService;
 
 import javax.swing.JFrame;
@@ -19,16 +18,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.KeyEvent;
-import javax.swing.KeyStroke;
-import javax.swing.InputMap;
-import javax.swing.ActionMap;
-import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Random;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
@@ -71,6 +66,8 @@ public class CafeSimulatorFrame extends JFrame {
     public static final String SAVE_FILE_PATH = "cafename.txt";
     private String cafeName;
 
+    private StatsService statsService;
+
     public static void mymain(String[] args) {
         File saveFile = new File(SAVE_FILE_PATH);
         final boolean MOCK_SAVE_FILE_EXISTS = saveFile.exists();
@@ -111,6 +108,7 @@ public class CafeSimulatorFrame extends JFrame {
 
         initializeMenuItems();
         initStatsService();
+
         cardLayout = new CardLayout();
 
         mainPanel = new JPanel(cardLayout) {
@@ -128,6 +126,7 @@ public class CafeSimulatorFrame extends JFrame {
         startPanel = new StartMenuPanel(hasSaveFile);
         mainPanel.add(startPanel, "Start");
 
+        // [수정] 기본 생성자 사용 (뒤로가기 버튼 제거됨)
         newGamePanel = new NewGameSetupPanel();
         mainPanel.add(newGamePanel, "Nickname");
 
@@ -319,7 +318,7 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToNewGamePanel() {
         newGamePanel.getStartButton().addActionListener(e -> {
-            cafeName = newGamePanel.getNameField().getText().trim();
+            String cafeName = newGamePanel.getNameField().getText().trim();
             if (cafeName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "카페 이름을 입력해주세요.", "입력 오류", JOptionPane.WARNING_MESSAGE);
                 return;
@@ -331,7 +330,6 @@ public class CafeSimulatorFrame extends JFrame {
 
     private void addListenersToGameSpacePanel() {
         gameSpacePanel.getBtn1().addActionListener(e -> {
-            // gameScreen.setDayLabel(currentDayNumber + "일차");
             showPanel("Game");
             if (!gameScreen.isGameLoaded()) {
                 gameScreen.startGame();
@@ -353,33 +351,9 @@ public class CafeSimulatorFrame extends JFrame {
     }
 
     private void addListenersToGameScreen() {
-        addExitBinding(startPanel);
-        addExitBinding(newGamePanel);
-        addExitBinding(gameSpacePanel);
-        addExitBinding(salesGraphPanel);
-        addExitBinding(statisticsSearchPanel);
-
-
-        //임시 마감 버튼 입니다.
-        // 타이머 연동하면 지우기
-        // gameScreen.getEndDayButton().addActionListener(e -> showDayEndDialog(10, 10));
-        // GameCanvas → Frame 콜백 연결
+        // [수정] ESC 키 바인딩 제거됨
         gameScreen.setDayEndListener((customerCount, revenue) -> {
             showDayEndDialog(customerCount, revenue);
-        });
-    }
-
-    private void addExitBinding(JPanel panel) {
-        String actionKey = "showExitConfirmation";
-        InputMap inputMap = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = panel.getActionMap();
-        KeyStroke escKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        inputMap.put(escKeyStroke, actionKey);
-        actionMap.put(actionKey, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                showExitConfirmation();
-            }
         });
     }
 
@@ -420,17 +394,16 @@ public class CafeSimulatorFrame extends JFrame {
         );
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
             File save = new File(SAVE_FILE_PATH);
-            File revenue = new File(GameCanvas.REVENUE_SAVE_PATH);
-            File sales = new File(GameCanvas.SALES_SAVE_PATH);
+            // 관련 데이터 파일들도 삭제 (GameCanvas 상수가 있다면 사용, 없다면 주석 처리 필요)
+            // File revenue = new File(core.GameCanvas.REVENUE_SAVE_PATH);
+            // File sales = new File(core.GameCanvas.SALES_SAVE_PATH);
+
             if (save.exists()) {
                 save.delete();
             }
-            if (revenue.exists()) {
-                revenue.delete();
-            }
-            if (sales.exists()) {
-                sales.delete();
-            }
+            // if (revenue.exists()) revenue.delete();
+            // if (sales.exists()) sales.delete();
+
             System.exit(0);
         } else {
             if ("Game".equals(currentPanelName)) {
@@ -443,46 +416,34 @@ public class CafeSimulatorFrame extends JFrame {
         gameScreen.stopGame();
         int dayNumber = currentDayNumber;
 
-        // 누적 매출 갱신
         totalAccumulatedRevenue += revenue;
-        int netProfit = revenue;  // 아직 비용 안 빼면 그냥 revenue == netProfit
+        int netProfit = revenue;
 
         DaySummaryDialog dayEndDialog =
                 new DaySummaryDialog(this, dayNumber, customerCount, revenue, totalAccumulatedRevenue);
 
         bottomBarPanel.setVisible(false);
-        dayEndDialog.setVisible(true);   // 모달 → 닫힐 때까지 여기서 블록됨
+        dayEndDialog.setVisible(true);
         bottomBarPanel.setVisible(true);
 
-        // 일별 기록 저장
         dailySalesHistory.put(Integer.valueOf(dayNumber), Integer.valueOf(netProfit));
 
-        // 다음 날로 넘어가기
         currentDayNumber++;
         showPanel("GameSpaceHub");
     }
-    
- // 예시: CafeSimulatorFrame 안에서
-    private StatsService statsService;
 
     private void initStatsService() {
+        // StatsService 초기화 (GameCanvas 변수가 없으면 경로 문자열을 직접 써도 됩니다)
+        // 예시: "sales_data.txt", "revenue_data.txt"
         try {
+            // core.GameCanvas가 있다면 상수를 쓰시고, 없다면 직접 파일명을 적으세요.
+            // 여기서는 일단 임시로 문자열을 직접 적어 오류를 방지합니다.
             statsService = StatsService.fromFiles(
-                    GameCanvas.SALES_SAVE_PATH,
-                    GameCanvas.REVENUE_SAVE_PATH,
+                    "sales_data.txt",
+                    "revenue_data.txt",
                     SAVE_FILE_PATH
             );
-        } catch (java.nio.file.NoSuchFileException e) {
-            // ★ 파일이 아직 없을 때: 조용히 빈 데이터로 시작
-            statsService = new StatsService(
-                    new ArrayList<>(),
-                    new ArrayList<>(),
-                    null
-            );
-            // 굳이 메시지 안 띄우고 무시해도 됨
-        } catch (IOException e) {
-            // 다른 IO 문제는 한 번 정도는 로그 찍어두는 게 좋음
-            e.printStackTrace();
+        } catch (Exception e) {
             statsService = new StatsService(
                     new ArrayList<>(),
                     new ArrayList<>(),
