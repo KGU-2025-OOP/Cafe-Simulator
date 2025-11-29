@@ -56,6 +56,8 @@ public class GameCanvas extends Canvas implements Runnable {
     private final TextBox timerBox;
     private DayEndListener endEvent;
     private boolean paused;
+    private int revenue;
+    private int servedOrders;
 
 
     public GameCanvas(int width, int height) {
@@ -97,6 +99,8 @@ public class GameCanvas extends Canvas implements Runnable {
                 long remainTime = roundTimer - lastTime;
                 lastTime = System.nanoTime();
                 roundTimer = lastTime + remainTime;
+                korean.toggleActivation();
+                korean.toggleActivation();
             }
             // message handling
             AWTEvent input = messageQueue.poll();
@@ -174,6 +178,9 @@ public class GameCanvas extends Canvas implements Runnable {
     }
 
     private void init() {
+
+        revenue = 0;
+        servedOrders = 0;
         paused = false;
         pause = false;
         // Initialize game objects
@@ -249,7 +256,9 @@ public class GameCanvas extends Canvas implements Runnable {
             timer.setLength(0);
             timer.append((roundTimer - lastTime) / FPSCounter.secondInNanoTime);
         } else {
-            // TODO: File IO append
+
+            korean.toggleActivation();
+            korean.toggleActivation();
             try {
                 FileWriter salesFW = new FileWriter(SALES_SAVE_PATH, true);
                 salesFW.append(coffeeshopManager.toString());
@@ -258,10 +267,6 @@ public class GameCanvas extends Canvas implements Runnable {
                 throw new RuntimeException(e);
             }
 
-            int revenue = 0;
-            for (int i = 0; i < orderCounter - 1; ++i) {
-                revenue += coffeeshopManager.getOrder(i).getPrice();
-            }
             try {
                 FileWriter revenueFW = new FileWriter(REVENUE_SAVE_PATH, true);
                 String content = coffeeshopManager.getDay() + " " + revenue + "\n";
@@ -277,9 +282,16 @@ public class GameCanvas extends Canvas implements Runnable {
             roundTime = DAY_TIME * FPSCounter.secondInNanoTime;
             roundTimer = lastTime + roundTime;
             coffeeshopManager.createRandomOrder();
-            int orderCounterBak = orderCounter;
+            coffeeshopManager.createRandomOrder();
+            int servedOrdersBak = servedOrders;
+            int revenueBak = revenue;
+            revenue = 0;
+            servedOrders = 0;
             orderCounter = 0;
             menuCounter = 0;
+            for (int i = 0; i < brewingSlots.size(); ++i) {
+                brewingSlots.get(i).clear();
+            }
             for (int i = 0; i < brewingSlots.size(); ++i) {
                 try {
                     brewingIDs.get(i).x = orderCounter;
@@ -297,7 +309,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     assert (true);
                 }
             }
-            endEvent.onDayEnd(orderCounterBak - 1, revenue);
+            endEvent.onDayEnd(servedOrdersBak, revenueBak);
         }
         timerBox.update(deltaTime);
         // update
@@ -307,8 +319,8 @@ public class GameCanvas extends Canvas implements Runnable {
             brewingSlots.get(i).update(deltaTime);
             if (brewingSlots.get(i).isEmpty()) {
                 if (coffeeshopManager.getOrder(brewingIDs.get(i).x).serve(brewingIDs.get(i).y)) {
-                    // order 서빙완료
-                    // Placeholder
+                    revenue += coffeeshopManager.getOrder(brewingIDs.get(i).x).getPrice();
+                    ++servedOrders;
                 }
                 try {
                     brewingSlots.get(i).loadMenu(coffeeshopManager.getOrder(orderCounter).getMenu(menuCounter));
