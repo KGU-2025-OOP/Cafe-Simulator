@@ -1,10 +1,14 @@
 package ui;
 
+import core.GameCanvas;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -116,6 +120,31 @@ public class SalesStatisticsPanel extends JPanel {
             this.historyData = historyData;
             salesData = new ArrayList<>();
             graphPoints = new ArrayList<>();
+
+            File salesSave = new File(GameCanvas.REVENUE_SAVE_PATH);
+            if (salesSave.exists()) {
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(salesSave));
+                    String in;
+                    do {
+                        in = br.readLine();
+                        if (in == null) {
+                            break;
+                        }
+                        String[] temp = in.split(" ");
+                        int day = Integer.parseInt(temp[0]);
+                        int revenue = Integer.parseInt(temp[1]);
+                        historyData.put(day, revenue);
+                    } while (in != null);
+                    br.close();
+                } catch (FileNotFoundException e) {
+                    assert (true);
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    assert (true);
+                    throw new RuntimeException(e);
+                }
+            }
 
             setBackground(COLOR_BACKGROUND);
             setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));

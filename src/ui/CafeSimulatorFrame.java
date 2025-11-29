@@ -1,5 +1,6 @@
 package ui;
 
+import core.GameCanvas;
 import stats.StatsService;
 
 import javax.swing.JFrame;
@@ -90,7 +91,7 @@ public class CafeSimulatorFrame extends JFrame {
             try {
                 FileReader fr = new FileReader(CafeSimulatorFrame.SAVE_FILE_PATH);
                 BufferedReader br = new BufferedReader(fr);
-                String[] saveData = br.readLine().split(" ");
+                String[] saveData = br.readLine().split(",");
                 cafeName = saveData[0];
                 currentDayNumber = Integer.parseInt(saveData[1]);
                 br.close();
@@ -368,7 +369,7 @@ public class CafeSimulatorFrame extends JFrame {
             try {
                 FileWriter fw = new FileWriter(SAVE_FILE_PATH, false);
                 fw.append(cafeName);
-                fw.append(" ");
+                fw.append(",");
                 fw.append(currentDayNumber + "");
                 fw.close();
             } catch (IOException e) {
@@ -395,14 +396,18 @@ public class CafeSimulatorFrame extends JFrame {
         if (confirmGiveUp == JOptionPane.YES_OPTION) {
             File save = new File(SAVE_FILE_PATH);
             // 관련 데이터 파일들도 삭제 (GameCanvas 상수가 있다면 사용, 없다면 주석 처리 필요)
-            // File revenue = new File(core.GameCanvas.REVENUE_SAVE_PATH);
-            // File sales = new File(core.GameCanvas.SALES_SAVE_PATH);
+            File revenue = new File(core.GameCanvas.REVENUE_SAVE_PATH);
+            File sales = new File(core.GameCanvas.SALES_SAVE_PATH);
 
             if (save.exists()) {
                 save.delete();
             }
-            // if (revenue.exists()) revenue.delete();
-            // if (sales.exists()) sales.delete();
+            if (revenue.exists()) {
+                revenue.delete();
+            }
+            if (sales.exists()) {
+                sales.delete();
+            }
 
             System.exit(0);
         } else {
@@ -436,11 +441,9 @@ public class CafeSimulatorFrame extends JFrame {
         // StatsService 초기화 (GameCanvas 변수가 없으면 경로 문자열을 직접 써도 됩니다)
         // 예시: "sales_data.txt", "revenue_data.txt"
         try {
-            // core.GameCanvas가 있다면 상수를 쓰시고, 없다면 직접 파일명을 적으세요.
-            // 여기서는 일단 임시로 문자열을 직접 적어 오류를 방지합니다.
             statsService = StatsService.fromFiles(
-                    "sales_data.txt",
-                    "revenue_data.txt",
+                    GameCanvas.SALES_SAVE_PATH,
+                    GameCanvas.REVENUE_SAVE_PATH,
                     SAVE_FILE_PATH
             );
         } catch (Exception e) {
