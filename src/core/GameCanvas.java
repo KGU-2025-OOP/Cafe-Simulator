@@ -259,7 +259,7 @@ public class GameCanvas extends Canvas implements Runnable {
             }
 
             int revenue = 0;
-            for (int i = 0; i < orderCounter - 1; ++i) {
+            for (int i = 0; i < orderCounter; ++i) {
                 revenue += coffeeshopManager.getOrder(i).getPrice();
             }
             try {
@@ -297,7 +297,7 @@ public class GameCanvas extends Canvas implements Runnable {
                     assert (true);
                 }
             }
-            endEvent.onDayEnd(orderCounterBak - 1, revenue);
+            endEvent.onDayEnd(orderCounterBak, revenue);
         }
         timerBox.update(deltaTime);
         // update
