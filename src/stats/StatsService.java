@@ -81,13 +81,20 @@ public class StatsService {
         }
         return 0;
     }
-    
+
     public int getUniqueCustomerCount() {
         Set<String> uniqueIds = new HashSet<>();
+        int roundBak = -1;
+        int res = 0;
         for (SalesRecord r : salesRecords) {
+            if (r.getRound() != roundBak) {
+                res += uniqueIds.size();
+                uniqueIds.clear();
+                roundBak = r.getRound();
+            }
             uniqueIds.add(r.getOrderId());   // 중복 제거
         }
-        return uniqueIds.size();
+        return res + uniqueIds.size();
     }
 
     public double getAverageOrderPrice() {
