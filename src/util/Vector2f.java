@@ -4,22 +4,22 @@ public class Vector2f {
     public float x;
     public float y;
 
-    Vector2f() {
+    public Vector2f() {
         x = 0;
         y = 0;
     }
 
-    Vector2f(float x, float y) {
+    public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    Vector2f(final Vector2f src) {
+    public Vector2f(final Vector2f src) {
         x = src.x;
         y = src.y;
     }
 
-    Vector2f(float angle) {
+    public Vector2f(float angle) {
         this();
         this.setVectorByAngle(angle);
     }
@@ -65,4 +65,7 @@ public class Vector2f {
         y = s * y;
     }
 
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

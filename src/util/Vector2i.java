@@ -35,4 +35,8 @@ public class Vector2i {
     public float length() {
         return (float)Math.sqrt(dot(this));
     }
+
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }
