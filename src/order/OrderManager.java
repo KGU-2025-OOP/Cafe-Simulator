@@ -58,6 +58,7 @@ public class OrderManager {
 
     public void nextDay() {
         orders.clear();
+        Order.nextDay();
         ++day;
         // day save routine
     }

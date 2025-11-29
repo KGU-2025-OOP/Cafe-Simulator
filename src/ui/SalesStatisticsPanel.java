@@ -65,7 +65,7 @@ public class SalesStatisticsPanel extends JPanel {
                 g2.setColor(new Color(0, 0, 0, 150));
                 g2.drawString(text, x + 3, y + 3);
 
-                g2.setColor(Color.WHITE);
+                g2.setColor(new Color(160, 110, 80));
                 g2.drawString(text, x, y);
             }
         };

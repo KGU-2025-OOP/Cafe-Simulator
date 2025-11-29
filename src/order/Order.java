@@ -32,6 +32,10 @@ public class Order {
         dropSpeed = 15.F;
     }
 
+    public static void nextDay() {
+        dailyOrderCount = 0;
+    }
+
     public void addMenu(Menu item) {
         items.add(item);
         served.add(false);
