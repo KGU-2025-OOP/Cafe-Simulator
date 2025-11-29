@@ -310,6 +310,7 @@ public class GameCanvas extends Canvas implements Runnable {
                 }
             }
             endEvent.onDayEnd(servedOrdersBak, revenueBak);
+
         }
         timerBox.update(deltaTime);
         // update

@@ -41,7 +41,26 @@ public class MenuGuidePanel extends JPanel {
         JPanel titlePanel = new JPanel(new GridBagLayout());
         titlePanel.setOpaque(false);
 
-        JLabel titleLabel = new JLabel("메뉴 도감");
+        JLabel titleLabel = new JLabel("메뉴 도감") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+                String text = getText();
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(text)) / 2;
+                int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+
+                g2.setColor(new Color(0, 0, 0, 150));
+                g2.drawString(text, x + 3, y + 3);
+
+                g2.setColor(new Color(160, 110, 80));
+                g2.drawString(text, x, y);
+            }
+        };
+        
         titleLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 40));
         titlePanel.add(titleLabel);
 
