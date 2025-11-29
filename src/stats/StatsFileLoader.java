@@ -4,50 +4,114 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StatsFileLoader {
 
+    private static final String OPTIONS_FILE_PATH = "resources/options.txt";
+
+    private static final Set<String> OPTION_KEYWORDS = new HashSet<>();
+
+    static {
+        Path path = Paths.get(OPTIONS_FILE_PATH);
+        if (Files.exists(path)) {
+            try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String trimmed = line.trim();
+                    if (trimmed.isEmpty()) {
+                        continue;
+                    }
+                    String[] parts = trimmed.split("\\s+");
+                    if (parts.length == 0) {
+                        continue;
+                    }
+                    String optionName = parts[0];
+                    OPTION_KEYWORDS.add(optionName);
+                }
+            } catch (IOException e) {
+                initFallbackOptionKeywords();
+            }
+        } else {
+            initFallbackOptionKeywords();
+        }
+    }
+
+    private static void initFallbackOptionKeywords() {
+        OPTION_KEYWORDS.clear();
+        OPTION_KEYWORDS.addAll(Arrays.asList(
+                "샷추가",
+                "휘핑추가",
+                "시럽추가",
+                "얼음조절",
+                "디카페인변경",
+                "라지사이즈",
+                "오트밀크변경",
+                "두유변경",
+                "무얼음",
+                "진하게",
+                "연하게",
+                "차갑게",
+                "따뜻하게",
+                "토핑추가",
+                "설탕추가",
+                "시나몬추가",
+                "생크림추가",
+                "컵홀더추가",
+                "포장하기",
+                "테이크아웃"
+        ));
+    }
+
     public static List<SalesRecord> loadSalesRecords(String filePath) throws IOException {
         List<SalesRecord> result = new ArrayList<>();
+        Path path = Paths.get(filePath);
 
-        try (BufferedReader br = Files.newBufferedReader(
-                Paths.get(filePath), StandardCharsets.UTF_8)) {
-
+        try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
             while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-
-                // 공백 기준으로 나누기
-                String[] tokens = line.split("\\s+");
-                if (tokens.length < 5) {
-                    System.err.println("판매 기록 포맷 오류 (토큰 부족): " + line);
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) {
                     continue;
                 }
 
-                try {
-                    int round = Integer.parseInt(tokens[0]);
-                    String timestamp = tokens[1];
-                    String orderId = tokens[2];
-                    int price = Integer.parseInt(tokens[3]);
-                    String menuName = tokens[4];
-
-                    List<String> options = new ArrayList<>();
-                    for (int i = 5; i < tokens.length; i++) {
-                        options.add(tokens[i]);
-                    }
-
-                    SalesRecord record = new SalesRecord(
-                            round, timestamp, orderId, price, menuName, options
-                    );
-                    result.add(record);
-
-                } catch (NumberFormatException ex) {
-                    System.err.println("판매 기록 숫자 파싱 오류: " + line);
+                String[] parts = trimmed.split("\\s+");
+                if (parts.length < 5) {
+                    continue;
                 }
+
+                int round = Integer.parseInt(parts[0]);
+                String timestamp = parts[1];
+                String orderId = parts[2];
+                int price = Integer.parseInt(parts[3]);
+
+                List<String> menuTokens = new ArrayList<>();
+                List<String> optionTokens = new ArrayList<>();
+
+                boolean inOption = false;
+                for (int i = 4; i < parts.length; i++) {
+                    String token = parts[i];
+                    if (OPTION_KEYWORDS.contains(token)) {
+                        inOption = true;
+                        optionTokens.add(token);
+                    } else {
+                        if (inOption) {
+                            optionTokens.add(token);
+                        } else {
+                            menuTokens.add(token);
+                        }
+                    }
+                }
+
+                String menuName = String.join(" ", menuTokens);
+                SalesRecord record = new SalesRecord(round, timestamp, orderId, price, menuName, optionTokens);
+                result.add(record);
             }
         }
 
@@ -56,52 +120,22 @@ public class StatsFileLoader {
 
     public static List<DailyRevenueRecord> loadDailyRevenues(String filePath) throws IOException {
         List<DailyRevenueRecord> result = new ArrayList<>();
+        Path path = Paths.get(filePath);
 
-        try (BufferedReader br = Files.newBufferedReader(
-                Paths.get(filePath), StandardCharsets.UTF_8)) {
-
+        try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
             while ((line = br.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty()) continue;
-
-                int revenue;
-                int round;
-
-                if (line.contains(",")) {
-                    // 새 포맷: "매출,라운드"
-                    String[] tokens = line.split(",");
-                    if (tokens.length < 2) {
-                        System.err.println("일일 매출 포맷 오류: " + line);
-                        continue;
-                    }
-                    try {
-                        revenue = Integer.parseInt(tokens[0].trim());
-                        round   = Integer.parseInt(tokens[1].trim());
-                    } catch (NumberFormatException ex) {
-                        System.err.println("일일 매출 숫자 파싱 오류: " + line);
-                        continue;
-                    }
-                } else {
-                    // 옛 포맷: "라운드 매출" (예: "1 32900")
-                    String[] tokens = line.split("\\s+");
-                    if (tokens.length < 2) {
-                        System.err.println("일일 매출 포맷 오류: " + line);
-                        continue;
-                    }
-                    try {
-                        // ★ 여기서 어떤 게 day/매출인지 헷갈릴 수 있는데,
-                        //   로그 "1 32900"을 보면 1=일차, 32900=매출로 보는 게 자연스러워서 이렇게 둠
-                        round   = Integer.parseInt(tokens[0].trim());
-                        revenue = Integer.parseInt(tokens[1].trim());
-                    } catch (NumberFormatException ex) {
-                        System.err.println("일일 매출 숫자 파싱 오류: " + line);
-                        continue;
-                    }
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) {
+                    continue;
                 }
-
-                DailyRevenueRecord record = new DailyRevenueRecord(revenue, round);
-                result.add(record);
+                String[] parts = trimmed.split("\\s+");
+                if (parts.length < 2) {
+                    continue;
+                }
+                int revenue = Integer.parseInt(parts[0]);
+                int round = Integer.parseInt(parts[1]);
+                result.add(new DailyRevenueRecord(round, revenue));
             }
         }
 
@@ -109,57 +143,32 @@ public class StatsFileLoader {
     }
 
     public static GameSaveInfo loadGameSaveInfo(String filePath) throws IOException {
-        try (BufferedReader br = Files.newBufferedReader(
-                Paths.get(filePath), StandardCharsets.UTF_8)) {
+        Path path = Paths.get(filePath);
 
-            String line = br.readLine();
-            if (line == null) {
-                return null;
-            }
-
-            line = line.trim();
-            if (line.isEmpty()) {
-                return null;
-            }
-
-            // 1) 우선 새 포맷: "카페이름, 2"
-            int idx = line.lastIndexOf(',');
-            if (idx != -1) {
-                String cafeName = line.substring(0, idx).trim();
-                String levelStr = line.substring(idx + 1).trim();
-                try {
-                    int level = Integer.parseInt(levelStr);
-                    return new GameSaveInfo(cafeName, level);
-                } catch (NumberFormatException ex) {
-                    System.err.println("게임 세이브 숫자 파싱 오류: " + line);
-                    return null;
+        try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty()) {
+                    continue;
                 }
-            }
-
-            // 2) 옛 포맷: "카페이름 2"
-            String[] tokens = line.split("\\s+");
-            if (tokens.length < 2) {
-                System.err.println("게임 세이브 포맷 오류: " + line);
-                return null;
-            }
-
-            String levelStr = tokens[tokens.length - 1];
-            StringBuilder nameBuilder = new StringBuilder();
-            for (int i = 0; i < tokens.length - 1; i++) {
-                if (i > 0) nameBuilder.append(' ');
-                nameBuilder.append(tokens[i]);
-            }
-            String cafeName = nameBuilder.toString();
-
-            try {
-                int level = Integer.parseInt(levelStr);
-                return new GameSaveInfo(cafeName, level);
-            } catch (NumberFormatException ex) {
-                System.err.println("게임 세이브 숫자 파싱 오류: " + line);
-                return null;
+                String[] parts = trimmed.split("\\s+");
+                if (parts.length < 2) {
+                    continue;
+                }
+                int day = Integer.parseInt(parts[parts.length - 1]);
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < parts.length - 1; i++) {
+                    if (i > 0) {
+                        sb.append(" ");
+                    }
+                    sb.append(parts[i]);
+                }
+                String cafeName = sb.toString();
+                return new GameSaveInfo(cafeName, day);
             }
         }
+
+        return new GameSaveInfo("", 0);
     }
 }
-
-

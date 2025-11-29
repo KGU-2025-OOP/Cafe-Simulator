@@ -3,26 +3,26 @@ package stats;
 public class GameSaveInfo {
 
     private final String cafeName;
-    private final int level;
+    private final int day;
 
-    public GameSaveInfo(String cafeName, int level) {
+    public GameSaveInfo(String cafeName, int day) {
         this.cafeName = cafeName;
-        this.level = level;
+        this.day = day;
     }
 
     public String getCafeName() {
         return cafeName;
     }
 
-    public int getLevel() {
-        return level;
+    public int getDay() {
+        return day;
     }
 
     @Override
     public String toString() {
         return "GameSaveInfo{" +
                 "cafeName='" + cafeName + '\'' +
-                ", level=" + level +
+                ", day=" + day +
                 '}';
     }
 }

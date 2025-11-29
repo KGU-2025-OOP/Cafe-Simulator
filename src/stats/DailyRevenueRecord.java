@@ -5,7 +5,7 @@ public class DailyRevenueRecord {
     private final int round;
     private final int revenue;
 
-    public DailyRevenueRecord(int revenue, int round) {
+    public DailyRevenueRecord(int round, int revenue) {
         this.round = round;
         this.revenue = revenue;
     }

@@ -3,7 +3,6 @@ package stats;
 import java.io.IOException;
 import java.util.*;
 
-
 public class StatsService {
 
     private final List<SalesRecord> salesRecords;
@@ -17,7 +16,6 @@ public class StatsService {
         this.dailyRevenues = new ArrayList<>(dailyRevenues);
         this.gameSaveInfo = gameSaveInfo;
     }
-
 
     public static StatsService fromFiles(String salesFilePath,
                                          String dailyRevenueFilePath,
@@ -41,7 +39,6 @@ public class StatsService {
     public GameSaveInfo getGameSaveInfo() {
         return gameSaveInfo;
     }
-
 
     public int getTotalRevenueFromSales() {
         int sum = 0;
@@ -87,8 +84,6 @@ public class StatsService {
         return (double) getTotalRevenueFromSales() / salesRecords.size();
     }
 
-    // ====== 검색 기능 ======
-
     public List<SalesRecord> findSalesByMenuName(String keyword) {
         String lower = keyword.toLowerCase(Locale.ROOT);
         List<SalesRecord> result = new ArrayList<>();
@@ -120,8 +115,6 @@ public class StatsService {
         return result;
     }
 
-    // ====== 정렬 기능 ======
-
     public List<SalesRecord> sortByPrice(boolean ascending) {
         List<SalesRecord> copy = new ArrayList<>(salesRecords);
         copy.sort((a, b) -> {
@@ -139,8 +132,6 @@ public class StatsService {
         });
         return copy;
     }
-
-    // ====== 메뉴별 집계 ======
 
     public Map<String, Integer> getMenuOrderCountMap() {
         Map<String, Integer> map = new HashMap<>();
@@ -169,5 +160,120 @@ public class StatsService {
             }
         }
         return best;
+    }
+
+    public List<MenuStatRow> getAllMenuStatsByRoundAndMenu() {
+        Map<String, int[]> agg = new HashMap<>();
+        for (SalesRecord r : salesRecords) {
+            String key = r.getRound() + "||" + r.getMenuName();
+            int[] arr = agg.get(key);
+            if (arr == null) {
+                arr = new int[]{0, 0};
+                agg.put(key, arr);
+            }
+            arr[0] += 1;
+            arr[1] += r.getPrice();
+        }
+        List<MenuStatRow> result = new ArrayList<>();
+        for (Map.Entry<String, int[]> e : agg.entrySet()) {
+            String key = e.getKey();
+            int idx = key.indexOf("||");
+            int round = Integer.parseInt(key.substring(0, idx));
+            String menu = key.substring(idx + 2);
+            int quantity = e.getValue()[0];
+            int total = e.getValue()[1];
+            result.add(new MenuStatRow(round, menu, quantity, total));
+        }
+        result.sort((a, b) -> {
+            if (a.getRound() != b.getRound()) {
+                return Integer.compare(a.getRound(), b.getRound());
+            }
+            return a.getMenuName().compareTo(b.getMenuName());
+        });
+        return result;
+    }
+
+    public List<MenuStatRow> searchMenuStatsByMenuKeyword(String keyword) {
+        String lower = keyword.toLowerCase(Locale.ROOT);
+        List<MenuStatRow> all = getAllMenuStatsByRoundAndMenu();
+        List<MenuStatRow> result = new ArrayList<>();
+        for (MenuStatRow row : all) {
+            if (row.getMenuName().toLowerCase(Locale.ROOT).contains(lower)) {
+                result.add(row);
+            }
+        }
+        return result;
+    }
+
+    public List<MenuStatRow> searchMenuStatsByRound(int round) {
+        List<MenuStatRow> all = getAllMenuStatsByRoundAndMenu();
+        List<MenuStatRow> result = new ArrayList<>();
+        for (MenuStatRow row : all) {
+            if (row.getRound() == round) {
+                result.add(row);
+            }
+        }
+        return result;
+    }
+
+    public List<OptionStatRow> getAllOptionStatsByRoundAndOption() {
+        Map<String, int[]> agg = new HashMap<>();
+        for (SalesRecord r : salesRecords) {
+            List<String> options = r.getOptions();
+            if (options == null) continue;
+            for (String opt : options) {
+                if (opt == null) continue;
+                String trimmed = opt.trim();
+                if (trimmed.isEmpty()) continue;
+                String key = r.getRound() + "||" + trimmed;
+                int[] arr = agg.get(key);
+                if (arr == null) {
+                    arr = new int[]{0, 0};
+                    agg.put(key, arr);
+                }
+                arr[0] += 1;
+                arr[1] += r.getPrice();
+            }
+        }
+        List<OptionStatRow> result = new ArrayList<>();
+        for (Map.Entry<String, int[]> e : agg.entrySet()) {
+            String key = e.getKey();
+            int idx = key.indexOf("||");
+            int round = Integer.parseInt(key.substring(0, idx));
+            String optionName = key.substring(idx + 2);
+            int quantity = e.getValue()[0];
+            int total = e.getValue()[1];
+            result.add(new OptionStatRow(round, optionName, quantity, total));
+        }
+        result.sort((a, b) -> {
+            if (a.getRound() != b.getRound()) {
+                return Integer.compare(a.getRound(), b.getRound());
+            }
+            return a.getOptionName().compareTo(b.getOptionName());
+        });
+        return result;
+    }
+
+    public List<OptionStatRow> searchOptionStatsByOptionKeyword(String keyword) {
+        String lower = keyword.toLowerCase(Locale.ROOT);
+        List<OptionStatRow> all = getAllOptionStatsByRoundAndOption();
+        List<OptionStatRow> result = new ArrayList<>();
+        for (OptionStatRow row : all) {
+            if (row.getOptionName().toLowerCase(Locale.ROOT).contains(lower)) {
+                result.add(row);
+            }
+        }
+        return result;
+    }
+
+    public List<OptionStatRow> searchOptionStatsByRound(int round) {
+        List<OptionStatRow> all = getAllOptionStatsByRoundAndOption();
+        List<OptionStatRow> result = new ArrayList<>();
+        for (OptionStatRow row : all) {
+            if (row.getRound() == round) {
+                result.add(row);
+            }
+        }
+        return result;
     }
 }
