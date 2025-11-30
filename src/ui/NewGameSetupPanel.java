@@ -69,6 +69,11 @@ public class NewGameSetupPanel extends JPanel {
         ic.gridy = 0;
         ic.anchor = GridBagConstraints.CENTER;
 
+        // [추가된 부분] ---------------------------------
+        ic.weightx = 1.0; // 가로 공간에 대한 가중치 부여 (이게 없으면 최소 크기로 줄어듦)
+        ic.fill = GridBagConstraints.HORIZONTAL; // 할당된 가로 공간을 꽉 채우도록 설정
+        // ---------------------------------------------
+
         nameField = new JTextField(35);
         nameField.setFont(new Font("SansSerif", Font.PLAIN, 24));
         nameField.setHorizontalAlignment(JTextField.CENTER);
