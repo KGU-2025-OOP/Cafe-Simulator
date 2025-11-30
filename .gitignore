@@ -32,3 +32,4 @@ out/production/Cafe-Simulator/menu/readme.md
 daily_revenue.txt
 sales.txt
 cafename.txt
+*.txt
