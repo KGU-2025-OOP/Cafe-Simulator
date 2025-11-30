@@ -346,6 +346,12 @@ public class CafeSimulatorFrame extends JFrame {
 
         if (gameSpacePanel.getBtn4() != null) {
             gameSpacePanel.getBtn4().addActionListener(e -> {
+                initStatsService();
+                statisticsSearchPanel = new StatisticsSearchPanel(statsService);
+                mainPanel.add(statisticsSearchPanel, "Search");
+                statisticsSearchPanel.getBackButton().addActionListener(e2 -> {
+                    showPanel("GameSpaceHub");
+                });
                 showPanel("Search");
             });
         }
