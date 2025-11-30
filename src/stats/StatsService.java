@@ -35,6 +35,17 @@ public class StatsService {
         return new StatsService(sales, daily, saveInfo);
     }
 
+    public void reloadData(String salesFilePath, String dailyRevenueFilePath, String saveFilePath) throws IOException {
+        this.salesRecords.clear();
+        this.salesRecords.addAll(StatsFileLoader.loadSalesRecords(salesFilePath));
+
+        this.dailyRevenues.clear();
+        this.dailyRevenues.addAll(StatsFileLoader.loadDailyRevenues(dailyRevenueFilePath));
+
+        // GameSaveInfo는 불변 객체일 수 있으므로 새로 할당
+        // this.gameSaveInfo = StatsFileLoader.loadGameSaveInfo(saveFilePath);
+    }
+
     public List<SalesRecord> getAllSalesRecords() {
         return Collections.unmodifiableList(salesRecords);
     }

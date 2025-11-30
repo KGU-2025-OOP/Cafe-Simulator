@@ -346,13 +346,22 @@ public class CafeSimulatorFrame extends JFrame {
 
         if (gameSpacePanel.getBtn4() != null) {
             gameSpacePanel.getBtn4().addActionListener(e -> {
-                initStatsService();
-                statisticsSearchPanel = new StatisticsSearchPanel(statsService);
-                mainPanel.add(statisticsSearchPanel, "Search");
-                statisticsSearchPanel.getBackButton().addActionListener(e2 -> {
-                    showPanel("GameSpaceHub");
-                });
-                showPanel("Search");
+                try {
+                    statsService.reloadData(
+                            GameCanvas.SALES_SAVE_PATH,
+                            GameCanvas.REVENUE_SAVE_PATH,
+                            SAVE_FILE_PATH
+                    );
+                    statisticsSearchPanel.refreshData();
+                    showPanel("Search");
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "아직 장사를 시작하지 않았습니다.",
+                            "판매기록이 없습니다.",
+                            JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
             });
         }
     }

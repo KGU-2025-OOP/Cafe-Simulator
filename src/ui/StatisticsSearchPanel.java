@@ -534,6 +534,11 @@ public class StatisticsSearchPanel extends JPanel {
         }
     }
 
+    public void refreshData() {
+        fillSummary();
+        doSearch();
+    }
+
     private void fillSummary() {
         if (statsService == null) {
             lblDays.setText("운영한 일수: -일");
